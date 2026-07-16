@@ -51,7 +51,6 @@ import {
 } from "lucide-react"
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
-import { Symbol } from "@/components/dashboard/Symbol"
 import { StatusBadge, type StatusTone } from "@/components/dashboard/StatusBadge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
@@ -71,9 +70,6 @@ const softPanel =
   "rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-soft)] shadow-none"
 
 const accountingTextAction = "ax-text-action"
-
-const accountingPrimaryButton =
-  "!border-[var(--btn-primary-bg)] !bg-[var(--btn-primary-bg)] !text-[var(--btn-primary-fg)] !shadow-none hover:!bg-[var(--btn-primary-bg-hover)] hover:!text-[var(--btn-primary-fg-hover)] focus-visible:!ring-[var(--btn-primary-bg)]/30"
 
 function SettingsFallback() {
   return <DashboardRouteLoader label="Loading settings" />
@@ -466,7 +462,7 @@ function SettingsContent() {
     checkoutSyncState === "pending"
       ? "processing"
       : (currentSubscription?.status || (billingStatus?.plan === "free" ? "free" : "active")) === "active"
-        ? "success"
+        ? "info"
         : billingStatus?.plan === "free"
           ? "info"
           : "neutral"
@@ -495,12 +491,12 @@ function SettingsContent() {
   return (
     <DashboardShell activeItem="settings" title="Settings" user={user}>
       <div className="space-y-4">
-        <PageHeader title="Settings" description="Workspace access, billing, accounting defaults, and review preferences." className="mb-0" compact />
+        <PageHeader title="Settings" description="Account, billing, books, and review." className="mb-0" compact />
         <div className="grid gap-4 lg:grid-cols-[17rem_minmax(0,1fr)] lg:items-start">
           {/* Mobile Section Selector */}
           <div className="lg:hidden">
             <Select value={activeSection} onValueChange={(value) => setActiveSection(value as SettingsSection)}>
-              <SelectTrigger className="h-11 w-full rounded-full bg-white px-4">
+              <SelectTrigger className="h-11 w-full rounded-md bg-card px-4">
                 <SelectValue placeholder="Select a section" />
               </SelectTrigger>
               <SelectContent>
@@ -525,7 +521,7 @@ function SettingsContent() {
 
           {/* Sidebar Navigation */}
           <nav className="hidden lg:block">
-            <div className="sticky top-14 rounded-lg border border-[var(--workspace-border)] bg-white p-2 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.75),0_1px_2px_0_rgba(16,24,40,0.04)]">
+            <div className="sticky top-14 rounded-lg border border-[var(--workspace-border)] bg-card p-2">
               <div className="space-y-1">
                 {sidebarSections.map((section) => (
                   <div key={section.title} className="space-y-1">
@@ -541,7 +537,7 @@ function SettingsContent() {
                           onClick={() => setActiveSection(item.id as SettingsSection)}
                           title={item.short}
                           className={cn(
-                            "ax-interactive relative flex h-10 w-full items-center gap-3 rounded-full border border-transparent px-3 text-sm font-semibold text-foreground outline-none focus-visible:ring-2 focus-visible:ring-black/15",
+                            "ax-interactive relative flex h-10 w-full items-center gap-3 rounded-md border border-transparent px-3 text-sm font-semibold text-foreground outline-none focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/25",
                             isActive
                               ? "border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]"
                               : "hover:border-[var(--workspace-border)] hover:bg-[var(--workspace-soft)]"
@@ -550,7 +546,7 @@ function SettingsContent() {
                           {isActive && (
                             <span className="absolute inset-y-2 left-1 w-[3px] rounded-full bg-[var(--workspace-primary)]" />
                           )}
-                          <Icon className="h-4 w-4 shrink-0 text-black" />
+                          <Icon className="h-4 w-4 shrink-0 text-[var(--workspace-ink)]" />
                           <span className="min-w-0 truncate">{item.label}</span>
                           <span className="sr-only">{item.short}</span>
                         </button>
@@ -691,7 +687,7 @@ function SettingsContent() {
                   actions={<StatusBadge tone={planStatusTone}>{planStatusLabel}</StatusBadge>}
                   contentClassName="space-y-4"
                 >
-                  <dl className="grid overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white sm:grid-cols-3 sm:divide-x sm:divide-[var(--workspace-border)]">
+                  <dl className="grid overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-card sm:grid-cols-3 sm:divide-x sm:divide-[var(--workspace-border)]">
                     <div className="border-b border-[var(--workspace-border)] px-4 py-3 sm:border-b-0">
                       <p className="text-xs font-semibold uppercase tracking-normal text-[var(--workspace-muted)]">Plan</p>
                       <p className="mt-2 text-lg font-semibold text-foreground">
@@ -715,7 +711,7 @@ function SettingsContent() {
                   <div className={cn("p-4", softPanel)}>
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <CreditStack className="h-6 w-6 shrink-0 text-black" />
+                        <CreditStack className="h-6 w-6 shrink-0 text-[var(--workspace-ink)]" />
                         <div>
                           <p className="text-sm font-semibold text-foreground">Credits</p>
                           <p className="text-xs font-medium text-foreground">{creditUsed} used of {creditTotal}</p>
@@ -736,13 +732,6 @@ function SettingsContent() {
                   </div>
 
                   <div className="flex flex-wrap items-center gap-3 border-t border-border pt-4">
-                    <Button
-                      variant="glossy"
-                      size="sm"
-                      onClick={() => router.push("/pricing")}
-                    >
-                      {noCredits ? "Buy credits" : "Compare plans"}
-                    </Button>
                     <InlineAction
                       className={accountingTextAction}
                       onClick={openBillingPortal}
@@ -750,6 +739,13 @@ function SettingsContent() {
                     >
                       {billingAction === "portal" ? "Opening..." : "Manage billing"}
                     </InlineAction>
+                    <Button
+                      variant="glossy"
+                      size="sm"
+                      onClick={() => router.push("/pricing")}
+                    >
+                      {noCredits ? "Buy credits" : "Compare plans"}
+                    </Button>
                   </div>
                 </WorkspaceSection>
 
@@ -769,7 +765,7 @@ function SettingsContent() {
                       type="button"
                       onClick={() => startCheckout(plan.checkout_key as BillingPlanKey)}
                       disabled={billingAction === plan.checkout_key || !plan.checkout_available}
-                      className="ax-interactive group flex min-h-24 w-full cursor-pointer flex-col justify-between rounded-lg border border-[var(--workspace-border)] bg-white p-4 text-left text-foreground shadow-none outline-none hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)] focus-visible:ring-2 focus-visible:ring-black/15 disabled:cursor-wait disabled:opacity-70"
+                      className="ax-interactive group flex min-h-24 w-full cursor-pointer flex-col justify-between rounded-lg border border-[var(--workspace-border)] bg-card p-4 text-left text-foreground outline-none hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/25 disabled:cursor-wait disabled:opacity-70"
                     >
                       <span>
                         <span className="block text-sm font-semibold">
@@ -786,7 +782,7 @@ function SettingsContent() {
                   <button
                     type="button"
                     onClick={() => router.push("/contact?topic=enterprise")}
-                    className="ax-interactive group flex min-h-24 w-full cursor-pointer flex-col justify-between rounded-lg border border-[var(--workspace-border)] bg-white p-4 text-left text-foreground shadow-none outline-none hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)] focus-visible:ring-2 focus-visible:ring-black/15"
+                    className="ax-interactive group flex min-h-24 w-full cursor-pointer flex-col justify-between rounded-lg border border-[var(--workspace-border)] bg-card p-4 text-left text-foreground outline-none hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/25"
                   >
                     <span>
                       <span className="block text-sm font-semibold">Enterprise</span>
@@ -810,7 +806,7 @@ function SettingsContent() {
                   icon={<Store />}
                   actions={(
                     <>
-                      <StatusBadge tone="warning">Owner only</StatusBadge>
+                      <StatusBadge tone="neutral">Owner only</StatusBadge>
                       {vendorRules.length > 0 ? <StatusBadge tone="info">{vendorRules.length} saved</StatusBadge> : null}
                     </>
                   )}
@@ -824,12 +820,9 @@ function SettingsContent() {
                     />
                   ) : vendorRules.length === 0 ? (
                     <div className="flex flex-col items-center gap-4 px-6 py-8 text-center">
-                      <Symbol
-                        name="firstsight-vendors-empty"
-                        size="hero"
-                        className="h-32 w-32 sm:h-36 sm:w-36"
-                        alt=""
-                      />
+                      <span className="inline-flex size-14 items-center justify-center rounded-full border border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
+                        <Store className="size-6" />
+                      </span>
                       <div className="max-w-sm space-y-1.5">
                         <h3 className="text-base font-semibold tracking-normal text-foreground">
                           No supplier defaults yet
@@ -840,19 +833,16 @@ function SettingsContent() {
                     <details key={rule.id} className={cn("group overflow-hidden", softPanel)}>
                       <summary className="ax-interactive flex cursor-pointer list-none flex-wrap items-start justify-between gap-4 p-3.5 outline-none [&::-webkit-details-marker]:hidden sm:p-4">
                         <div className="flex items-start gap-3">
-                          <Symbol
-                            name="success-vendor-remembered"
-                            size="badge"
-                            className="mt-0.5 h-10 w-10"
-                            alt=""
-                          />
+                          <span className="mt-0.5 inline-flex size-10 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
+                            <Store className="size-4" />
+                          </span>
                           <div>
                           <div className="flex flex-wrap items-center gap-2">
                             <h3 className="text-sm font-semibold text-foreground">{rule.display_name}</h3>
                             <StatusBadge tone="info">
                               {rule.applies_to === 'both' ? 'Invoice / receipt' : rule.applies_to}
                             </StatusBadge>
-                            <StatusBadge tone={rule.enabled ? "success" : "neutral"}>
+                            <StatusBadge tone={rule.enabled ? "info" : "neutral"}>
                               {rule.enabled ? 'Enabled' : 'Disabled'}
                             </StatusBadge>
                           </div>
@@ -861,7 +851,7 @@ function SettingsContent() {
                           </p>
                           </div>
                         </div>
-                        <ChevronDown className="mt-2 size-4 shrink-0 text-black transition-transform group-open:rotate-180" />
+                        <ChevronDown className="mt-2 size-4 shrink-0 text-[var(--workspace-muted)] transition-transform group-open:rotate-180" />
                       </summary>
 
                       <div className="border-t border-border p-3.5 sm:p-4">
@@ -926,7 +916,7 @@ function SettingsContent() {
                       </div>
                       <div className="mt-4 flex flex-wrap items-center justify-end gap-4 border-t border-border pt-3">
                         <InlineAction
-                          tone={rule.enabled ? "warning" : "success"}
+                          tone={rule.enabled ? "warning" : "brand"}
                           disabled={vendorRuleAction === rule.id}
                           onClick={() => void toggleVendorRule(rule)}
                         >
@@ -982,7 +972,7 @@ function SettingsContent() {
                       <div>
                         <Label htmlFor="purchase-orders-csv">Purchase orders CSV</Label>
                         <p className="mt-1 text-xs leading-5 text-[var(--workspace-muted)]">
-                          Columns: <span className="font-mono text-slate-900 dark:text-slate-100">po_number, vendor, date, total, remaining, currency</span>
+                          Columns: <span className="font-mono text-[var(--workspace-ink)]">po_number, vendor, date, total, remaining, currency</span>
                         </p>
                       </div>
                       <textarea
@@ -991,7 +981,7 @@ function SettingsContent() {
                         onChange={(event) => setPoCsv(event.target.value)}
                         placeholder={"po_number,vendor,date,total,remaining,currency\nPO-1001,Acme Ltd,2026-05-01,1200.00,1200.00,USD"}
                         rows={6}
-                        className="w-full rounded-lg border border-slate-200 bg-white p-3 font-mono text-xs outline-none transition focus:border-[var(--workspace-primary)]/40 focus:ring-2 focus:ring-black/15 dark:border-slate-800 dark:bg-slate-950"
+                        className="w-full rounded-lg border border-[var(--workspace-border)] bg-card p-3 font-mono text-xs text-[var(--workspace-ink)] outline-none transition-colors focus:border-[var(--workspace-primary)] focus:ring-2 focus:ring-[var(--workspace-primary)]/20"
                       />
                       <div className="flex justify-end border-t border-border pt-3">
                         <Button
@@ -999,7 +989,6 @@ function SettingsContent() {
                           size="sm"
                           onClick={() => void importPurchaseOrders()}
                           disabled={poImportBusy || !poCsv.trim()}
-                          className={accountingPrimaryButton}
                         >
                           {poImportBusy ? <Loader2 className="size-4 animate-spin" /> : null}
                           {poImportBusy ? "Importing..." : "Import purchase orders"}

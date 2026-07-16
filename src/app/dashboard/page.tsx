@@ -78,7 +78,6 @@ export default function DashboardPage() {
           <WorkspaceFirstRunGuide
             userId={user.id}
             workspaceId={activeWorkspace?.id}
-            hasClients={hasClients}
             onClientCreated={handleClientCreated}
           />
         ) : null}
@@ -92,13 +91,15 @@ export default function DashboardPage() {
           />
         ) : null}
         <WorkspaceOverview companies={companies} activity={activity} />
-        <CompaniesTable
-          workspaceId={activeWorkspace?.id}
-          refreshKey={clientsRefreshKey}
-          onCompanyCountChange={handleCompanyCountChange}
-          onCompaniesLoaded={setCompanies}
-          mode="home"
-        />
+        {hasClients !== false ? (
+          <CompaniesTable
+            workspaceId={activeWorkspace?.id}
+            refreshKey={clientsRefreshKey}
+            onCompanyCountChange={handleCompanyCountChange}
+            onCompaniesLoaded={setCompanies}
+            mode="home"
+          />
+        ) : null}
       </div>
     </DashboardShell>
   )

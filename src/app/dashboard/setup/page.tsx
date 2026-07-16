@@ -45,7 +45,7 @@ function SetupContent() {
     <DashboardShell activeItem="setup" title="Setup" user={user}>
       <PageHeader
         title="Setup"
-        description="Finish the connections that remove manual intake and handoffs."
+        description="Connect intake, reviewers, and books."
         compact
       />
       <div className="max-w-3xl text-foreground">

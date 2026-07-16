@@ -420,7 +420,7 @@ export function WorkspaceWalkthrough({
 
           <motion.div
             aria-hidden="true"
-            className="fixed rounded-lg border-2 border-[var(--workspace-primary)] shadow-[0_0_0_4px_rgba(255,255,255,0.92)]"
+            className="fixed rounded-lg border-2 border-[var(--workspace-primary)]"
             animate={{
               top: targetRect.top,
               left: targetRect.left,
@@ -438,7 +438,7 @@ export function WorkspaceWalkthrough({
             aria-labelledby="workspace-walkthrough-title"
             aria-describedby={currentStep.body ? "workspace-walkthrough-body" : undefined}
             tabIndex={-1}
-            className="pointer-events-auto fixed rounded-[10px] border border-white/10 bg-[#202432] p-4 text-white shadow-[0_18px_50px_rgba(15,23,42,0.32)] outline-none"
+            className="pointer-events-auto fixed rounded-[10px] border border-[var(--workspace-topbar-border)] bg-[var(--workspace-topbar)] p-4 text-white outline-none"
             style={coachmarkPosition}
             initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -446,7 +446,7 @@ export function WorkspaceWalkthrough({
             transition={{ duration: shouldReduceMotion ? 0 : 0.18, ease: "easeOut" }}
           >
             <div className="flex items-center justify-between gap-4">
-              <p className="text-xs font-semibold uppercase text-[#9ec5ff]">
+              <p className="text-xs font-semibold uppercase text-[var(--workspace-blue-soft)]">
                 Step {currentIndex + 1} of {steps.length}
               </p>
               <button

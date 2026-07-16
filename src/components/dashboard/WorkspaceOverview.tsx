@@ -9,10 +9,10 @@ import {
   BarChart3,
   BookCheck,
   ChevronDown,
+  Inbox,
   Link2,
   PlugZap,
   ReceiptText,
-  Upload,
 } from "lucide-react"
 
 import type { CompanySummary } from "@/components/dashboard/companies/company-types"
@@ -124,7 +124,7 @@ function ActivityDetail({ data }: { data: ActivityPoint[] }) {
               x2={width}
               y1={y}
               y2={y}
-              stroke="#e4e7ef"
+              stroke="var(--workspace-border)"
               strokeDasharray="3 6"
               vectorEffect="non-scaling-stroke"
             />
@@ -152,8 +152,8 @@ function ActivityDetail({ data }: { data: ActivityPoint[] }) {
           ) : null}
           {data.length ? (
             <>
-              <text x="0" y="122" fill="#475467" fontSize="10">{data[0].label}</text>
-              <text x={width} y="122" fill="#475467" fontSize="10" textAnchor="end">{data[data.length - 1].label}</text>
+              <text x="0" y="122" fill="var(--workspace-muted)" fontSize="10">{data[0].label}</text>
+              <text x={width} y="122" fill="var(--workspace-muted)" fontSize="10" textAnchor="end">{data[data.length - 1].label}</text>
             </>
           ) : null}
         </svg>
@@ -184,7 +184,7 @@ function WorkloadDetail({ data }: { data: ClientWorkload[] }) {
                 title={`${formatCount(client.review)} review flags`}
               />
               <span
-                className="h-full bg-[#171717]"
+                className="h-full bg-[var(--workspace-ink)]"
                 style={{ width: `${billsWidth}%` }}
                 title={`${formatCount(client.bills)} draft bills`}
               />
@@ -197,7 +197,7 @@ function WorkloadDetail({ data }: { data: ClientWorkload[] }) {
       })}
       <div className="flex items-center gap-4 pt-1 text-[10px] font-medium text-[var(--workspace-muted)]">
         <span className="inline-flex items-center gap-1.5"><span className="size-1.5 rounded-full bg-[var(--landing-blue)]" />Review</span>
-        <span className="inline-flex items-center gap-1.5"><span className="size-1.5 rounded-full bg-[#171717]" />Drafts</span>
+        <span className="inline-flex items-center gap-1.5"><span className="size-1.5 rounded-full bg-[var(--workspace-ink)]" />Drafts</span>
       </div>
     </div>
   )
@@ -231,11 +231,11 @@ function nextAction(companies: CompanySummary[]) {
   ))
   if (intakeClient) {
     return {
-      icon: Upload,
-      title: `Upload for ${intakeClient.name}`,
-      detail: "First batch",
-      label: "Upload",
-      href: `/dashboard/client?company_id=${encodeURIComponent(intakeClient.id)}#upload-files`,
+      icon: Inbox,
+      title: `Open ${intakeClient.name}`,
+      detail: "Ready for first intake",
+      label: "Open client",
+      href: `/dashboard/companies/${encodeURIComponent(intakeClient.id)}`,
     }
   }
 
@@ -251,11 +251,11 @@ function nextAction(companies: CompanySummary[]) {
   }
 
   return {
-    icon: Upload,
-    title: "Upload client files",
-    detail: "Start the next batch",
-    label: "Upload",
-    href: "/dashboard/client#upload-files",
+    icon: Inbox,
+    title: "Check incoming files",
+    detail: "Client links, email, and folders",
+    label: "Open inbox",
+    href: "/dashboard/inbox",
   }
 }
 
@@ -294,7 +294,7 @@ export function WorkspaceOverview({
   }
 
   return (
-    <section className={cn("overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white", className)}>
+    <section className={cn("overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-card", className)}>
       <div className="grid items-center gap-4 px-4 py-4 sm:px-5 lg:grid-cols-[minmax(0,1fr)_auto]">
         <div className="flex min-w-0 items-center gap-3.5">
           <span className="flex size-11 shrink-0 items-center justify-center rounded-md bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
@@ -308,7 +308,7 @@ export function WorkspaceOverview({
             <p className="text-[12px] text-[var(--workspace-muted)]">{action.detail}</p>
           </div>
         </div>
-        <Button asChild variant="blue" size="sm" className="w-full sm:w-fit">
+        <Button asChild variant="glossy" size="sm" className="w-full sm:w-fit">
           <Link href={action.href}>
             {action.label}
             <ArrowUpRight className="size-3.5" />
@@ -319,17 +319,17 @@ export function WorkspaceOverview({
       <div className="flex flex-col border-t border-[var(--workspace-border)] sm:flex-row sm:items-stretch sm:justify-between">
         <nav className="grid flex-1 grid-cols-3 divide-x divide-[var(--workspace-border)]" aria-label="Workspace queues">
           <Link href="/dashboard/client" className="ax-interactive flex items-center justify-center gap-2 px-3 py-3 hover:bg-[var(--workspace-row-hover)]">
-            <BookCheck className="size-3.5 text-black" />
+            <BookCheck className="size-3.5 text-[var(--workspace-ink)]" />
             <strong className="text-[13px] tabular-nums">{formatCount(needsReview)}</strong>
             <span className="hidden text-[11px] text-[var(--workspace-muted)] md:inline">Review</span>
           </Link>
           <Link href="/dashboard/accounts-payable" className="ax-interactive flex items-center justify-center gap-2 px-3 py-3 hover:bg-[var(--workspace-row-hover)]">
-            <ReceiptText className="size-3.5 text-black" />
+            <ReceiptText className="size-3.5 text-[var(--workspace-ink)]" />
             <strong className="text-[13px] tabular-nums">{formatCount(draftBills)}</strong>
             <span className="hidden text-[11px] text-[var(--workspace-muted)] md:inline">Drafts</span>
           </Link>
           <Link href="/dashboard/integrations" className="ax-interactive flex items-center justify-center gap-2 px-3 py-3 hover:bg-[var(--workspace-row-hover)]">
-            <Link2 className="size-3.5 text-black" />
+            <Link2 className="size-3.5 text-[var(--workspace-ink)]" />
             <strong className="text-[13px] tabular-nums">{connected}/{companies.length}</strong>
             <span className="hidden text-[11px] text-[var(--workspace-muted)] md:inline">Linked</span>
           </Link>
@@ -343,13 +343,13 @@ export function WorkspaceOverview({
               aria-expanded={detailView === "activity"}
               title="Document activity"
               className={cn(
-                "ax-interactive flex h-9 items-center gap-2 rounded-full px-2.5 outline-none hover:bg-[var(--workspace-row-hover)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/25",
+                "ax-interactive flex h-9 items-center gap-2 rounded-md px-2.5 outline-none hover:bg-[var(--workspace-row-hover)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/25",
                 detailView === "activity" && "bg-[var(--workspace-blue-soft)]",
               )}
             >
-              <Activity className="size-3.5 text-black" />
+              <Activity className="size-3.5 text-[var(--workspace-ink)]" />
               <MiniCurve data={activity} />
-              <ChevronDown className={cn("size-3.5 text-black transition-transform duration-150", detailView === "activity" && "rotate-180")} />
+              <ChevronDown className={cn("size-3.5 text-[var(--workspace-muted)] transition-transform duration-150", detailView === "activity" && "rotate-180")} />
               <span className="sr-only">Activity</span>
             </button>
           ) : null}
@@ -360,7 +360,7 @@ export function WorkspaceOverview({
               aria-expanded={detailView === "workload"}
               title="Client workload"
               className={cn(
-                "ax-interactive flex size-9 items-center justify-center rounded-full outline-none hover:bg-[var(--workspace-row-hover)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/25",
+                "ax-interactive flex size-9 items-center justify-center rounded-md outline-none hover:bg-[var(--workspace-row-hover)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/25",
                 detailView === "workload" && "bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]",
               )}
             >

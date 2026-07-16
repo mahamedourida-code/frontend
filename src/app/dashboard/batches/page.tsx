@@ -7,10 +7,7 @@ import { DashboardShell } from "@/components/DashboardShell"
 import { BatchesQueue } from "@/components/dashboard/BatchesQueue"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { PageHeader } from "@/components/dashboard/PageHeader"
-import { Button } from "@/components/ui/button"
 import { useAuth } from "@/hooks/useAuth"
-import Link from "next/link"
-import { Upload } from "lucide-react"
 
 function BatchesFallback() {
   return <DashboardRouteLoader label="Loading batches" />
@@ -46,16 +43,8 @@ function BatchesContent() {
     <DashboardShell activeItem="batches" title="Batches" user={user}>
       <PageHeader
         title="Batches"
-        description="Read, review, and resolve each uploaded batch."
+        description="Review and resolve uploaded batches."
         compact
-        actions={(
-          <Button asChild variant="glossy" size="sm">
-            <Link href="/dashboard/client#upload-files">
-              <Upload className="size-4" />
-              Upload batch
-            </Link>
-          </Button>
-        )}
       />
       <BatchesQueue />
     </DashboardShell>

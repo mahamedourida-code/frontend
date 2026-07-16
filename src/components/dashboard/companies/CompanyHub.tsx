@@ -6,11 +6,12 @@ import { useRouter } from "next/navigation"
 import {
   BookCheck,
   Building2,
+  ChevronRight,
   FileText,
   Landmark,
+  Pencil,
   ReceiptText,
   RefreshCw,
-  Upload,
 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -51,9 +52,7 @@ type QueueRowProps = {
   value: string
   detail: string
   href: string
-  action: string
   status: ReactNode
-  primary?: boolean
 }
 
 function formatDate(value: string | null) {
@@ -73,11 +72,15 @@ function documentTotal(company: CompanySummary) {
   return company.purchases + company.receipts + company.bankStatements + company.other
 }
 
-function QueueRow({ icon, label, value, detail, href, action, status, primary = false }: QueueRowProps) {
+function QueueRow({ icon, label, value, detail, href, status }: QueueRowProps) {
   return (
-    <div className="grid gap-3 border-b border-[var(--workspace-border)] px-4 py-3.5 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center sm:px-5">
+    <Link
+      href={href}
+      aria-label={`${label}: ${value}`}
+      className="ax-interactive group grid gap-3 border-b border-[var(--workspace-border)] px-4 py-3.5 outline-none last:border-b-0 hover:bg-[var(--workspace-row-hover)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--workspace-primary)]/25 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center sm:px-5"
+    >
       <div className="flex min-w-0 items-center gap-3">
-        <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-md bg-[var(--workspace-soft)] text-black [&_svg]:size-4">
+        <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-md bg-[var(--workspace-soft)] text-[var(--workspace-ink)] [&_svg]:size-4">
           {icon}
         </span>
         <div className="min-w-0">
@@ -89,10 +92,8 @@ function QueueRow({ icon, label, value, detail, href, action, status, primary = 
         </div>
       </div>
       <p className="text-[13px] font-semibold tabular-nums text-foreground sm:min-w-24 sm:text-right">{value}</p>
-      <Button asChild variant={primary ? "glossy" : "surface"} size="sm" className="w-full sm:w-auto">
-        <Link href={href}>{action}</Link>
-      </Button>
-    </div>
+      <ChevronRight className="size-4 text-[var(--workspace-muted)] transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-[var(--workspace-ink)]" />
+    </Link>
   )
 }
 
@@ -105,7 +106,6 @@ function ClientWorkQueue({ company, companyId }: { company: CompanySummary; comp
     <WorkspaceSection
       title="Client work queue"
       icon={<Building2 />}
-      hint="Open the next exception, draft, or intake task without leaving this client."
       contentClassName="p-0"
       compact
     >
@@ -113,20 +113,17 @@ function ClientWorkQueue({ company, companyId }: { company: CompanySummary; comp
         icon={<BookCheck />}
         label="Review exceptions"
         value={`${company.needsReview} flagged`}
-        detail={company.needsReview ? "Correct fields and rows before export or publishing." : "No extracted documents need attention."}
+        detail={company.needsReview ? "Correct flagged fields before publishing." : "No documents need attention."}
         href={`/dashboard/client?company_id=${encodedId}`}
-        action={company.needsReview ? "Review now" : "Open review"}
-        status={<StatusBadge tone={company.needsReview ? "warning" : "success"} size="sm">{company.needsReview ? "Action needed" : "Clear"}</StatusBadge>}
-        primary={company.needsReview > 0}
+        status={<StatusBadge tone={company.needsReview ? "warning" : "info"} size="sm">{company.needsReview ? "Action needed" : "Clear"}</StatusBadge>}
       />
       <QueueRow
         icon={<ReceiptText />}
         label="Draft bills"
         value={`${company.bills} drafts`}
-        detail="Reviewed bills waiting for your approval to publish."
+        detail="Reviewed bills waiting to publish."
         href={`/dashboard/accounts-payable?company_id=${encodedId}`}
-        action="Open bills"
-        status={<StatusBadge tone={company.bills ? "review" : "neutral"} size="sm">{company.bills ? "Pending" : "None"}</StatusBadge>}
+        status={<StatusBadge tone={company.bills ? "info" : "neutral"} size="sm">{company.bills ? "Pending" : "None"}</StatusBadge>}
       />
       <QueueRow
         icon={<FileText />}
@@ -134,7 +131,6 @@ function ClientWorkQueue({ company, companyId }: { company: CompanySummary; comp
         value={`${documents} filed`}
         detail={`Last intake ${formatDate(company.lastUploadAt)}.`}
         href={`/dashboard/inbox?company_id=${encodedId}`}
-        action="Open inbox"
         status={<StatusBadge tone={documents ? "info" : "neutral"} size="sm">{documents ? "Active" : "Empty"}</StatusBadge>}
       />
       <QueueRow
@@ -143,8 +139,7 @@ function ClientWorkQueue({ company, companyId }: { company: CompanySummary; comp
         value={booksConnected ? providerLabel(company) : "Not connected"}
         detail={booksConnected ? (company.accountingCompanyName || "Ready for reviewed draft bills.") : "Connect QuickBooks Online or Xero before publishing."}
         href={`/dashboard/integrations?company_id=${encodedId}`}
-        action={booksConnected ? "Manage" : "Connect"}
-        status={<StatusBadge tone={booksConnected ? "success" : "neutral"} size="sm">{booksConnected ? "Connected" : "Setup"}</StatusBadge>}
+        status={<StatusBadge tone={booksConnected ? "info" : "neutral"} size="sm">{booksConnected ? "Connected" : "Setup"}</StatusBadge>}
       />
     </WorkspaceSection>
   )
@@ -233,22 +228,24 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
           )}
           compact
           actions={company ? (
-            <>
-              <Button asChild variant="glossy" size="sm">
-                <Link href={`/dashboard/client?company_id=${encodeURIComponent(companyId)}#upload-files`}>
-                  <Upload className="size-4" />
-                  Upload batch
-                </Link>
-              </Button>
-              <InlineAction onClick={openRename}>Rename</InlineAction>
-            </>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={openRename}
+              aria-label="Rename client"
+              title="Rename client"
+              className="size-8"
+            >
+              <Pencil className="size-4" />
+            </Button>
           ) : undefined}
         />
 
         {loading ? (
           <WorkspaceActivityIndicator title="Opening client queue" scope="page" />
         ) : loadError || !company ? (
-          <div className="rounded-lg border border-[var(--workspace-border)] bg-white">
+          <div className="rounded-lg border border-[var(--workspace-border)] bg-card">
             <EmptyState
               art="bot-error"
               icon={<Building2 />}

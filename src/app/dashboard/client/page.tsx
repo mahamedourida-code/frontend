@@ -1883,8 +1883,8 @@ Best regards`
   return (
     <DashboardShell
       activeItem="process"
-      title="Auto-detect documents"
-      eyebrow="Stack"
+      title="Review batch"
+      eyebrow="Batch"
       user={user}
       contentClassName="max-w-none px-3 py-3 sm:px-5 lg:px-6"
     >

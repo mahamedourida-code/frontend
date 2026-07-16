@@ -105,12 +105,12 @@ const queueStatuses: Array<{ value: AccountsPayableStatus; label: string }> = [
   { value: "discarded", label: "Discarded" },
 ]
 
-const statusTone: Record<AccountsPayableStatus, "warning" | "review" | "info" | "success" | "error" | "neutral"> = {
+const statusTone: Record<AccountsPayableStatus, "warning" | "info" | "error" | "neutral"> = {
   needs_coding: "warning",
-  needs_review: "review",
-  pending_approval: "review",
+  needs_review: "warning",
+  pending_approval: "info",
   ready_to_publish: "info",
-  published: "success",
+  published: "info",
   failed: "error",
   discarded: "neutral",
 }
@@ -123,11 +123,9 @@ function xeroPublication(item?: AccountsPayableItem | null) {
   return (item as (AccountsPayableItem & { xero_publication?: XeroBillPublication | null }) | null)?.xero_publication || null
 }
 
-const dotColor: Record<"warning" | "review" | "info" | "success" | "error" | "neutral", string> = {
+const dotColor: Record<"warning" | "info" | "error" | "neutral", string> = {
   warning: "bg-amber-400",
-  review: "bg-violet-400",
-  info: "bg-sky-400",
-  success: "bg-emerald-500",
+  info: "bg-[var(--workspace-primary)]",
   error: "bg-rose-500",
   neutral: "bg-muted-foreground/50",
 }
@@ -167,7 +165,7 @@ const moreFilters: Array<{ value: MoreFilter; label: string }> = [
   { value: "discarded", label: "Discarded" },
 ]
 
-const workspacePanel = "ax-workspace-panel border-slate-200 bg-slate-50/70"
+const workspacePanel = "ax-workspace-panel border-[var(--workspace-border)] bg-[var(--workspace-soft)]"
 
 const workspaceTable = "ax-table"
 
@@ -182,7 +180,7 @@ function AccountingDestinationGlyph({
 }) {
   if (destination === "xero") {
     return (
-      <span className={cn("inline-flex size-5 shrink-0 items-center justify-center rounded-full border border-sky-200 bg-sky-50 text-black", className)}>
+      <span className={cn("inline-flex size-5 shrink-0 items-center justify-center rounded-full border border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]", className)}>
         <Cloud className={cn("size-3.5", iconClassName)} strokeWidth={2.3} aria-hidden="true" />
       </span>
     )
@@ -190,7 +188,7 @@ function AccountingDestinationGlyph({
 
   if (destination === "quickbooks") {
     return (
-      <span className={cn("inline-flex size-5 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-black", className)}>
+      <span className={cn("inline-flex size-5 shrink-0 items-center justify-center rounded-full border border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]", className)}>
         <Landmark className={cn("size-3.5", iconClassName)} strokeWidth={2.3} aria-hidden="true" />
       </span>
     )
@@ -199,11 +197,9 @@ function AccountingDestinationGlyph({
   return null
 }
 
-const statusTextColor: Record<"warning" | "review" | "info" | "success" | "error" | "neutral", string> = {
+const statusTextColor: Record<"warning" | "info" | "error" | "neutral", string> = {
   warning: "text-[var(--text-attention)]",
-  review: "text-[var(--text-review)]",
   info: "text-[var(--text-action)]",
-  success: "text-[var(--text-success)]",
   error: "text-[var(--text-danger)]",
   neutral: "text-[var(--workspace-muted)]",
 }
@@ -1131,7 +1127,7 @@ function AccountsPayableContent() {
   return (
     <DashboardShell activeItem="accounts_payable" title="Draft bills" user={user} contentClassName="max-w-none px-3 py-3 sm:px-5 lg:px-6">
       <div className="space-y-3">
-        <div className="sticky top-14 z-30 -mx-3 border-b border-border bg-background/[0.95] px-3 py-2 shadow-[0_8px_22px_-22px_rgba(15,23,42,0.55)] backdrop-blur supports-[backdrop-filter]:bg-background/[0.88] sm:-mx-5 sm:px-5 lg:-mx-6 lg:px-6">
+        <div className="sticky top-14 z-30 -mx-3 border-b border-border bg-background/[0.95] px-3 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/[0.88] sm:-mx-5 sm:px-5 lg:-mx-6 lg:px-6">
         <PageHeader
           title="Draft bills"
           compact
@@ -1154,13 +1150,13 @@ function AccountsPayableContent() {
         {/* Pre-publish gate — a quiet line when some selected bills won't pass
             validation, so they're not silently dropped at publish time. */}
         {selectedReadyIds.length > 0 && blockedSelected.length > 0 ? (
-          <div className="flex flex-wrap items-center gap-2.5 rounded-md border border-[color-mix(in_srgb,var(--text-danger)_30%,transparent)] bg-white px-3 py-2">
+          <div className="flex flex-wrap items-center gap-2.5 rounded-md border border-[color-mix(in_srgb,var(--text-danger)_30%,transparent)] bg-card px-3 py-2">
             <StatusBadge tone="error">{blockedSelected.length} need a fix</StatusBadge>
             <span className="text-xs font-medium text-[var(--text-danger)]">
               {prePublishSummary} · held back when you publish
             </span>
             {cleanSelectedIds.length > 0 ? (
-              <StatusBadge tone="success">{cleanSelectedIds.length} ready to go</StatusBadge>
+              <StatusBadge tone="info">{cleanSelectedIds.length} ready to go</StatusBadge>
             ) : null}
           </div>
         ) : null}
@@ -1206,14 +1202,16 @@ function AccountsPayableContent() {
               />
               <details className="relative shrink-0">
                 <summary
+                  title="More queue filters"
                   className={cn(
-                    "ax-interactive flex h-8 cursor-pointer list-none items-center rounded-full border px-3.5 text-[13px] font-medium [&::-webkit-details-marker]:hidden",
+                    "ax-interactive flex h-8 cursor-pointer list-none items-center gap-1.5 rounded-md border px-3 text-[13px] font-medium [&::-webkit-details-marker]:hidden",
                     moreFilters.some(option => option.value === filter)
                       ? "border-[var(--workspace-primary)] bg-[var(--workspace-primary)] text-white"
-                      : "border-slate-300 bg-white text-foreground hover:border-[var(--workspace-primary)] hover:text-[var(--workspace-primary)]",
+                      : "border-[var(--workspace-button-border)] bg-card text-foreground hover:border-[var(--workspace-primary)] hover:text-[var(--workspace-primary)]",
                   )}
                 >
-                  More filters
+                  <SlidersHorizontal className="size-3.5" />
+                  <span className="hidden sm:inline">More</span>
                 </summary>
                 <div className={cn("absolute right-0 z-20 mt-2 grid min-w-[180px] gap-1 rounded-lg border p-1.5 shadow-none", workspacePanel)}>
                   {moreFilters.map(option => {
@@ -1230,7 +1228,7 @@ function AccountsPayableContent() {
                           "ax-interactive flex items-center justify-between rounded-md px-2.5 py-1.5 text-left text-[13px] font-medium",
                           filter === option.value
                             ? "bg-[var(--workspace-primary)] text-white"
-                            : "bg-white text-foreground hover:bg-slate-100 hover:text-[var(--workspace-primary)]",
+                            : "bg-card text-foreground hover:bg-[var(--workspace-row-hover)] hover:text-[var(--workspace-primary)]",
                         )}
                       >
                         {option.label}
@@ -1252,26 +1250,19 @@ function AccountsPayableContent() {
                   </div>
                 ) : visibleItems.length === 0 ? (
                   <div className="flex flex-col items-center justify-center px-4 py-12 text-center">
-                    <Symbol
-                      name="firstsight-draft-bills-empty"
-                      size="hero"
-                      className="h-24 w-24"
-                      alt=""
-                    />
-                    <h3 className="mt-4 text-lg font-medium tracking-normal text-slate-950">
+                    <span className="inline-flex size-12 items-center justify-center rounded-full border border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
+                      <ReceiptText className="size-5" />
+                    </span>
+                    <h3 className="mt-4 text-lg font-medium tracking-normal text-[var(--workspace-ink)]">
                       {items.length ? "Nothing in this view" : "No draft bills yet"}
                     </h3>
                     {!items.length ? (
-                      <div className="mt-4 flex w-full max-w-xs flex-col items-stretch gap-2">
-                        <Button asChild variant="glossy" size="sm">
-                          <Link href="/dashboard/client#upload-files">
-                            Upload an invoice batch
-                          </Link>
-                        </Button>
-                        <Button asChild variant="surface" size="sm">
-                          <Link href="/dashboard/integrations">Connect QuickBooks or Xero</Link>
-                        </Button>
-                      </div>
+                      <Button asChild variant="glossy" size="sm" className="mt-4">
+                        <Link href="/dashboard/client#upload-files">
+                          <ReceiptText className="size-3.5" />
+                          Upload invoices
+                        </Link>
+                      </Button>
                     ) : null}
                   </div>
                 ) : (
@@ -1310,14 +1301,14 @@ function AccountsPayableContent() {
                             }}
                             data-state={isActive ? "selected" : undefined}
                             className={cn(
-                              "ax-interactive cursor-pointer bg-white p-4 text-left text-sm text-slate-900",
+                              "ax-interactive cursor-pointer bg-card p-4 text-left text-sm text-[var(--workspace-ink)]",
                               isActive && "bg-[var(--workspace-soft)]/70",
                             )}
                           >
                             <div className="flex items-start justify-between gap-3">
                               <div className="min-w-0">
                                 <div className="flex items-center gap-2">
-                                  <span className="ax-data-entity truncate text-[15px] font-semibold text-slate-950">
+                                  <span className="ax-data-entity truncate text-[15px] font-semibold text-[var(--workspace-ink)]">
                                     {item.draft_data.vendor || "Supplier missing"}
                                   </span>
                                   {hasDuplicate ? <span className="size-1.5 shrink-0 rounded-full bg-amber-500" title="Possible duplicate" /> : null}
@@ -1326,7 +1317,7 @@ function AccountsPayableContent() {
                                 <p className="mt-1 truncate text-xs font-medium text-foreground/70">{item.source_filename}</p>
                               </div>
                               <div className="shrink-0 text-right">
-                                <p className="font-mono text-sm tabular-nums text-slate-950">{amountLabel(item)}</p>
+                                <p className="font-mono text-sm tabular-nums text-[var(--workspace-ink)]">{amountLabel(item)}</p>
                                 <StatusBadge tone={tone} className="mt-1 h-5 px-2 text-[11px]">
                                   {statusLabel(item.status)}
                                 </StatusBadge>
@@ -1335,11 +1326,11 @@ function AccountsPayableContent() {
 
                             <dl className="mt-3 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1.5 border-y border-border py-2 text-xs">
                               <dt className="font-medium text-foreground/60">Bill</dt>
-                              <dd className="truncate text-right font-mono text-slate-950">{ledgerValue(item.draft_data.invoice_number)}</dd>
+                              <dd className="truncate text-right font-mono text-[var(--workspace-ink)]">{ledgerValue(item.draft_data.invoice_number)}</dd>
                               <dt className="font-medium text-foreground/60">Due</dt>
-                              <dd className="text-right text-slate-950">{shortDate(item.draft_data.due_date)}</dd>
+                              <dd className="text-right text-[var(--workspace-ink)]">{shortDate(item.draft_data.due_date)}</dd>
                               <dt className="font-medium text-foreground/60">Account</dt>
-                              <dd className="truncate text-right text-slate-950">{ledgerValue(item.draft_data.account_category)}</dd>
+                              <dd className="truncate text-right text-[var(--workspace-ink)]">{ledgerValue(item.draft_data.account_category)}</dd>
                             </dl>
 
                             {issueBadges.length ? (
@@ -1391,7 +1382,7 @@ function AccountsPayableContent() {
 
               <div className="hidden max-h-[58svh] overflow-auto lg:block">
               <table className={cn("w-full min-w-[1320px] text-left text-xs", workspaceTable)}>
-                <thead className="sticky top-0 z-[5] border-b border-slate-200 bg-slate-50">
+                <thead className="sticky top-0 z-[5] border-b border-[var(--workspace-border)] bg-[var(--workspace-table-header)]">
                   <tr>
                     <th className="w-10 px-4 py-3" />
                     <th className="min-w-[180px] px-4 py-3">Supplier</th>
@@ -1407,7 +1398,7 @@ function AccountsPayableContent() {
                     <th className="w-[132px] px-4 py-3">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody className="divide-y divide-[var(--workspace-border)]">
                   {loading ? (
                     <tr>
                       <td colSpan={12} className="p-4">
@@ -1421,29 +1412,19 @@ function AccountsPayableContent() {
                     <tr>
                       <td colSpan={12}>
                         <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
-                          <Symbol
-                            name="firstsight-draft-bills-empty"
-                            size="hero"
-                            className="h-24 w-24 sm:h-28 sm:w-28"
-                            alt=""
-                          />
-                          <h3 className="mt-5 text-xl font-medium tracking-normal text-slate-950">
+                          <span className="inline-flex size-14 items-center justify-center rounded-full border border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
+                            <ReceiptText className="size-6" />
+                          </span>
+                          <h3 className="mt-5 text-xl font-medium tracking-normal text-[var(--workspace-ink)]">
                             {items.length ? "Nothing in this view" : "No draft bills yet"}
                           </h3>
                           {!items.length ? (
-                            <div className="mt-4 flex w-full max-w-2xl flex-col items-center gap-4">
-                              <Button asChild variant="glossy" size="sm">
-                                <Link href="/dashboard/client#upload-files">
-                                  Upload an invoice batch
-                                </Link>
-                              </Button>
-                              <Button asChild variant="surface" size="sm">
-                                <Link href="/dashboard/integrations">Connect QuickBooks or Xero</Link>
-                              </Button>
-                              <InlineAction asChild className="text-xs">
-                                <Link href="/dashboard/guide">Read the guide</Link>
-                              </InlineAction>
-                            </div>
+                            <Button asChild variant="glossy" size="sm" className="mt-4">
+                              <Link href="/dashboard/client#upload-files">
+                                <ReceiptText className="size-3.5" />
+                                Upload invoices
+                              </Link>
+                            </Button>
                           ) : null}
                         </div>
                       </td>
@@ -1474,7 +1455,7 @@ function AccountsPayableContent() {
                               }
                             }}
                             data-state={isActive ? "selected" : undefined}
-                            className="ax-interactive cursor-pointer bg-white font-normal text-slate-900"
+                            className="ax-interactive cursor-pointer bg-card font-normal text-[var(--workspace-ink)]"
                           >
                             <td className="px-4 py-3.5" onClick={isReady ? event => event.stopPropagation() : undefined}>
                               {isReady ? (
@@ -1543,7 +1524,7 @@ function AccountsPayableContent() {
                                       </StatusBadge>
                                     </span>
                                   ) : item.status === "ready_to_publish" ? (
-                                    <StatusBadge tone="success" className="h-5 px-2 text-[11px]">
+                                    <StatusBadge tone="info" className="h-5 px-2 text-[11px]">
                                       Looks good
                                     </StatusBadge>
                                   ) : null
@@ -1577,10 +1558,10 @@ function AccountsPayableContent() {
                       <p className="mt-1 break-all text-[13px] text-foreground">{activeItem.source_filename}</p>
                       {/* Approval gate — terse audit one-liners. */}
                       {activeItem.submitted_by_email ? (
-                        <p className="mt-1 text-xs font-medium text-slate-950">Prepared by {activeItem.submitted_by_email}</p>
+                        <p className="mt-1 text-xs font-medium text-[var(--workspace-ink)]">Prepared by {activeItem.submitted_by_email}</p>
                       ) : null}
                       {activeItem.approved_by_email ? (
-                        <p className="mt-0.5 text-xs font-medium text-slate-950">Approved by {activeItem.approved_by_email}</p>
+                        <p className="mt-0.5 text-xs font-medium text-[var(--workspace-ink)]">Approved by {activeItem.approved_by_email}</p>
                       ) : null}
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
@@ -1629,7 +1610,7 @@ function AccountsPayableContent() {
                           )
                         }
                         return activeItem.status === "ready_to_publish"
-                          ? <StatusBadge tone="success">Looks good</StatusBadge>
+                          ? <StatusBadge tone="info">Looks good</StatusBadge>
                           : null
                       })()}
                       <span className={cn("text-xs font-medium", statusTextColor[statusTone[activeItem.status]])}>
@@ -1696,7 +1677,7 @@ function AccountsPayableContent() {
                         </div>
                       </div>
                       {dismissDraft?.warningId === warning.id ? (
-                        <div className="mt-3 flex flex-col gap-2 rounded-md border border-amber-200 bg-white/80 p-2.5 dark:bg-amber-950/60">
+                        <div className="mt-3 flex flex-col gap-2 rounded-md border border-amber-200 bg-card p-2.5">
                           <p className="text-[11px] font-medium uppercase tracking-normal text-amber-800 dark:text-amber-200">
                             Reason for dismissal (optional)
                           </p>
@@ -1735,7 +1716,7 @@ function AccountsPayableContent() {
                         <p className="text-xs font-medium uppercase tracking-normal text-[var(--workspace-muted)]">
                           {autoAppliedRule.mode === "auto_ready" ? "Coding applied: ready for approval" : "Coding applied from vendor rule"}
                         </p>
-                        <p className="mt-1 text-sm font-normal text-slate-950">
+                        <p className="mt-1 text-sm font-normal text-[var(--workspace-ink)]">
                           {autoAppliedRule.ruleName}
                         </p>
                         {autoAppliedRule.learnedLabels.length ? (
@@ -1744,7 +1725,7 @@ function AccountsPayableContent() {
                               {autoAppliedRule.learnedLabels.map((label) => (
                                 <span
                                   key={label}
-                                  className="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-medium capitalize text-slate-700"
+                                  className="rounded-full border border-[var(--workspace-border)] bg-card px-2 py-0.5 text-[11px] font-medium capitalize text-[var(--workspace-muted)]"
                                 >
                                   {label}
                                 </span>
@@ -1764,7 +1745,7 @@ function AccountsPayableContent() {
                     </div>
                   ) : activeItem.vendor_suggestion ? (
                     <div className={cn("rounded-md border p-3", workspacePanel)}>
-                      <p className="text-xs font-medium text-slate-950">Remembered suggestions</p>
+                      <p className="text-xs font-medium text-[var(--workspace-ink)]">Remembered suggestions</p>
                       <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
                         {Object.entries(activeItem.vendor_suggestion.suggested_fields).map(([key, value]) => (
                           <span key={key} className="rounded-md border border-border bg-background px-2 py-1">
@@ -1810,7 +1791,7 @@ function AccountsPayableContent() {
                           "mt-1.5 rounded-md border px-2.5 py-1.5 text-[11px]",
                           activeItem.po_match_status === "exceeds"
                             ? "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200"
-                            : "border-slate-200 bg-slate-50 text-slate-700",
+                            : "border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-[var(--workspace-muted)]",
                         )}>
                           <div className="flex items-center justify-between gap-2">
                             <span className="flex items-center gap-1.5">
@@ -1924,7 +1905,7 @@ function AccountsPayableContent() {
                     ))}
                     <div className="space-y-1.5">
                       <FieldLabel>Invoice total</FieldLabel>
-                      <div className={cn("flex h-9 items-center rounded-lg border px-3 text-sm font-normal text-slate-950", workspacePanel)}>
+                      <div className={cn("flex h-9 items-center rounded-lg border px-3 text-sm font-normal text-[var(--workspace-ink)]", workspacePanel)}>
                         {amountLabel(activeItem)}
                       </div>
                     </div>
@@ -2030,7 +2011,7 @@ function AccountsPayableContent() {
                   ) : null}
 
                   <details className={cn("rounded-md border", workspacePanel)}>
-                    <summary className="ax-interactive cursor-pointer list-none px-3 py-2.5 text-sm font-medium text-slate-950 [&::-webkit-details-marker]:hidden">
+                    <summary className="ax-interactive cursor-pointer list-none px-3 py-2.5 text-sm font-medium text-[var(--workspace-ink)] [&::-webkit-details-marker]:hidden">
                       Advanced details
                     </summary>
                     <div className="space-y-3 border-t border-border px-3 py-3">
@@ -2054,7 +2035,7 @@ function AccountsPayableContent() {
                           </div>
                         ))}
                       </div>
-                      <label className="flex items-center gap-2 rounded-md border border-border bg-white px-3 py-2.5 text-sm text-black">
+                      <label className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2.5 text-sm text-[var(--workspace-ink)]">
                         <Checkbox
                           checked={attachmentVisible}
                           disabled={activeLocked}
@@ -2100,10 +2081,10 @@ function AccountsPayableContent() {
                   <div>
                     <div className="mb-2 flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium text-slate-950">Line items</p>
+                        <p className="text-sm font-medium text-[var(--workspace-ink)]">Line items</p>
                         {/* Line-item splits — per-line coding overrides the header. */}
                         {showLineCoding ? (
-                          <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-medium text-slate-700">
+                          <span className="inline-flex items-center gap-1 rounded-full border border-[var(--workspace-border)] bg-card px-2 py-0.5 text-[11px] font-medium text-[var(--workspace-muted)]">
                             <Symbol name="code-double-entry" size="inline" className="size-4" alt="" />
                             Split
                           </span>
@@ -2118,40 +2099,40 @@ function AccountsPayableContent() {
                     {lineItems.length ? (
                       <div className="overflow-x-auto rounded-md border border-border">
                         <table className={cn("min-w-full text-xs", workspaceTable)}>
-                          <thead className="bg-slate-100">
+                          <thead className="bg-[var(--workspace-table-header)]">
                             <tr>
                               {lineColumns.map(column => (
-                                <th key={column} className="whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-normal text-slate-500">
+                                <th key={column} className="whitespace-nowrap border-b border-[var(--workspace-border)] px-2 py-2 text-left text-[10px] font-medium uppercase tracking-normal text-[var(--workspace-table-head)]">
                                   {column.replaceAll("_", " ")}
                                 </th>
                               ))}
                               {showLineCoding ? (
                                 <>
-                                  <th className="w-[150px] whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-normal text-slate-500">Account</th>
-                                  <th className="w-[120px] whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-normal text-slate-500">Tax</th>
+                                  <th className="w-[150px] whitespace-nowrap border-b border-[var(--workspace-border)] px-2 py-2 text-left text-[10px] font-medium uppercase tracking-normal text-[var(--workspace-table-head)]">Account</th>
+                                  <th className="w-[120px] whitespace-nowrap border-b border-[var(--workspace-border)] px-2 py-2 text-left text-[10px] font-medium uppercase tracking-normal text-[var(--workspace-table-head)]">Tax</th>
                                   {isQuickBooks && classes.length ? (
-                                    <th className="w-[120px] whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-normal text-slate-500">Class</th>
+                                    <th className="w-[120px] whitespace-nowrap border-b border-[var(--workspace-border)] px-2 py-2 text-left text-[10px] font-medium uppercase tracking-normal text-[var(--workspace-table-head)]">Class</th>
                                   ) : null}
                                   {!isQuickBooks && trackingGroups.length ? (
-                                    <th className="w-[120px] whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-normal text-slate-500">Tracking</th>
+                                    <th className="w-[120px] whitespace-nowrap border-b border-[var(--workspace-border)] px-2 py-2 text-left text-[10px] font-medium uppercase tracking-normal text-[var(--workspace-table-head)]">Tracking</th>
                                   ) : null}
                                 </>
                               ) : null}
-                              {!activeLocked ? <th className="w-14 border-b border-slate-200 px-2 py-2" /> : null}
+                              {!activeLocked ? <th className="w-14 border-b border-[var(--workspace-border)] px-2 py-2" /> : null}
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-slate-200">
+                          <tbody className="divide-y divide-[var(--workspace-border)]">
                             {lineItems.map((line, rowIndex) => {
                               const lineTracking = Array.isArray(line.tracking_option_ref_ids) ? (line.tracking_option_ref_ids as string[]) : []
                               return (
-                              <tr key={rowIndex} className="bg-white last:border-b-0">
+                              <tr key={rowIndex} className="bg-card last:border-b-0">
                                 {lineColumns.map(column => (
                                   <td key={column} className="p-1.5">
                                     <input
                                       value={String(line[column] ?? "")}
                                       disabled={activeLocked}
                                       onChange={event => updateLineCell(rowIndex, column, event.target.value)}
-                                      className="ax-interactive h-8 min-w-[90px] rounded-sm border border-transparent bg-transparent px-2 font-normal text-slate-950 outline-none focus:border-slate-300 focus:bg-white"
+                                      className="ax-interactive h-8 min-w-[90px] rounded-sm border border-transparent bg-transparent px-2 font-normal text-[var(--workspace-ink)] outline-none focus:border-[var(--workspace-button-border)] focus:bg-card"
                                     />
                                   </td>
                                 ))}
@@ -2261,7 +2242,7 @@ function AccountsPayableContent() {
                     )}
                   </div>
 
-                  <div className="sticky bottom-0 z-10 -mx-3 -mb-3 flex flex-wrap items-center justify-end gap-2 border-t border-border bg-background/[0.96] px-3 py-2.5 shadow-[0_-8px_20px_-20px_rgba(15,23,42,0.55)] backdrop-blur supports-[backdrop-filter]:bg-background/[0.88] sm:-mx-4 sm:-mb-4 sm:px-4">
+                  <div className="sticky bottom-0 z-10 -mx-3 -mb-3 flex flex-wrap items-center justify-end gap-2 border-t border-border bg-background/[0.96] px-3 py-2.5 backdrop-blur supports-[backdrop-filter]:bg-background/[0.88] sm:-mx-4 sm:-mb-4 sm:px-4">
                     {!activeLocked ? (
                       <>
                         {activeItem.status === "pending_approval" ? (
@@ -2282,12 +2263,12 @@ function AccountsPayableContent() {
                                 disabled={saving}
                                 className="h-9"
                               >
-                                <Symbol name="approved-stamp" size="inline" className="mr-1 size-4" alt="" />
+                                <CircleCheck className="mr-1 size-4" />
                                 Approve
                               </MotionButton>
                             </>
                           ) : (
-                            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-950">
+                            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--workspace-ink)]">
                               <Symbol name="code-period-close" size="inline" className="size-4" alt="" />
                               Awaiting approval
                             </span>
@@ -2381,14 +2362,16 @@ function AccountsPayableContent() {
             <div className="space-y-3">
               {publishResult.succeeded > 0 && publishResult.failed.length === 0 ? (
                 <div className="flex flex-col items-center py-2 text-center">
-                  <Symbol name="success-approved" size="hero" className="h-48 w-48 sm:h-56 sm:w-56" alt="" />
-                  <p className="mt-4 text-base font-medium text-slate-950">
+                  <span className="inline-flex size-14 items-center justify-center rounded-full border border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
+                    <CircleCheck className="size-6" />
+                  </span>
+                  <p className="mt-4 text-base font-medium text-[var(--workspace-ink)]">
                     {publishResult.succeeded} {publishResult.succeeded === 1 ? "bill" : "bills"} published to {destinationName}
                   </p>
                 </div>
               ) : null}
               <div className={cn("flex flex-wrap items-center gap-2 rounded-md border px-3 py-2.5 text-sm", workspacePanel)}>
-                <StatusBadge tone="success">{publishResult.succeeded} published</StatusBadge>
+                <StatusBadge tone="info">{publishResult.succeeded} published</StatusBadge>
                 {publishResult.failed.length > 0 ? (
                   <StatusBadge tone="error">{publishResult.failed.length} failed</StatusBadge>
                 ) : (
@@ -2397,7 +2380,7 @@ function AccountsPayableContent() {
               </div>
               {publishResult.failed.length > 0 ? (
                 <div className="rounded-md border border-border">
-                  <p className={cn("border-b px-3 py-2 text-xs font-medium uppercase tracking-normal text-slate-500", workspacePanel)}>
+                  <p className={cn("border-b px-3 py-2 text-xs font-medium uppercase tracking-normal text-[var(--workspace-table-head)]", workspacePanel)}>
                     Failed items
                   </p>
                   <ul className="max-h-[200px] divide-y divide-border overflow-y-auto">
@@ -2416,7 +2399,7 @@ function AccountsPayableContent() {
           ) : (
             <div className="space-y-3">
               <div className="rounded-md border border-border">
-                <p className={cn("border-b px-3 py-2 text-xs font-medium uppercase tracking-normal text-slate-500", workspacePanel)}>
+                <p className={cn("border-b px-3 py-2 text-xs font-medium uppercase tracking-normal text-[var(--workspace-table-head)]", workspacePanel)}>
                   Will publish ({cleanSelectedIds.length})
                 </p>
                 {cleanSelectedIds.length ? (
@@ -2510,7 +2493,7 @@ function AccountsPayableContent() {
           <DialogContent className="gap-5 rounded-md sm:max-w-md" showCloseButton={!pendingConfirmationBusy}>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2.5 text-base font-medium">
-                <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-white text-slate-950">
+                <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
                   {pendingConfirmationDetails.icon}
                 </span>
                 {pendingConfirmationDetails.title}
@@ -2523,7 +2506,7 @@ function AccountsPayableContent() {
             {activeItem ? (
               <div className={cn("flex items-center justify-between gap-3 rounded-md border px-3 py-2.5", workspacePanel)}>
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-slate-950">{activeItem.draft_data.vendor || "Supplier missing"}</p>
+                  <p className="truncate text-sm font-medium text-[var(--workspace-ink)]">{activeItem.draft_data.vendor || "Supplier missing"}</p>
                   <p className="mt-0.5 truncate text-xs font-medium text-foreground/70">{activeItem.source_filename}</p>
                 </div>
                 <span className="shrink-0 font-mono text-xs tabular-nums text-foreground">
@@ -2565,7 +2548,7 @@ function AccountsPayableContent() {
         <DialogContent className="gap-4 rounded-md sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-base font-medium">
-              <span className="inline-flex size-6 items-center justify-center rounded-md bg-[var(--workspace-blue-soft)] text-black">
+              <span className="inline-flex size-6 items-center justify-center rounded-md bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
                 <FileText className="size-3.5" />
               </span>
               Match a purchase order
@@ -2581,7 +2564,7 @@ function AccountsPayableContent() {
             </div>
           ) : poList.length === 0 ? (
             <div className={cn("rounded-xl border p-5 text-center", workspacePanel)}>
-              <p className="text-sm font-medium text-slate-950">No open purchase orders</p>
+              <p className="text-sm font-medium text-[var(--workspace-ink)]">No open purchase orders</p>
               <p className="mt-1 text-xs font-normal text-foreground">No open purchase orders are available for this supplier.</p>
             </div>
           ) : (
@@ -2596,20 +2579,20 @@ function AccountsPayableContent() {
                     onClick={() => void matchPo(po.id)}
                     disabled={poBusy}
                     className={cn(
-                      "ax-interactive flex w-full items-center justify-between gap-3 rounded-lg border-2 bg-white px-3 py-2.5 text-left text-black transition-colors",
+                      "ax-interactive flex w-full items-center justify-between gap-3 rounded-lg border bg-card px-3 py-2.5 text-left text-[var(--workspace-ink)] transition-colors",
                       exceeds
                         ? "border-amber-300 hover:border-amber-500 hover:bg-amber-50"
-                        : "border-slate-200 hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)]/60",
+                        : "border-[var(--workspace-border)] hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)]/60",
                     )}
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-slate-950">PO {po.po_number}</p>
-                      <p className="text-xs font-normal text-slate-600">
+                      <p className="truncate text-sm font-medium text-[var(--workspace-ink)]">PO {po.po_number}</p>
+                      <p className="text-xs font-normal text-[var(--workspace-muted)]">
                         {po.vendor_name || "—"}{po.po_date ? ` · ${po.po_date}` : ""}
                       </p>
                     </div>
                     <div className="shrink-0 text-right">
-                      <p className="font-mono text-sm font-normal tabular-nums text-slate-950">{po.currency || ""} {Number(po.total).toFixed(2)}</p>
+                      <p className="font-mono text-sm font-normal tabular-nums text-[var(--workspace-ink)]">{po.currency || ""} {Number(po.total).toFixed(2)}</p>
                       {po.remaining_amount != null ? (
                         <p className="text-[11px] font-medium text-neutral-600">Remaining {Number(po.remaining_amount).toFixed(2)}</p>
                       ) : null}

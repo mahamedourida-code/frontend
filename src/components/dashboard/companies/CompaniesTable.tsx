@@ -14,7 +14,6 @@ import {
   ReceiptText,
   RefreshCw,
   Search,
-  Upload,
   X,
 } from "lucide-react"
 
@@ -96,7 +95,7 @@ function QueueCell({ company }: { company: CompanySummary }) {
   if (company.bills > 0) {
     return (
       <div className="space-y-1">
-        <StatusBadge tone="review" size="sm">Draft bills</StatusBadge>
+      <StatusBadge tone="info" size="sm">Draft bills</StatusBadge>
         <p className="text-[11px] text-[var(--workspace-muted)]">{company.bills} awaiting publish</p>
       </div>
     )
@@ -131,7 +130,7 @@ function ActionLink({ company }: { company: CompanySummary }) {
     ? { href: `/dashboard/client?company_id=${encodedId}`, label: "Review", icon: BookCheck }
     : company.bills > 0
       ? { href: `/dashboard/accounts-payable?company_id=${encodedId}`, label: "Open bills", icon: ReceiptText }
-      : { href: `/dashboard/client?company_id=${encodedId}#upload-files`, label: "Upload", icon: Upload }
+      : { href: `/dashboard/companies/${encodedId}`, label: "Open client", icon: Building2 }
   const Icon = action.icon
 
   return (
@@ -273,14 +272,14 @@ export function CompaniesTable({
             <div className="ms-auto flex min-w-0 items-center gap-1">
               {searchOpen ? (
                 <div className="relative w-[min(15rem,44vw)]">
-                  <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-black" />
+                  <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-[var(--workspace-muted)]" />
                   <Input
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                     placeholder="Find client"
                     aria-label="Find a client"
                     autoFocus
-                    className="h-8 rounded-full bg-white pl-8 pr-3 text-[12px]"
+                    className="h-8 rounded-full bg-card pl-8 pr-3 text-[12px]"
                   />
                 </div>
               ) : null}
@@ -331,24 +330,6 @@ export function CompaniesTable({
                 </DropdownMenu>
               </span>
 
-              <span className={cn(searchOpen && "max-sm:hidden")}>
-                <AddCompanyDialog
-                  workspaceId={workspaceId}
-                  onCreated={() => void load()}
-                  trigger={(
-                    <Button
-                      variant="surface"
-                      size="icon"
-                      disabled={!workspaceId}
-                      aria-label="Add client"
-                      title="Add client"
-                      className="size-8"
-                    >
-                      <Plus className="size-4" />
-                    </Button>
-                  )}
-                />
-              </span>
             </div>
           </div>
 
@@ -397,7 +378,7 @@ export function CompaniesTable({
                   >
                     <span className="flex min-w-0 items-center gap-3">
                       <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[var(--workspace-soft)]">
-                        <Building2 className="size-3.5 text-black" />
+                        <Building2 className="size-3.5 text-[var(--workspace-ink)]" />
                       </span>
                       <span className="min-w-0">
                         <span className="ax-data-entity block truncate text-[13px] font-semibold">{company.name}</span>
@@ -409,7 +390,7 @@ export function CompaniesTable({
                       </span>
                     </span>
                     <HomeQueueState company={company} />
-                    <ChevronRight className="size-4 text-black" />
+                    <ChevronRight className="size-4 text-[var(--workspace-muted)]" />
                   </Link>
                 ))}
               </div>
@@ -436,13 +417,13 @@ export function CompaniesTable({
         <div className="sticky top-14 z-20 flex flex-col gap-2 rounded-t-lg border-b border-[var(--workspace-border)] bg-[color-mix(in_srgb,white_94%,transparent)] px-3 py-2.5 backdrop-blur-md xl:flex-row xl:items-center xl:justify-between">
           <div className="flex min-w-0 flex-1 flex-col gap-2 lg:flex-row lg:items-center">
             <div className="relative w-full lg:w-64">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-black" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-[var(--workspace-muted)]" />
               <Input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Find a client"
                 aria-label="Find a client"
-                className="h-8 rounded-full bg-white pl-8 text-[12px]"
+                className="h-8 rounded-full bg-card pl-8 text-[12px]"
               />
             </div>
             <SegmentedTabs
@@ -534,7 +515,7 @@ export function CompaniesTable({
                 {visibleCompanies.map((company) => (
                   <TableRow
                     key={company.id}
-                    className="ax-interactive cursor-pointer bg-white hover:bg-[var(--workspace-row-hover)]"
+                    className="ax-interactive cursor-pointer bg-card hover:bg-[var(--workspace-row-hover)]"
                     onClick={() => router.push(`/dashboard/companies/${encodeURIComponent(company.id)}`)}
                   >
                     <TableCell className="px-4 py-3">
@@ -543,11 +524,11 @@ export function CompaniesTable({
                         className="group flex items-center gap-3"
                         onClick={(event) => event.stopPropagation()}
                       >
-                        <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-black">
+                        <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-[var(--workspace-ink)]">
                           <Building2 className="size-4" />
                         </span>
                         <span className="ax-data-entity min-w-0 flex-1 truncate group-hover:text-[var(--workspace-blue)]">{company.name}</span>
-                        <ChevronRight className="size-4 shrink-0 text-black" />
+                        <ChevronRight className="size-4 shrink-0 text-[var(--workspace-muted)]" />
                       </Link>
                     </TableCell>
                     <TableCell className="py-3"><QueueCell company={company} /></TableCell>

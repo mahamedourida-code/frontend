@@ -3,10 +3,11 @@
 import * as React from "react"
 import Link from "next/link"
 import {
-  ArrowRight,
   AtSign,
   Check,
   CreditCard,
+  ChevronDown,
+  ChevronRight,
   FolderSync,
   Link2,
   Plug,
@@ -19,8 +20,6 @@ import {
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
-import { Button } from "@/components/ui/button"
-import { InlineAction } from "@/components/ui/inline-action"
 import { cn } from "@/lib/utils"
 import {
   accountsPayableApi,
@@ -262,20 +261,36 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
     )
   }
 
+  const coreIds = new Set(["accounting", "email", "client-links", "reviewer"])
+  const coreItems = items.filter((item) => coreIds.has(item.id))
+  const optionalItems = items.filter((item) => !coreIds.has(item.id))
+
   return (
     <WorkspaceSection
       icon={<Check />}
       title="Workspace readiness"
-      hint="Connect the intake and review handoffs your firm will use every week."
+      hint="Complete the handoffs your team uses."
       actions={<StatusBadge tone="neutral">{items.filter((item) => item.state === "done").length}/{items.filter((item) => item.state !== "neutral").length} ready</StatusBadge>}
       contentClassName="p-0"
       compact
     >
       <ul className="divide-y divide-border">
-        {[...items]
+        {[...coreItems]
           .sort((left, right) => (left.state === "todo" ? -1 : right.state === "todo" ? 1 : 0))
           .map((item) => <ChecklistRow key={item.id} item={item} />)}
       </ul>
+      <details className="group border-t border-border">
+        <summary className="ax-interactive flex cursor-pointer list-none items-center justify-between px-4 py-3 text-[12px] font-semibold text-[var(--workspace-muted)] outline-none hover:bg-[var(--workspace-row-hover)] hover:text-[var(--workspace-ink)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--workspace-primary)]/25 [&::-webkit-details-marker]:hidden">
+          <span>Optional setup</span>
+          <span className="inline-flex items-center gap-2">
+            {optionalItems.filter((item) => item.state === "done").length}/{optionalItems.length}
+            <ChevronDown className="size-4 transition-transform duration-150 group-open:rotate-180" />
+          </span>
+        </summary>
+        <ul className="divide-y divide-border border-t border-border">
+          {optionalItems.map((item) => <ChecklistRow key={item.id} item={item} />)}
+        </ul>
+      </details>
     </WorkspaceSection>
   )
 }
@@ -284,53 +299,44 @@ function ChecklistRow({ item }: { item: ChecklistItem }) {
   const isDone = item.state === "done"
 
   return (
-    <li className="flex flex-wrap items-center justify-between gap-x-5 gap-y-2 px-4 py-3">
-      <div className="flex min-w-0 items-center gap-3">
+    <li>
+      <Link
+        href={item.href}
+        className="ax-interactive group flex items-center gap-3 px-4 py-3 outline-none hover:bg-[var(--workspace-row-hover)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--workspace-primary)]/25"
+      >
         {/* Status marker — a quietly satisfying check when done. */}
         <span
           className={cn(
             "inline-flex size-8 shrink-0 items-center justify-center rounded-md [&_svg]:size-4",
             isDone
-              ? "bg-[var(--workspace-soft)] text-[var(--workspace-primary)]"
-              : "bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-[var(--workspace-blue)]",
+              ? "bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]"
+              : "bg-[var(--workspace-soft)] text-[var(--workspace-ink)]",
           )}
         >
           {isDone ? <Check strokeWidth={2.5} /> : item.icon}
         </span>
 
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="text-[13px] font-semibold leading-tight text-foreground">{item.label}</p>
+        <span className="min-w-0 flex-1">
+          <span className="flex flex-wrap items-center gap-2">
+            <span className="text-[13px] font-semibold leading-tight text-foreground">{item.label}</span>
             {isDone ? (
-              <StatusBadge tone="neutral" size="sm">Ready</StatusBadge>
+              <StatusBadge tone="info" size="sm">Ready</StatusBadge>
             ) : item.state === "neutral" ? (
               <StatusBadge tone="neutral" size="sm">Optional</StatusBadge>
-            ) : (
-              <StatusBadge tone="neutral" size="sm">Set up</StatusBadge>
-            )}
-          </div>
+            ) : null}
+          </span>
           {isDone && item.doneNote ? (
-            <p className="mt-1 truncate text-[11px] leading-snug text-[var(--workspace-muted)]">
+            <span className="mt-1 block truncate text-[11px] leading-snug text-[var(--workspace-muted)]">
               {item.doneNote}
-            </p>
+            </span>
           ) : null}
-        </div>
-      </div>
+        </span>
 
-      <div className="shrink-0">
-        {isDone ? (
-          <InlineAction asChild className="text-xs">
-            <Link href={item.href}>Manage</Link>
-          </InlineAction>
-        ) : (
-          <Button asChild variant="surface" size="sm">
-            <Link href={item.href}>
-              {item.cta}
-              <ArrowRight className="size-3.5" />
-            </Link>
-          </Button>
-        )}
-      </div>
+        <span className="hidden shrink-0 text-[11px] font-semibold text-[var(--workspace-muted)] sm:inline">
+          {isDone ? "Manage" : item.cta}
+        </span>
+        <ChevronRight className="size-4 shrink-0 text-[var(--workspace-muted)] transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-[var(--workspace-ink)]" />
+      </Link>
     </li>
   )
 }

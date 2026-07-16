@@ -33,21 +33,18 @@ const providers: Array<{
   id: Provider
   name: string
   Icon: LucideIcon
-  iconClassName: string
   api: typeof quickBooksApi
 }> = [
   {
     id: "quickbooks",
     name: "QuickBooks Online",
     Icon: Landmark,
-    iconClassName: "border-emerald-200 bg-emerald-50 text-black",
     api: quickBooksApi,
   },
   {
     id: "xero",
     name: "Xero",
     Icon: Cloud,
-    iconClassName: "border-sky-200 bg-sky-50 text-black",
     api: xeroApi,
   },
 ]
@@ -63,13 +60,6 @@ function formatSynced(value?: string | null) {
   } catch {
     return "Not synced yet"
   }
-}
-
-function referenceCount(connection: AccountingConnectionStatus) {
-  return Object.values(connection.reference_counts || {}).reduce(
-    (total, count) => total + Number(count || 0),
-    0,
-  )
 }
 
 export function AccountingConnectionsSection({
@@ -197,7 +187,7 @@ export function AccountingConnectionsSection({
     <WorkspaceSection
       icon={<Plug2 />}
       title="Accounting destinations"
-      hint="Connect QuickBooks Online or Xero, then choose where reviewed draft bills publish."
+      hint="Choose where reviewed draft bills publish."
       contentClassName="p-0"
       compact
     >
@@ -217,20 +207,20 @@ export function AccountingConnectionsSection({
             >
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
                 <div className="flex min-w-0 flex-1 items-center gap-3">
-                  <span className={cn("inline-flex size-10 shrink-0 items-center justify-center rounded-lg border", provider.iconClassName)}>
-                    <ProviderIcon className="size-5 text-black" strokeWidth={2.1} aria-hidden="true" />
+                  <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)]">
+                    <ProviderIcon className="size-5 text-[var(--workspace-primary)]" strokeWidth={2.1} aria-hidden="true" />
                   </span>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="text-[14px] font-semibold text-foreground">{provider.name}</h2>
-                      <StatusBadge tone={connection.connected ? "success" : "neutral"} size="sm">
+                      <StatusBadge tone={connection.connected ? "info" : "neutral"} size="sm">
                         {connection.connected ? "Connected" : "Not connected"}
                       </StatusBadge>
                       {selected ? <StatusBadge tone="info" size="sm">Publishing here</StatusBadge> : null}
                     </div>
                     {connection.connected ? (
                       <p className="mt-1 truncate text-[11px] leading-5 text-[var(--workspace-muted)]">
-                        {`${connection.company_name || "Company connected"} · ${referenceCount(connection)} list references · synced ${formatSynced(connection.last_synced_at)}`}
+                        {`${connection.company_name || "Company connected"} · synced ${formatSynced(connection.last_synced_at)}`}
                       </p>
                     ) : (
                       <p className="mt-1 text-[11px] text-[var(--workspace-muted)]">OAuth connection required before publishing.</p>
@@ -243,7 +233,7 @@ export function AccountingConnectionsSection({
                     "inline-flex h-8 cursor-pointer items-center gap-2 rounded-full border px-3 text-[12px] font-semibold",
                     selected
                       ? "border-[var(--workspace-primary)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]"
-                      : "border-[var(--workspace-border)] bg-white text-[var(--workspace-muted)]",
+                      : "border-[var(--workspace-border)] bg-card text-[var(--workspace-muted)]",
                     (!isOwner || Boolean(action)) && "cursor-default opacity-65",
                   )}>
                     <input
@@ -255,7 +245,7 @@ export function AccountingConnectionsSection({
                       disabled={!isOwner || Boolean(action)}
                       className="size-3.5 accent-[var(--workspace-primary)]"
                     />
-                    Draft bill destination
+                    Publish here
                   </label>
                   {isOwner ? (
                     <>
@@ -271,6 +261,9 @@ export function AccountingConnectionsSection({
                       </>
                     ) : (
                       <Button variant="glossy" size="sm" onClick={() => void connect(provider.id)} disabled={Boolean(action) || loading}>
+                        {action === `${provider.id}:connect`
+                          ? <RefreshCw className="size-3.5 animate-spin" />
+                          : <Plug2 className="size-3.5" />}
                         {action === `${provider.id}:connect` ? "Connecting..." : `Connect ${provider.name}`}
                       </Button>
                     )}

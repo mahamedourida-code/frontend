@@ -11,7 +11,6 @@ import {
   LoaderCircle,
   RefreshCw,
   Search,
-  Upload,
 } from "lucide-react"
 
 import { EmptyState } from "@/components/dashboard/EmptyState"
@@ -19,7 +18,6 @@ import { SegmentedTabs } from "@/components/dashboard/SegmentedTabs"
 import { SkeletonList } from "@/components/dashboard/SkeletonTable"
 import { StatusBadge, type StatusTone } from "@/components/dashboard/StatusBadge"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
-import { Button } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
 import { Input } from "@/components/ui/input"
 import { ocrApi } from "@/lib/api-client"
@@ -40,7 +38,7 @@ const REVIEW_STATUSES = new Set(["completed", "partially_completed"])
 const ISSUE_STATUSES = new Set(["failed", "cancelled"])
 
 function batchStatusTone(status: string): StatusTone {
-  if (status === "completed") return "success"
+  if (status === "completed") return "info"
   if (status === "partially_completed") return "warning"
   if (status === "failed") return "error"
   if (status === "cancelled") return "neutral"
@@ -105,7 +103,7 @@ function BatchRow({ batch }: { batch: Batch }) {
       href={`/dashboard/client?job_id=${encodeURIComponent(batch.jobId)}`}
       className="ax-interactive group grid min-h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 border-b border-[var(--workspace-border)] px-4 py-2.5 outline-none last:border-b-0 hover:bg-[var(--workspace-row-hover)] focus-visible:bg-[var(--workspace-row-hover)] sm:grid-cols-[auto_minmax(0,1fr)_auto_auto]"
     >
-      <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-md bg-[var(--workspace-soft)] text-black">
+      <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-md bg-[var(--workspace-soft)] text-[var(--workspace-ink)]">
         {ISSUE_STATUSES.has(batch.status) ? <CircleAlert className="size-4" /> : <Layers className="size-4" />}
       </span>
       <span className="min-w-0">
@@ -187,13 +185,13 @@ export function BatchesQueue() {
         />
         <div className="flex min-w-0 items-center gap-2">
           <div className="relative min-w-0 flex-1 sm:w-56 sm:flex-none">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-black" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-[var(--workspace-muted)]" />
             <Input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Find a batch"
               aria-label="Find a batch"
-              className="h-8 rounded-full bg-white pl-8 text-[12px]"
+              className="h-8 rounded-full bg-card pl-8 text-[12px]"
             />
           </div>
           <InlineAction onClick={load} disabled={refreshing} aria-label="Refresh batch register">
@@ -224,14 +222,6 @@ export function BatchesQueue() {
             icon={<Inbox />}
             title={query ? "No matching batches" : filter === "all" ? "No batches yet" : `No ${filter === "active" ? "batches in progress" : filter}`}
             description={query ? "Clear the search or switch the register filter." : undefined}
-            action={counts.all === 0 ? (
-              <Button asChild variant="glossy" size="sm">
-                <Link href="/dashboard/client#upload-files">
-                  <Upload className="size-3.5" />
-                  Upload batch
-                </Link>
-              </Button>
-            ) : undefined}
             compact
           />
         ) : (

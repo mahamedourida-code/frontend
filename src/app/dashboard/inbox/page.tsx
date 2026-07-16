@@ -70,9 +70,9 @@ function formatExpiry(value: string) {
   return `${days}d left`
 }
 
-function submissionTone(sub: ClientUploadSubmission): "success" | "processing" | "info" | "error" | "neutral" {
+function submissionTone(sub: ClientUploadSubmission): "processing" | "info" | "error" | "neutral" {
   const state = sub.job_status || sub.status
-  if (state === "completed" || state === "partially_completed") return "success"
+  if (state === "completed" || state === "partially_completed") return "info"
   if (state === "processing") return "processing"
   if (state === "queued" || state === "received") return "info"
   if (state === "rejected" || state === "failed") return "error"
@@ -89,8 +89,8 @@ const SOURCE_LABEL: Record<"direct_upload" | "email" | "client_link" | "google_d
 
 const SOURCE_TINT: Record<"direct_upload" | "email" | "client_link" | "google_drive" | "dropbox", string> = {
   direct_upload: "border-border bg-muted/50 text-foreground",
-  email: "border-[#bfdbfe] bg-[#eff6ff] text-[#1d4ed8]",
-  client_link: "border-[#bbf7d0] bg-[#f0fdf4] text-[#15803d]",
+  email: "border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]",
+  client_link: "border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]",
   google_drive: "border-border bg-muted/50 text-foreground",
   dropbox: "border-border bg-muted/50 text-foreground",
 }
@@ -156,8 +156,8 @@ function MobileRow({
   return (
     <div className="flex items-center justify-between gap-3 px-4 py-3">
       <div className="min-w-0 space-y-1">
-        <p className="truncate text-sm font-medium text-black">{title}</p>
-        {meta ? <div className="flex flex-wrap items-center gap-2 text-xs text-black">{meta}</div> : null}
+        <p className="truncate text-sm font-medium text-[var(--workspace-ink)]">{title}</p>
+        {meta ? <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--workspace-ink)]">{meta}</div> : null}
         {children}
       </div>
       {trailing ? <div className="flex shrink-0 items-center gap-3">{trailing}</div> : null}
@@ -199,6 +199,17 @@ export default function EmailInboxPage() {
       router.replace("/sign-in?next=%2Fdashboard%2Finbox")
     }
   }, [authLoading, router, user])
+
+  useEffect(() => {
+    const requestedView = searchParams.get("view")
+    if (requestedView === "activity" || requestedView === "channels" || requestedView === "access") {
+      setView(requestedView)
+      return
+    }
+    if (searchParams.has("google_drive") || searchParams.has("dropbox")) {
+      setView("channels")
+    }
+  }, [searchParams])
 
   const loadInbox = useCallback(async () => {
     if (!user || !activeWorkspace) return
@@ -408,18 +419,26 @@ export default function EmailInboxPage() {
   }
 
   const submissionFileCount = submissions.reduce((count, submission) => count + submission.file_count, 0)
+  const requestedSection = searchParams.get("section")
 
   return (
     <DashboardShell activeItem="inbox" title="Inbox" user={user} showBack={false}>
-      <div className="max-w-6xl space-y-4 text-black">
+      <div className="max-w-6xl space-y-4 text-[var(--workspace-ink)]">
         <PageHeader
           title="Inbox"
-          description="Incoming client files, forwarded documents, and watched folders."
+          description="Files from clients, email, and folders."
           compact
           actions={
-            <Button variant="ghost" size="sm" onClick={() => void loadInbox()} disabled={loading}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => void loadInbox()}
+              disabled={loading}
+              aria-label="Refresh inbox"
+              title="Refresh inbox"
+              className="size-8"
+            >
               <RefreshCw className="size-4" />
-              Refresh
             </Button>
           }
         />
@@ -459,14 +478,13 @@ export default function EmailInboxPage() {
               id="client-upload-links"
               icon={<Link2 />}
               title="Upload links"
-              className="shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
             >
               <div className="space-y-3.5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-black">Client upload portal</p>
+                    <p className="text-sm font-semibold text-[var(--workspace-ink)]">Client upload portal</p>
                   </div>
-                  <StatusBadge tone={links.length ? "success" : "neutral"}>{links.length} link{links.length === 1 ? "" : "s"}</StatusBadge>
+                  <StatusBadge tone={links.length ? "info" : "neutral"}>{links.length} link{links.length === 1 ? "" : "s"}</StatusBadge>
                 </div>
                 <div className="flex flex-col gap-2.5 sm:flex-row">
                   <Input value={linkLabel} onChange={event => setLinkLabel(event.target.value)} placeholder="Client documents" className="flex-1" />
@@ -480,7 +498,7 @@ export default function EmailInboxPage() {
               {newUploadUrl ? (
                 <div className="mt-4 space-y-3">
                   <Field label="Upload link" icon={<Link2 />}>
-                    <div className="flex items-center gap-3 rounded-md border border-[#d8dde6] bg-[#f8fafc] px-3 py-2">
+                    <div className="flex items-center gap-3 rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-3 py-2">
                       <p className="ax-data-reference min-w-0 flex-1 truncate font-mono text-xs">{newUploadUrl}</p>
                       <InlineAction
                         className="shrink-0"
@@ -506,7 +524,7 @@ export default function EmailInboxPage() {
                     </div>
                   </Field>
                   <Field label="Status link" icon={<Clock />}>
-                    <div className="flex items-center gap-3 rounded-md border border-[#d8dde6] bg-[#f8fafc] px-3 py-2">
+                    <div className="flex items-center gap-3 rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-3 py-2">
                       <p className="ax-data-reference min-w-0 flex-1 truncate font-mono text-xs">{newUploadUrl.replace("/upload/", "/status/")}</p>
                       <InlineAction
                         className="shrink-0"
@@ -540,7 +558,7 @@ export default function EmailInboxPage() {
                   <div className="mt-4 hidden overflow-hidden rounded-md border border-border sm:block">
                     <Table className="ax-table">
                       <TableHeader>
-                        <TableRow className="bg-[#f3f4f6] hover:bg-[#f3f4f6]">
+                        <TableRow className="bg-[var(--workspace-table-header)] hover:bg-[var(--workspace-table-header)]">
                           <TableHead className={cell}>Label</TableHead>
                           <TableHead className={cell}>Submissions</TableHead>
                           <TableHead className={cell}>Expires</TableHead>
@@ -550,9 +568,9 @@ export default function EmailInboxPage() {
                       <TableBody className="[&_tr:last-child]:border-0">
                         {links.slice(0, 5).map(link => (
                           <TableRow key={link.id}>
-                            <TableCell className={cn(cell, "font-medium text-black")}>{link.label}</TableCell>
-                            <TableCell className={cn(cell, "tabular-nums text-black")}>{link.submission_count}/{link.max_submissions}</TableCell>
-                            <TableCell className={cn(cell, "text-black")}>{formatExpiry(link.expires_at)}</TableCell>
+                            <TableCell className={cn(cell, "font-medium text-[var(--workspace-ink)]")}>{link.label}</TableCell>
+                            <TableCell className={cn(cell, "tabular-nums text-[var(--workspace-ink)]")}>{link.submission_count}/{link.max_submissions}</TableCell>
+                            <TableCell className={cn(cell, "text-[var(--workspace-ink)]")}>{formatExpiry(link.expires_at)}</TableCell>
                             <TableCell className="px-4 py-3">
                               {link.enabled ? (
                                 <InlineAction tone="danger" className="text-xs" onClick={() => void revokeClientLink(link.id)} disabled={actionBusy === link.id}>
@@ -571,7 +589,7 @@ export default function EmailInboxPage() {
                   {/* Mobile cards */}
                   <div className="mt-4 space-y-3 sm:hidden">
                     {links.slice(0, 5).map(link => (
-                      <div key={link.id} className="rounded-md border border-border bg-white">
+                      <div key={link.id} className="rounded-md border border-border bg-card">
                         <MobileRow
                           title={link.label}
                           meta={
@@ -613,11 +631,11 @@ export default function EmailInboxPage() {
 
               <div className="mt-4 space-y-3">
                 {members.filter(member => member.role === "reviewer").map(member => (
-                  <div key={member.id} className="rounded-md border border-border bg-white">
+                  <div key={member.id} className="rounded-md border border-border bg-card">
                     <MobileRow
                       title={member.member_email}
                       meta={
-                        <StatusBadge tone={member.status === "revoked" ? "neutral" : member.status === "active" ? "success" : "info"}>
+                        <StatusBadge tone={member.status === "revoked" ? "neutral" : "info"}>
                           <span className="capitalize">{member.status}</span>
                         </StatusBadge>
                       }
@@ -642,24 +660,25 @@ export default function EmailInboxPage() {
             id="email-in-address"
             icon={<AtSign />}
             title="Email intake"
-            className="shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
+            collapsible
+            defaultOpen={requestedSection === "email"}
           >
             <div className="space-y-3.5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-2.5">
-                  <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-sky-200 bg-sky-50 text-black">
+                  <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
                     <Mail className="size-4.5" />
                   </span>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-black">Forwarding address</p>
+                    <p className="text-sm font-semibold text-[var(--workspace-ink)]">Forwarding address</p>
                   </div>
                 </div>
-                <StatusBadge tone={address?.address ? "success" : "processing"}>
+                <StatusBadge tone={address?.address ? "info" : "processing"}>
                   {address?.address ? "Ready" : "Provisioning"}
                 </StatusBadge>
               </div>
-              <div className="flex flex-col gap-3 rounded-md border border-[#d8dde6] bg-[#f8fafc] px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
-                <p className="min-w-0 break-all font-mono text-sm text-black">
+              <div className="flex flex-col gap-3 rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
+                <p className="min-w-0 break-all font-mono text-sm text-[var(--workspace-ink)]">
                   {address?.address || "Provisioning address..."}
                 </p>
                 <InlineAction onClick={() => void copyAddress()} disabled={!address} className="shrink-0">
@@ -691,7 +710,8 @@ export default function EmailInboxPage() {
             id="watched-folders"
             icon={<FolderSync />}
             title="Watched folders"
-            className="shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
+            collapsible
+            defaultOpen={requestedSection === "folders"}
           >
             <div className="divide-y divide-border">
               {(["google_drive", "dropbox"] as ConnectedSourceProvider[]).map((provider) => {
@@ -705,13 +725,13 @@ export default function EmailInboxPage() {
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2.5">
-                        <span className="inline-flex size-9 items-center justify-center rounded-md bg-[#eff6ff] text-black">
+                        <span className="inline-flex size-9 items-center justify-center rounded-md border border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
                           {provider === "google_drive" ? <FolderInput className="size-4.5" /> : <Cloud className="size-4.5" />}
                         </span>
                         <div>
-                          <p className="text-sm font-semibold text-black">{label}</p>
+                          <p className="text-sm font-semibold text-[var(--workspace-ink)]">{label}</p>
                           {source?.account_email ? (
-                            <p className="truncate text-xs text-black">{source.account_email}</p>
+                            <p className="truncate text-xs text-[var(--workspace-ink)]">{source.account_email}</p>
                           ) : (
                             <p className="truncate text-xs font-medium text-[var(--workspace-muted)]">
                               {configured ? "Ready to connect" : "Provider setup pending"}
@@ -720,7 +740,7 @@ export default function EmailInboxPage() {
                         </div>
                       </div>
                       {source ? (
-                        <StatusBadge tone={source.status === "connected" ? "success" : source.status === "error" ? "error" : "neutral"}>
+                        <StatusBadge tone={source.status === "connected" ? "info" : source.status === "error" ? "error" : "neutral"}>
                           <BadgeValue value={source.status === "connected" ? "Watching" : source.status === "error" ? "Needs attention" : "Paused"} />
                         </StatusBadge>
                       ) : (
@@ -742,7 +762,7 @@ export default function EmailInboxPage() {
                                   placeholder={provider === "google_drive" ? "AxLiner intake" : "/AxLiner intake"}
                                   className="h-9"
                                 />
-                                <InlineAction tone="success" onClick={() => void saveWatchedFolder(source.id)} disabled={actionBusy === source.id} className="shrink-0">
+                                <InlineAction tone="brand" onClick={() => void saveWatchedFolder(source.id)} disabled={actionBusy === source.id} className="shrink-0">
                                   Save
                                 </InlineAction>
                                 <InlineAction onClick={() => setFolderDraft(null)} className="shrink-0" aria-label="Cancel">
@@ -766,8 +786,8 @@ export default function EmailInboxPage() {
                           </Field>
                         </div>
                         <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                          <span className="inline-flex items-center gap-1.5 text-xs text-black">
-                            <Clock className="size-3.5 text-black" />
+                          <span className="inline-flex items-center gap-1.5 text-xs text-[var(--workspace-ink)]">
+                            <Clock className="size-3.5 text-[var(--workspace-muted)]" />
                             {source.last_synced_at ? formatReceivedAt(source.last_synced_at) : "Never synced"}
                           </span>
                           <div className="flex flex-wrap items-center gap-4">
@@ -820,8 +840,8 @@ export default function EmailInboxPage() {
               compact
               action={(
                 <Button asChild variant="surface" size="sm">
-                  <Link href={activeWorkspace?.role === "owner" ? "/dashboard/inbox#client-upload-links" : "/dashboard/client#upload-files"}>
-                    {activeWorkspace?.role === "owner" ? "Create upload link" : "Upload files"}
+                  <Link href={activeWorkspace?.role === "owner" ? "/dashboard/inbox?view=channels#client-upload-links" : "/dashboard/guide"}>
+                    {activeWorkspace?.role === "owner" ? "Create upload link" : "Open guide"}
                   </Link>
                 </Button>
               )}
@@ -832,7 +852,7 @@ export default function EmailInboxPage() {
               <div className="hidden overflow-hidden rounded-lg border border-[var(--workspace-border)] sm:block">
                 <Table className="ax-table">
                   <TableHeader>
-                    <TableRow className="bg-[#f3f4f6] hover:bg-[#f3f4f6]">
+                    <TableRow className="bg-[var(--workspace-table-header)] hover:bg-[var(--workspace-table-header)]">
                       <TableHead className={cn(cell, "pl-6")}>Filename</TableHead>
                       <TableHead className={cell}>Source</TableHead>
                       <TableHead className={cell}>Date</TableHead>
@@ -846,12 +866,12 @@ export default function EmailInboxPage() {
                       const filename = submission.documents[0]?.original_filename || `${submission.file_count} submitted files`
                       return (
                         <TableRow key={submission.id}>
-                          <TableCell className={cn(cell, "max-w-[220px] truncate pl-6 font-medium text-black")}>{filename}</TableCell>
+                          <TableCell className={cn(cell, "max-w-[220px] truncate pl-6 font-medium text-[var(--workspace-ink)]")}>{filename}</TableCell>
                           <TableCell className={cell}>
                             <SourceBadge kind="client_link" />
                           </TableCell>
                            <TableCell className={cn(cell, "ax-data-date")}>{formatReceivedAt(submission.created_at)}</TableCell>
-                          <TableCell className={cn(cell, "tabular-nums text-black")}>{submission.file_count}</TableCell>
+                          <TableCell className={cn(cell, "tabular-nums text-[var(--workspace-ink)]")}>{submission.file_count}</TableCell>
                           <TableCell className={cell}>
                             <StatusBadge tone={submissionTone(submission)}>
                               <BadgeValue value={(submission.job_status || submission.status).replace(/_/g, " ")} />
@@ -917,7 +937,7 @@ export default function EmailInboxPage() {
               compact
               action={(
                 <Button asChild variant="surface" size="sm">
-                  <Link href={activeWorkspace?.role === "owner" ? "/dashboard/inbox#email-in-address" : "/dashboard/guide"}>
+                  <Link href={activeWorkspace?.role === "owner" ? "/dashboard/inbox?view=channels&section=email#email-in-address" : "/dashboard/guide"}>
                     {activeWorkspace?.role === "owner" ? "Find the email address" : "Open guide"}
                   </Link>
                 </Button>
@@ -928,7 +948,7 @@ export default function EmailInboxPage() {
               <div className="hidden overflow-hidden rounded-lg border border-[var(--workspace-border)] sm:block">
                 <Table className="ax-table">
                   <TableHeader>
-                    <TableRow className="bg-[#f3f4f6] hover:bg-[#f3f4f6]">
+                    <TableRow className="bg-[var(--workspace-table-header)] hover:bg-[var(--workspace-table-header)]">
                       <TableHead className={cn(cell, "pl-6")}>Sender</TableHead>
                       <TableHead className={cell}>Documents</TableHead>
                       <TableHead className={cell}>Source</TableHead>
@@ -941,14 +961,14 @@ export default function EmailInboxPage() {
                     {messages.map((message) => {
                       const state = messageState(message)
                       const documentNames = message.documents.map(document => document.original_filename).join(", ")
-                      const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Reading" ? "processing" : "neutral"
+                      const tone = state === "Ready" ? "info" : (state === "Failed" || state === "Rejected") ? "error" : state === "Reading" ? "processing" : "neutral"
                       return (
                         <TableRow key={message.id}>
                           <TableCell className={cn(cell, "max-w-[220px] pl-6")}>
                             <p className="ax-data-entity truncate text-sm">{message.sender || "Unknown sender"}</p>
                             <p className="ax-data-reference mt-1 truncate text-xs">{message.source_email_reference}</p>
                           </TableCell>
-                          <TableCell className={cn(cell, "max-w-[260px] truncate text-sm text-black")}>
+                          <TableCell className={cn(cell, "max-w-[260px] truncate text-sm text-[var(--workspace-ink)]")}>
                             {documentNames || `${message.attachment_count} attachment${message.attachment_count === 1 ? "" : "s"}`}
                           </TableCell>
                           <TableCell className={cell}>
@@ -980,7 +1000,7 @@ export default function EmailInboxPage() {
                 {messages.map((message) => {
                   const state = messageState(message)
                   const documentNames = message.documents.map(document => document.original_filename).join(", ")
-                  const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Reading" ? "processing" : "neutral"
+                  const tone = state === "Ready" ? "info" : (state === "Failed" || state === "Rejected") ? "error" : state === "Reading" ? "processing" : "neutral"
                   return (
                     <MobileRow
                       key={message.id}
@@ -1004,7 +1024,7 @@ export default function EmailInboxPage() {
                       }
                     >
                       <p className="ax-data-reference truncate text-xs">{message.source_email_reference}</p>
-                      <p className="truncate text-sm text-black">
+                      <p className="truncate text-sm text-[var(--workspace-ink)]">
                         {documentNames || `${message.attachment_count} attachment${message.attachment_count === 1 ? "" : "s"}`}
                       </p>
                     </MobileRow>

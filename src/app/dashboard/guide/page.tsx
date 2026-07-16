@@ -117,7 +117,7 @@ export default function GuidePage() {
     <DashboardShell activeItem="guide" title="Start here" user={user} showBack={false}>
       <PageHeader
         title="Start here"
-        description="From client to reviewed draft."
+        description="Client to reviewed draft."
         compact
         actions={
           <Button asChild variant="surface" size="icon" aria-label="Start workspace tour" title="Start workspace tour">
@@ -131,7 +131,7 @@ export default function GuidePage() {
       <div className="max-w-5xl pb-10">
         <section
           aria-labelledby="guide-flow-title"
-          className="overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white shadow-[0_22px_55px_-44px_rgba(15,23,42,0.55)]"
+          className="overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-card"
         >
           <h2 id="guide-flow-title" className="sr-only">
             Accounting setup flow
@@ -163,14 +163,14 @@ export default function GuidePage() {
                   whileTap={m.reduced ? undefined : { scale: 0.985 }}
                   transition={m.tPress}
                   className={cn(
-                    "relative isolate flex min-h-11 min-w-0 items-center gap-2 rounded-md px-3 py-2 text-left outline-none transition-colors duration-[160ms] focus-visible:ring-2 focus-visible:ring-[#1877F2] focus-visible:ring-offset-1",
-                    isActive ? "text-white" : "text-[var(--workspace-muted)] hover:bg-white hover:text-[var(--workspace-ink)]",
+                    "relative isolate flex min-h-11 min-w-0 items-center gap-2 rounded-md px-3 py-2 text-left outline-none transition-colors duration-[160ms] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)] focus-visible:ring-offset-1",
+                    isActive ? "text-white" : "text-[var(--workspace-muted)] hover:bg-card hover:text-[var(--workspace-ink)]",
                   )}
                 >
                   {isActive ? (
                     <motion.span
                       layoutId="guide-active-step"
-                      className="absolute inset-0 -z-10 rounded-md bg-[#1877F2] shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_1px_3px_rgba(24,119,242,0.24)]"
+                      className="absolute inset-0 -z-10 rounded-md bg-[var(--workspace-primary)]"
                       transition={m.tFast}
                     />
                   ) : null}
@@ -196,7 +196,7 @@ export default function GuidePage() {
                 transition={m.tFast}
                 className="grid min-h-[190px] items-center gap-5 p-5 sm:grid-cols-[64px_minmax(0,1fr)_auto] sm:p-6"
               >
-                <span className="flex size-14 items-center justify-center rounded-full bg-[#edf4ff] text-[#1877F2] ring-1 ring-inset ring-[#1877F2]/15 sm:size-16">
+                <span className="flex size-14 items-center justify-center rounded-full border border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)] sm:size-16">
                   <ActiveIcon className="ax-blue-icon size-6 sm:size-7" />
                 </span>
 
@@ -214,8 +214,8 @@ export default function GuidePage() {
 
                 <Button
                   asChild
-                  variant="blue"
-                  className="w-full border-[#1877F2] bg-[#1877F2] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_1px_2px_rgba(24,119,242,0.22),0_4px_12px_-5px_rgba(24,119,242,0.42)] hover:border-[#166FE5] hover:bg-[#166FE5] hover:text-white sm:w-auto"
+                  variant="glossy"
+                  className="w-full sm:w-auto"
                 >
                   <Link href={activeStep.href}>
                     {activeStep.action}
