@@ -52,6 +52,7 @@ type CompaniesTableProps = {
   onCompanyCountChange?: (count: number) => void
   onCompaniesLoaded?: (companies: CompanySummary[]) => void
   mode?: "full" | "home"
+  canManage?: boolean
 }
 
 type CompanyApi = {
@@ -196,6 +197,7 @@ export function CompaniesTable({
   onCompanyCountChange,
   onCompaniesLoaded,
   mode = "full",
+  canManage = true,
 }: CompaniesTableProps) {
   const router = useRouter()
   const [companies, setCompanies] = useState<CompanySummary[]>([])
@@ -365,7 +367,8 @@ export function CompaniesTable({
               <EmptyState
                 icon={<Building2 />}
                 title="No clients yet"
-                action={<AddCompanyDialog workspaceId={workspaceId} onCreated={() => void load()} />}
+                description={canManage ? undefined : "The workspace owner has not added a client."}
+                action={canManage ? <AddCompanyDialog workspaceId={workspaceId} onCreated={() => void load()} /> : undefined}
                 className="min-h-52"
                 compact
               />
@@ -446,16 +449,18 @@ export function CompaniesTable({
               <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
               Refresh
             </InlineAction>
-            <AddCompanyDialog
-              workspaceId={workspaceId}
-              onCreated={() => void load()}
-              trigger={(
-                <Button variant="glossy" size="sm" disabled={!workspaceId}>
-                  <Plus className="size-3.5" />
-                  Add client
-                </Button>
-              )}
-            />
+            {canManage ? (
+              <AddCompanyDialog
+                workspaceId={workspaceId}
+                onCreated={() => void load()}
+                trigger={(
+                  <Button variant="glossy" size="sm" disabled={!workspaceId}>
+                    <Plus className="size-3.5" />
+                    Add client
+                  </Button>
+                )}
+              />
+            ) : null}
           </div>
         </div>
 
@@ -498,9 +503,11 @@ export function CompaniesTable({
           ) : (
             <EmptyState
               icon={<Building2 />}
-              title="Add the first client"
-              description="Keep intake, review exceptions, and draft bills separated by client."
-              action={<AddCompanyDialog workspaceId={workspaceId} onCreated={() => void load()} />}
+              title={canManage ? "Add the first client" : "No clients yet"}
+              description={canManage
+                ? "Keep intake, review exceptions, and draft bills separated by client."
+                : "The workspace owner has not added a client."}
+              action={canManage ? <AddCompanyDialog workspaceId={workspaceId} onCreated={() => void load()} /> : undefined}
               className="min-h-64"
               compact
             />

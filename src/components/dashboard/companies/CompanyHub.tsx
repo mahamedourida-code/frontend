@@ -36,6 +36,7 @@ import {
 import { InlineAction } from "@/components/ui/inline-action"
 import { Input } from "@/components/ui/input"
 import { useAuth } from "@/hooks/useAuth"
+import { useWorkspaces } from "@/hooks/useWorkspaces"
 import { companyApi } from "@/lib/api-client"
 
 type CompanyHubProps = {
@@ -148,6 +149,8 @@ function ClientWorkQueue({ company, companyId }: { company: CompanySummary; comp
 export function CompanyHub({ companyId }: CompanyHubProps) {
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
+  const { activeWorkspace, isLoading: workspaceLoading } = useWorkspaces(user)
+  const canManage = !workspaceLoading && activeWorkspace?.role === "owner"
   const [company, setCompany] = useState<CompanySummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(false)
@@ -227,7 +230,7 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
             </Link>
           )}
           compact
-          actions={company ? (
+          actions={company && canManage ? (
             <Button
               type="button"
               variant="ghost"
@@ -263,11 +266,13 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
         ) : (
           <div className="space-y-5">
             <ClientWorkQueue company={company} companyId={companyId} />
-            <DangerZone title="Delete client" description="Detach this client label while keeping its documents and bills.">
-              <Button variant="dangerOutline" size="sm" onClick={() => setDeleteOpen(true)}>
-                Delete client
-              </Button>
-            </DangerZone>
+            {canManage ? (
+              <DangerZone title="Delete client" description="Detach this client label while keeping its documents and bills.">
+                <Button variant="dangerOutline" size="sm" onClick={() => setDeleteOpen(true)}>
+                  Delete client
+                </Button>
+              </DangerZone>
+            ) : null}
           </div>
         )}
       </div>
