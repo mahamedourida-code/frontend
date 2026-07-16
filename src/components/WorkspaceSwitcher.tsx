@@ -113,11 +113,17 @@ export function WorkspaceSwitcher({ user, onSignOut, menuSide = "right" }: Works
     if (workspaceName.trim().length < 2) return
     setCreating(true)
     const workspace = await createWorkspace(workspaceName)
-    setCreating(false)
     if (workspace) {
-      setWorkspaceName("")
-      setDialogOpen(false)
+      window.location.assign("/dashboard")
+      return
     }
+    setCreating(false)
+  }
+
+  const handleSelectWorkspace = async (workspace: Workspace) => {
+    if (workspace.id === activeWorkspace?.id) return
+    await selectWorkspace(workspace)
+    window.location.assign("/dashboard")
   }
 
   return (
@@ -193,7 +199,7 @@ export function WorkspaceSwitcher({ user, onSignOut, menuSide = "right" }: Works
                       >
                         <DropdownMenuItem
                           onSelect={() => {
-                            void selectWorkspace(workspace)
+                            void handleSelectWorkspace(workspace)
                           }}
                           className={cn(
                             "flex h-10 items-center gap-2.5 rounded-md px-2 text-sm font-medium",
