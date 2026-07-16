@@ -218,7 +218,7 @@ const folderPanelTitleClass =
   "ax-h1 ax-marketing-display max-w-[660px] text-balance !font-medium !leading-[1.08] !tracking-[-0.04em] text-neutral-950";
 const folderPanelBodyClass = "ax-body ax-marketing-body mt-5 max-w-[610px] font-semibold text-neutral-950";
 const folderPanelCtaClass =
-  "mt-8 inline-flex h-12 items-center rounded-lg border border-[var(--btn-secondary-border)] bg-[var(--btn-secondary-bg)] px-8 text-[15px] font-bold text-[var(--btn-secondary-fg)] transition-colors hover:bg-[var(--btn-secondary-bg-hover)] hover:text-[var(--btn-secondary-fg-hover)] hover:border-[var(--btn-secondary-bg-hover)]";
+  "mt-8 inline-flex h-12 items-center rounded-lg border border-[var(--btn-secondary-border)] bg-[var(--btn-secondary-bg)] px-8 text-[15px] font-semibold text-[var(--btn-secondary-fg)] transition-colors hover:bg-[var(--btn-secondary-bg-hover)] hover:text-[var(--btn-secondary-fg-hover)] hover:border-[var(--btn-secondary-bg-hover)]";
 
 // The landing videos are heavy (hero ≈63 MB, folder-drop ≈31 MB, review-board
 // ≈17 MB). Autoplaying all of them with the source attached on first paint
@@ -472,7 +472,7 @@ export default function Home() {
               </p>
 
               <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                <Button variant="glossy" asChild className="h-[58px] rounded-lg px-12 text-lg font-bold hover:no-underline">
+                <Button variant="glossy" asChild className="h-[58px] rounded-lg px-12 text-lg font-semibold hover:no-underline">
                   <NextLink href="/sign-up?next=%2Fdashboard%2Fclient">Start free</NextLink>
                 </Button>
               </div>

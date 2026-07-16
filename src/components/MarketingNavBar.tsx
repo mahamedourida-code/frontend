@@ -346,7 +346,7 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
         <div className="hidden items-center gap-2.5 lg:flex">
           {isAuthenticated ? (
             <>
-              <Button variant="ink" asChild className="h-10 px-5 text-[15px] font-bold">
+              <Button variant="ink" asChild className="h-10 px-5 text-[15px] font-semibold">
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
               <Button variant="surface" asChild className="h-10 px-5 text-[15px] font-semibold">
@@ -364,7 +364,7 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
               >
                 <Link href="/sign-in?next=%2Fdashboard%2Fclient">Log in</Link>
               </Button>
-              <Button variant="ink" asChild className="h-10 px-5 text-[15px] font-bold">
+              <Button variant="ink" asChild className="h-10 px-5 text-[15px] font-semibold">
                 <Link href="/sign-up?next=%2Fdashboard%2Fclient">Sign up</Link>
               </Button>
               <Button variant="surface" asChild className="h-10 px-5 text-[15px] font-semibold">
