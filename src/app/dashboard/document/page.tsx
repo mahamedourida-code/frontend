@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useCallback, useEffect, useState } from "react"
+import { Suspense, useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
@@ -126,6 +126,7 @@ function DocumentReviewContent() {
   const [downloading, setDownloading] = useState(false)
   const [sendingBill, setSendingBill] = useState(false)
   const [sentToBills, setSentToBills] = useState(false)
+  const saveInFlightRef = useRef(false)
 
   const load = useCallback(async () => {
     if (!jobId || !documentId) {
@@ -224,6 +225,7 @@ function DocumentReviewContent() {
       return
     }
 
+    saveInFlightRef.current = true
     setSavingPath(fieldPath.join("."))
     try {
       await ocrApi.updateDocumentReviewValue(jobId, documentId, {
@@ -235,11 +237,13 @@ function DocumentReviewContent() {
     } catch (err: any) {
       toast.error(err?.detail || err?.message || "Could not save that change.")
     } finally {
+      saveInFlightRef.current = false
       setSavingPath(null)
     }
   }
 
   const markReady = async () => {
+    if (saveInFlightRef.current) return
     setMarkingReady(true)
     try {
       await ocrApi.updateDocumentReviewStatus(jobId, documentId, "ready")

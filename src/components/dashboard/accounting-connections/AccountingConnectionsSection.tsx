@@ -53,6 +53,13 @@ function providerName(provider: Provider) {
   return providers.find(({ id }) => id === provider)?.name || provider
 }
 
+function connectedAlternative(
+  connections: Record<Provider, AccountingConnectionStatus>,
+  current: Provider,
+) {
+  return providers.find(({ id }) => id !== current && connections[id].connected)?.id
+}
+
 function formatSynced(value?: string | null) {
   if (!value) return "Not synced yet"
   try {
@@ -92,14 +99,24 @@ export function AccountingConnectionsSection({
         xeroApi.status(workspaceId),
         accountingDestinationApi.get(workspaceId),
       ])
-      setConnections({ quickbooks, xero })
-      setDestination(selectedDestination)
+      const nextConnections = { quickbooks, xero }
+      let nextDestination = selectedDestination
+      const fallback = connectedAlternative(nextConnections, selectedDestination)
+      if (isOwner && !nextConnections[selectedDestination].connected && fallback) {
+        try {
+          nextDestination = await accountingDestinationApi.set(fallback, workspaceId)
+        } catch {
+          // The connected provider remains available for the owner to select manually.
+        }
+      }
+      setConnections(nextConnections)
+      setDestination(nextDestination)
     } catch {
       toast.error("Could not load accounting connections.")
     } finally {
       setLoading(false)
     }
-  }, [workspaceId])
+  }, [isOwner, workspaceId])
 
   useEffect(() => {
     void load()
@@ -111,6 +128,11 @@ export function AccountingConnectionsSection({
     if (!provider) return
     callbackHandled.current = true
     const result = params.get(provider)
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href)
+      url.searchParams.delete(provider)
+      window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`)
+    }
 
     if (result === "connected") {
       setAction(`${provider}:sync`)
@@ -161,7 +183,18 @@ export function AccountingConnectionsSection({
     try {
       const api = providers.find(({ id }) => id === provider)!.api
       const status = await api.disconnect(workspaceId)
-      setConnections(current => ({ ...current, [provider]: status }))
+      const nextConnections = { ...connections, [provider]: status }
+      setConnections(nextConnections)
+      if (provider === destination) {
+        const fallback = connectedAlternative(nextConnections, provider)
+        if (fallback) {
+          try {
+            setDestination(await accountingDestinationApi.set(fallback, workspaceId))
+          } catch {
+            // No radio remains selected until the owner chooses a connected destination.
+          }
+        }
+      }
       toast.success(`${name} disconnected.`)
     } catch {
       toast.error(`Could not disconnect ${name}.`)
@@ -171,7 +204,7 @@ export function AccountingConnectionsSection({
   }
 
   const selectDestination = async (provider: Provider) => {
-    if (!isOwner || provider === destination) return
+    if (!isOwner || provider === destination || !connections[provider].connected) return
     setAction("destination")
     try {
       setDestination(await accountingDestinationApi.set(provider, workspaceId))
@@ -199,7 +232,8 @@ export function AccountingConnectionsSection({
         ) : providers.map((provider, index) => {
           const connection = connections[provider.id]
           const ProviderIcon = provider.Icon
-          const selected = destination === provider.id
+          const selected = connection.connected && destination === provider.id
+          const destinationDisabled = !isOwner || Boolean(action) || !connection.connected
           return (
             <div
               key={provider.id}
@@ -234,7 +268,7 @@ export function AccountingConnectionsSection({
                     selected
                       ? "border-[var(--workspace-primary)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]"
                       : "border-[var(--workspace-border)] bg-card text-[var(--workspace-muted)]",
-                    (!isOwner || Boolean(action)) && "cursor-default opacity-65",
+                    destinationDisabled && "cursor-default opacity-65",
                   )}>
                     <input
                       type="radio"
@@ -242,7 +276,7 @@ export function AccountingConnectionsSection({
                       value={provider.id}
                       checked={selected}
                       onChange={() => void selectDestination(provider.id)}
-                      disabled={!isOwner || Boolean(action)}
+                      disabled={destinationDisabled}
                       className="size-3.5 accent-[var(--workspace-primary)]"
                     />
                     Publish here

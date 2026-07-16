@@ -632,7 +632,7 @@ export function DocumentReviewWorkspace({
                 variant="glossy"
                 size="sm"
                 onClick={onMarkReady}
-                disabled={markingReady}
+                disabled={markingReady || Boolean(savingPath)}
                 className="h-9 px-3.5 shadow-none hover:shadow-none active:shadow-none"
               >
                 {markingReady ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
