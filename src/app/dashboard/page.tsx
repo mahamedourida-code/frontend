@@ -9,10 +9,11 @@ import type { CompanySummary } from "@/components/dashboard/companies/company-ty
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { WorkspaceFirstRunGuide } from "@/components/dashboard/WorkspaceFirstRunGuide"
-import { WorkspaceOverview } from "@/components/dashboard/WorkspaceOverview"
+import { WorkspaceOverview, type ActivityPoint } from "@/components/dashboard/WorkspaceOverview"
 import { WorkspaceWalkthrough } from "@/components/dashboard/WorkspaceWalkthrough"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
+import { ocrApi } from "@/lib/api-client"
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -21,6 +22,7 @@ export default function DashboardPage() {
   const [clientsRefreshKey, setClientsRefreshKey] = useState(0)
   const [hasClients, setHasClients] = useState<boolean | null>(null)
   const [companies, setCompanies] = useState<CompanySummary[]>([])
+  const [activity, setActivity] = useState<ActivityPoint[]>([])
   const [tourRequest, setTourRequest] = useState<string | undefined>(undefined)
 
   const handleClientCreated = useCallback(() => {
@@ -41,6 +43,24 @@ export default function DashboardPage() {
   useEffect(() => {
     setTourRequest(new URLSearchParams(window.location.search).get("tour") ?? undefined)
   }, [])
+
+  useEffect(() => {
+    if (!user) return
+    let mounted = true
+    ocrApi.getDashboard("30d")
+      .then((summary) => {
+        if (!mounted) return
+        setActivity(summary.chart.map((point) => ({
+          date: point.timestamp,
+          label: point.formattedDate || point.formattedTime || point.timestamp,
+          count: point.count,
+        })))
+      })
+      .catch(() => undefined)
+    return () => {
+      mounted = false
+    }
+  }, [user?.id])
 
   if (loading || !user) {
     return <DashboardRouteLoader label="Loading clients" />
@@ -71,7 +91,7 @@ export default function DashboardPage() {
             />
           </>
         ) : null}
-        <WorkspaceOverview companies={companies} />
+        <WorkspaceOverview companies={companies} activity={activity} />
         <CompaniesTable
           workspaceId={activeWorkspace?.id}
           refreshKey={clientsRefreshKey}

@@ -864,7 +864,7 @@ export function ProcessImagesContent() {
     if (noCredits) {
       setWorkspaceBanner({
         title: "No credits left",
-        description: "Upgrade when reading stacks is saving more time than manual retyping.",
+        description: "Upgrade when document batches are saving more time than manual entry.",
         actionLabel: "Buy credits",
         onAction: () => router.push("/pricing?from=no-credits"),
         tone: "warning",
@@ -1865,7 +1865,7 @@ Best regards`
   const creditBanner: WorkspaceBanner | null = noCredits && !isProcessing
     ? {
         title: "No credits left",
-        description: "Upgrade when reading stacks is saving more time than manual retyping.",
+        description: "Upgrade when document batches are saving more time than manual entry.",
         actionLabel: "Buy credits",
         onAction: () => router.push("/pricing?from=no-credits"),
         tone: "warning",

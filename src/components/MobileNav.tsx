@@ -371,7 +371,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                     onClick={() => handleNavigation("/dashboard/client#upload-files")}
                   >
                     <Upload className="h-4 w-4 text-black" />
-                    Upload documents
+                    Upload files
                   </Button>
                 </div>
               )}
@@ -494,7 +494,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                                   return (
                                     <React.Fragment key={child.href}>
                                       {showGroup && (
-                                        <p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-800">
+                                        <p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-normal text-emerald-800">
                                           {child.group}
                                         </p>
                                       )}

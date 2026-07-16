@@ -529,7 +529,7 @@ function SettingsContent() {
               <div className="space-y-1">
                 {sidebarSections.map((section) => (
                   <div key={section.title} className="space-y-1">
-                    <p className="px-3 pb-2 pt-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--workspace-muted)]">
+                    <p className="px-3 pb-2 pt-1.5 text-[11px] font-semibold uppercase tracking-normal text-[var(--workspace-muted)]">
                       {section.title}
                     </p>
                     {section.items.map((item) => {
@@ -693,19 +693,19 @@ function SettingsContent() {
                 >
                   <dl className="grid overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white sm:grid-cols-3 sm:divide-x sm:divide-[var(--workspace-border)]">
                     <div className="border-b border-[var(--workspace-border)] px-4 py-3 sm:border-b-0">
-                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--workspace-muted)]">Plan</p>
+                      <p className="text-xs font-semibold uppercase tracking-normal text-[var(--workspace-muted)]">Plan</p>
                       <p className="mt-2 text-lg font-semibold text-foreground">
                         {billingLoading ? "Loading" : formatPlan(billingStatus?.plan)}
                       </p>
                     </div>
                     <div className="border-b border-[var(--workspace-border)] px-4 py-3 sm:border-b-0">
-                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--workspace-muted)]">Renewal</p>
+                      <p className="text-xs font-semibold uppercase tracking-normal text-[var(--workspace-muted)]">Renewal</p>
                       <p className="mt-2 text-lg font-semibold text-foreground">
                         {formatDate(currentSubscription?.renews_at || currentSubscription?.ends_at)}
                       </p>
                     </div>
                     <div className="px-4 py-3">
-                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--workspace-muted)]">Batch limit</p>
+                      <p className="text-xs font-semibold uppercase tracking-normal text-[var(--workspace-muted)]">Batch limit</p>
                       <p className="mt-2 text-lg font-semibold text-foreground">
                         {limits ? `${limits.max_files_per_batch} files, ${limits.max_file_size_mb} MB` : "Loading"}
                       </p>
@@ -831,7 +831,7 @@ function SettingsContent() {
                         alt=""
                       />
                       <div className="max-w-sm space-y-1.5">
-                        <h3 className="text-base font-semibold tracking-tight text-foreground">
+                        <h3 className="text-base font-semibold tracking-normal text-foreground">
                           No supplier defaults yet
                         </h3>
                       </div>

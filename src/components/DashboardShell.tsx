@@ -220,18 +220,18 @@ export function DashboardShell({
                 variant="glossy"
                 size="sm"
                 onClick={startBatch}
-                aria-label="Start a new batch"
-                className="h-9 px-3 text-[12px] font-semibold max-sm:size-9 max-sm:px-0 [&_svg]:text-[var(--brand-green-fg)]"
+                aria-label="Upload source documents"
+                className="h-9 px-3 text-[12px] font-semibold max-sm:size-9 max-sm:px-0 [&_svg]:text-[var(--workspace-primary)]"
               >
                 <Plus className="hidden size-4 sm:block" />
                 <Upload className="size-4 sm:hidden" />
-                <span className="hidden sm:inline">New batch</span>
+                <span className="hidden sm:inline">Upload</span>
               </Button>
 
               <NotificationsBell />
 
               {!isPaid ? (
-                <Button asChild variant="lime" size="sm" className="hidden h-9 px-4 xl:inline-flex">
+                <Button asChild variant="lime" size="sm" className="hidden h-9 px-4 sm:inline-flex">
                   <Link href="/pricing">Upgrade</Link>
                 </Button>
               ) : null}

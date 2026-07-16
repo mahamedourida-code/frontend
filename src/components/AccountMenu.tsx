@@ -67,7 +67,7 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
         >
           <Avatar className="size-7">
             {avatarUrl ? <AvatarImage src={avatarUrl} alt="" /> : null}
-            <AvatarFallback className="bg-[var(--brand-green)] text-[11px] font-semibold text-[var(--brand-green-fg)]">
+            <AvatarFallback className="bg-[var(--workspace-soft)] text-[11px] font-semibold text-[var(--workspace-ink)]">
               {initials(name)}
             </AvatarFallback>
           </Avatar>
@@ -82,7 +82,7 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
         <div className="flex items-center gap-2.5 px-2 py-2">
           <Avatar className="size-8">
             {avatarUrl ? <AvatarImage src={avatarUrl} alt="" /> : null}
-            <AvatarFallback className="bg-[var(--brand-green)] text-[11px] font-semibold text-[var(--brand-green-fg)]">
+            <AvatarFallback className="bg-[var(--workspace-soft)] text-[11px] font-semibold text-[var(--workspace-ink)]">
               {initials(name)}
             </AvatarFallback>
           </Avatar>

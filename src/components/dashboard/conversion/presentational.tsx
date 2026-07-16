@@ -233,7 +233,7 @@ export function BookkeeperBreakdown({ figures, layout = "row" }: { figures: Book
       <Symbol name={verdictSymbol} size="inline" className="h-14 w-14 shrink-0" alt="" />
       {cells.map(([label, value]) => (
         <span key={label} className="inline-flex items-baseline gap-1.5">
-          <span className="text-[11px] font-bold uppercase tracking-wide text-foreground">{label}</span>
+          <span className="text-[11px] font-bold uppercase tracking-normal text-foreground">{label}</span>
           <span className="text-[13px] font-semibold tabular-nums text-foreground">{value}</span>
         </span>
       ))}

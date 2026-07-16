@@ -51,7 +51,7 @@ export function InboxSummaryStrip({
         const interactive = Boolean(stat.selectable && onSelect && stat.value > 0)
         const content = (
           <>
-            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+            <span className="text-[11px] font-semibold uppercase tracking-normal text-muted-foreground">
               {stat.label}
             </span>
             <span className="mt-1 text-xl font-semibold tabular-nums text-foreground">{stat.value}</span>

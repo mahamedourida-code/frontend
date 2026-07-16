@@ -90,7 +90,7 @@ function QueueCell({ company }: { company: CompanySummary }) {
   }
 
   if (totalDocuments(company) > 0) {
-    return <StatusBadge tone="success" size="sm">Queue clear</StatusBadge>
+    return <StatusBadge tone="neutral" size="sm">Queue clear</StatusBadge>
   }
 
   return <StatusBadge tone="neutral" size="sm">Awaiting intake</StatusBadge>

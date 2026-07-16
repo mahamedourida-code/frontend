@@ -62,7 +62,7 @@ export function ReviewScoreBadge({
       </PopoverTrigger>
       <PopoverContent side={side} align="start" className="w-72 p-0">
         <div className="border-b border-border px-3.5 py-2.5">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="text-[11px] font-semibold uppercase tracking-normal text-muted-foreground">
             Why this needs review
           </p>
           <p className="mt-0.5 flex items-center gap-1.5 text-sm font-semibold text-foreground">

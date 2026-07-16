@@ -13,7 +13,7 @@ import Link from "next/link"
 import { Upload } from "lucide-react"
 
 function BatchesFallback() {
-  return <DashboardRouteLoader label="Loading stacks" />
+  return <DashboardRouteLoader label="Loading batches" />
 }
 
 export default function BatchesPage() {
@@ -43,9 +43,9 @@ function BatchesContent() {
   }
 
   return (
-    <DashboardShell activeItem="batches" title="Stacks" user={user}>
+    <DashboardShell activeItem="batches" title="Batches" user={user}>
       <PageHeader
-        title="Stacks"
+        title="Batches"
         description="Read, review, and resolve each uploaded batch."
         compact
         actions={(

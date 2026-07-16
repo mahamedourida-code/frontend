@@ -24,6 +24,12 @@ import {
   Upload,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { useHistory, type HistoryJob } from "@/hooks/useHistory"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
@@ -56,7 +62,7 @@ const GROUP_LABELS: Record<CommandGroup, string> = {
   review: "Review",
   output: "Publish",
   uploadAs: "Document types",
-  manage: "Workspace",
+  manage: "Settings",
   act: "Actions",
   clients: "Clients",
   documents: "Documents",
@@ -79,8 +85,8 @@ const NAVIGATE_ITEMS: CommandItem[] = [
   { id: "nav-companies", group: "workspace", label: "Clients", hint: "Workspace", keywords: "companies customers home", icon: Building2, href: "/dashboard" },
   { id: "nav-guide", group: "workspace", label: "Getting started", hint: "Workspace guide", keywords: "guide help onboarding workflow docs", icon: BookOpen, href: "/dashboard/guide" },
   { id: "nav-inbox", group: "collect", label: "Inbox", hint: "Incoming files", keywords: "intake client submissions", icon: Inbox, href: "/dashboard/inbox" },
-  { id: "nav-upload", group: "collect", label: "Upload documents", hint: "Start a stack", keywords: "new add files import scan batches", icon: Upload, href: "/dashboard/client#upload-files" },
-  { id: "nav-stacks", group: "review", label: "Stacks", hint: "Processing batches", keywords: "batches jobs processing", icon: Layers, href: "/dashboard/batches" },
+  { id: "nav-upload", group: "collect", label: "Upload files", hint: "Source documents", keywords: "new add files import scan batches", icon: Upload, href: "/dashboard/client#upload-files" },
+  { id: "nav-stacks", group: "review", label: "Batches", hint: "Processing and review", keywords: "batches jobs processing", icon: Layers, href: "/dashboard/batches" },
   { id: "nav-review", group: "review", label: "Review board", hint: "Check exceptions", keywords: "batches documents exceptions results", icon: BookCheck, href: "/dashboard/client" },
   { id: "nav-exports", group: "output", label: "Export Excel / CSV", hint: "Reviewed files", keywords: "download spreadsheet output", icon: FileSpreadsheet, href: "/dashboard/client#reviewed-outputs" },
   { id: "nav-bills", group: "output", label: "Draft bills", hint: "Ready to publish", keywords: "accounts payable ap queue coding", icon: ReceiptText, href: "/dashboard/accounts-payable" },
@@ -159,7 +165,11 @@ interface CommandPaletteProps {
 // Outer gate: only mount the body (and the useHistory fetch) while the palette is open,
 // so the dashboard never pays for the "Find" source until the shortcut is pressed.
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
-  return open ? <CommandPaletteBody onOpenChange={onOpenChange} /> : null
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {open ? <CommandPaletteBody onOpenChange={onOpenChange} /> : null}
+    </Dialog>
+  )
 }
 
 function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) => void }) {
@@ -231,11 +241,6 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
   }, [router, onOpenChange])
 
   useEffect(() => {
-    const t = setTimeout(() => inputRef.current?.focus(), 20)
-    return () => clearTimeout(t)
-  }, [])
-
-  useEffect(() => {
     setActiveIndex(0)
   }, [query])
 
@@ -251,8 +256,6 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
         e.preventDefault()
         const item = results[activeIndex]
         if (item) execute(item)
-      } else if (e.key === "Escape") {
-        onOpenChange(false)
       }
     }
     window.addEventListener("keydown", onKey)
@@ -265,20 +268,19 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
   }, [activeIndex])
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-start justify-center px-3 pt-[12vh] sm:px-4 sm:pt-[16vh]"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Find in workspace"
+    <DialogContent
+      showCloseButton={false}
+      onOpenAutoFocus={(event) => {
+        event.preventDefault()
+        inputRef.current?.focus()
+      }}
+      className="top-[12vh] max-w-[34rem] translate-y-0 gap-0 overflow-hidden border-[var(--workspace-border)] bg-white p-0 shadow-[0_20px_60px_rgba(15,23,42,0.22)] sm:top-[16vh] sm:max-w-[34rem]"
     >
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => onOpenChange(false)}
-          />
+          <DialogTitle className="sr-only">Find in workspace</DialogTitle>
+          <DialogDescription className="sr-only">
+            Find a client, batch, document, or workspace action.
+          </DialogDescription>
 
-          {/* Panel */}
-          <div className="relative z-10 w-full max-w-[34rem] overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.22)]">
             {/* Search row */}
             <div className="flex items-center gap-3 border-b border-border px-4 py-3">
               <Search className="size-4 shrink-0 text-black" />
@@ -337,7 +339,7 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
                                   <Icon className="size-4 text-black" />
                                 </span>
                                 <span className="flex-1 truncate text-[15px] font-semibold">{item.label}</span>
-                                <span className="shrink-0 text-[13px] font-medium text-muted-foreground">{item.hint}</span>
+                                <span className="hidden shrink-0 text-[13px] font-medium text-muted-foreground sm:block">{item.hint}</span>
                               </button>
                             </li>
                           )
@@ -349,13 +351,6 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
               )}
             </div>
 
-            {/* Footer hints */}
-            <div className="hidden">
-              <span className="flex items-center gap-1"><kbd className="font-sans">↑↓</kbd> navigate</span>
-              <span className="flex items-center gap-1"><kbd className="font-sans">↵</kbd> open</span>
-              <span className="flex items-center gap-1"><kbd className="font-sans">esc</kbd> close</span>
-            </div>
-      </div>
-    </div>
+    </DialogContent>
   )
 }

@@ -78,7 +78,7 @@ export function WorkspaceActivityIndicator({
     >
       <span
         className={cn(
-          "inline-flex items-baseline font-medium tracking-tight",
+          "inline-flex items-baseline font-medium tracking-normal",
           scope === "page" ? "text-base" : "text-sm",
         )}
       >

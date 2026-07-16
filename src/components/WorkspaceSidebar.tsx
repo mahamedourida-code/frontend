@@ -101,11 +101,11 @@ const BATCH_ENTRY_ITEMS = new Set<WorkspaceSidebarItemKey>([
 ])
 
 function normalizedActiveItem(activeItem: WorkspaceSidebarItemKey, hash: string): VisibleItemKey | null {
+  if (BATCH_ENTRY_ITEMS.has(activeItem) || hash === "#upload-files") return null
   if (activeItem === "overview" || activeItem === "clients") return "companies"
   if (activeItem === "process") return "review"
   if (activeItem === "history") return "activity"
   if (activeItem === "exports" || hash === "#reviewed-outputs") return "review"
-  if (BATCH_ENTRY_ITEMS.has(activeItem) || hash === "#upload-files") return null
   if ([...WORK_ITEMS, ...RECORD_ITEMS, ...MANAGE_ITEMS].some((item) => item.key === activeItem)) {
     return activeItem as VisibleItemKey
   }
@@ -240,15 +240,15 @@ export function WorkspaceSidebar({
           href="/dashboard/client#upload-files"
           data-workspace-tour="upload"
           aria-current={batchEntryActive ? "page" : undefined}
-          title={collapsed ? "New batch" : undefined}
+          title={collapsed ? "Upload" : undefined}
           className={cn(
-            "ax-interactive mb-4 flex h-9 items-center justify-center rounded-full border border-[var(--brand-green-ring)] bg-[var(--brand-green)] font-semibold text-[var(--brand-green-fg)] shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_1px_2px_rgba(16,24,40,0.08)] hover:bg-[var(--brand-green-hover)]",
+            "ax-interactive mb-4 flex h-9 items-center justify-center rounded-full border border-[var(--workspace-primary)] bg-[var(--workspace-blue-soft)] font-semibold text-[#174a9c] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_1px_2px_rgba(23,74,156,0.12)] hover:bg-[#dbe8ff]",
             collapsed ? "px-0" : "gap-2 px-3 text-[13px]",
-            batchEntryActive && "ring-2 ring-[var(--brand-green-ring)]/20",
+            batchEntryActive && "ring-2 ring-[var(--workspace-primary)]/20",
           )}
         >
-          <Plus className="size-4 text-[var(--brand-green-fg)]" />
-          {!collapsed ? <span>New batch</span> : null}
+          <Plus className="size-4 text-[var(--workspace-primary)]" />
+          {!collapsed ? <span>Upload</span> : null}
         </Link>
 
         <div className="space-y-1">

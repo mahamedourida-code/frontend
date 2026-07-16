@@ -61,7 +61,7 @@ export function SourceHighlightOverlay({
           )}
         >
           <div className="rounded-md border border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)] px-3 py-2 shadow-none backdrop-blur">
-            <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--brand-brown-fg)]">
+            <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-normal text-[var(--brand-brown-fg)]">
               <Quote className="size-3" />
               {label ? `Found "${label}" here` : "Found on the document"}
             </p>

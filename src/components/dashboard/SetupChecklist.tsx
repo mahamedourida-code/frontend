@@ -267,7 +267,7 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
       icon={<Check />}
       title="Workspace readiness"
       hint="Connect the intake and review handoffs your firm will use every week."
-      actions={<StatusBadge tone="info">{items.filter((item) => item.state === "done").length}/{items.filter((item) => item.state !== "neutral").length} ready</StatusBadge>}
+      actions={<StatusBadge tone="neutral">{items.filter((item) => item.state === "done").length}/{items.filter((item) => item.state !== "neutral").length} ready</StatusBadge>}
       contentClassName="p-0"
       compact
     >
@@ -291,7 +291,7 @@ function ChecklistRow({ item }: { item: ChecklistItem }) {
           className={cn(
             "inline-flex size-8 shrink-0 items-center justify-center rounded-md [&_svg]:size-4",
             isDone
-              ? "bg-[color-mix(in_srgb,var(--workspace-success)_14%,transparent)] text-[var(--workspace-success)]"
+              ? "bg-[var(--workspace-soft)] text-[var(--workspace-primary)]"
               : "bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-[var(--workspace-blue)]",
           )}
         >
@@ -302,11 +302,11 @@ function ChecklistRow({ item }: { item: ChecklistItem }) {
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-[13px] font-semibold leading-tight text-foreground">{item.label}</p>
             {isDone ? (
-              <StatusBadge tone="success" size="sm">Ready</StatusBadge>
+              <StatusBadge tone="neutral" size="sm">Ready</StatusBadge>
             ) : item.state === "neutral" ? (
               <StatusBadge tone="neutral" size="sm">Optional</StatusBadge>
             ) : (
-              <StatusBadge tone="info" size="sm">Set up</StatusBadge>
+              <StatusBadge tone="neutral" size="sm">Set up</StatusBadge>
             )}
           </div>
           {isDone && item.doneNote ? (

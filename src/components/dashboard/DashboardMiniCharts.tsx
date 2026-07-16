@@ -125,7 +125,7 @@ function StatCard({
       <div className="flex min-w-0 flex-1 flex-col gap-3 p-5">
         {/* Label + status badge */}
         <div className="flex items-start justify-between gap-2">
-          <p className="min-w-0 truncate text-xs font-semibold uppercase tracking-wider text-foreground">
+          <p className="min-w-0 truncate text-xs font-semibold uppercase tracking-normal text-foreground">
             {label}
           </p>
           {badge ? (
@@ -197,7 +197,7 @@ export function DashboardMiniCharts({
       badge: { tone: "success", label: `${successRate}%` },
     },
     {
-      label: "Active stacks",
+      label: "Active batches",
       value: activeJobs,
       delta: "waiting or reading",
       accentClass: "bg-amber-400",
@@ -210,7 +210,7 @@ export function DashboardMiniCharts({
     {
       label: "Failed",
       value: failedJobs,
-      delta: `of ${totalJobs.toLocaleString()} total stacks`,
+      delta: `of ${totalJobs.toLocaleString()} total batches`,
       accentClass: "bg-rose-500",
       valueClass: failedJobs > 0 ? "text-[var(--text-danger)]" : "text-foreground",
       sparkColor: "#f43f5e",

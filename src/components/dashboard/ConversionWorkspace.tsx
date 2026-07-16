@@ -263,8 +263,8 @@ export function UploadDropzone({
         ) : (
           <FolderUp className="mx-auto mb-4 h-7 w-7 text-black" />
         )}
-        <h3 className="text-lg font-semibold tracking-tight text-foreground">
-          {isDragging ? "Drop to upload" : uploadedFiles.length ? "Add files" : "Upload documents"}
+        <h3 className="text-lg font-semibold tracking-normal text-foreground">
+          {isDragging ? "Drop to upload" : uploadedFiles.length ? "Add files" : "Upload files"}
         </h3>
         <p className="mt-1.5 text-sm font-medium text-muted-foreground">
           Drop files here or browse.
@@ -276,7 +276,7 @@ export function UploadDropzone({
                 <Symbol key={n} name={n} size="medium" className="h-16 w-16 sm:h-20 sm:w-20" alt="" />
               ))}
             </div>
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <span className="text-[11px] font-semibold uppercase tracking-normal text-muted-foreground">
               Invoices · Receipts · Bank statements · Tables · Handwriting
             </span>
           </div>
@@ -564,7 +564,7 @@ function ExtractedTable({ rows }: { rows: any[][] }) {
             <th
               key={cellIndex}
               className={cn(
-                "border-b border-[var(--workspace-border)] px-3 py-2.5 text-[11px] font-semibold uppercase tracking-[0.04em] text-[var(--workspace-table-head)]",
+                "border-b border-[var(--workspace-border)] px-3 py-2.5 text-[11px] font-semibold uppercase tracking-normal text-[var(--workspace-table-head)]",
                 isNumericCell(cell) ? "text-right" : "text-left",
               )}
             >
@@ -2083,7 +2083,7 @@ export function ResultActions({
                         <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--workspace-purple)_10%,transparent)] text-black [&_svg]:size-[18px] [&_svg]:text-black">
                           <ReceiptText />
                         </span>
-                        <span className="text-[15px] font-semibold tracking-tight text-foreground">Vendor memory</span>
+                        <span className="text-[15px] font-semibold tracking-normal text-foreground">Vendor memory</span>
                       </span>
                       {comparisonFile.vendor_suggestion ? (
                         <StatusBadge tone="info" icon={<Sparkles />}>Remembered</StatusBadge>
@@ -2307,7 +2307,7 @@ export function ResultActions({
                             <span className={cn("inline-flex h-5 items-center rounded-full border px-2 text-[11px] font-semibold", getOutputBadge(comparisonFile).className)}>
                               {getOutputBadge(comparisonFile).label}
                             </span>
-                            <span className={cn("text-[11px] font-bold uppercase tracking-[0.08em]", documentTypeToneClass(comparisonFile.document_type))}>
+                            <span className={cn("text-[11px] font-bold uppercase tracking-normal", documentTypeToneClass(comparisonFile.document_type))}>
                               {formatDocumentType(comparisonFile.document_type)}
                             </span>
                             {isHandwrittenDocument(comparisonFile) ? <HandwrittenBadge variant="label" /> : null}
@@ -2318,16 +2318,16 @@ export function ResultActions({
                               </span>
                             ) : null}
                           </div>
-                          <p className="mt-1.5 truncate text-[15px] font-bold tracking-tight text-[var(--data-entity)]">
+                          <p className="mt-1.5 truncate text-[15px] font-bold tracking-normal text-[var(--data-entity)]">
                             {comparisonSummary?.identity || comparisonFile.filename || "Document"}
                           </p>
                           {comparisonSummary?.identityLabel ? (
-                            <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#475467]">{comparisonSummary.identityLabel}</p>
+                            <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-normal text-[#475467]">{comparisonSummary.identityLabel}</p>
                           ) : null}
                         </div>
                         {comparisonSummary?.amount && comparisonSummary.amount !== "-" ? (
                           <div className="shrink-0 text-right">
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#475467]">{comparisonSummary.amountLabel || "Total"}</p>
+                            <p className="text-[11px] font-semibold uppercase tracking-normal text-[#475467]">{comparisonSummary.amountLabel || "Total"}</p>
                             <p className="mt-0.5 text-2xl font-bold tabular-nums text-[var(--data-money)]">{comparisonSummary.amount}</p>
                           </div>
                         ) : null}
@@ -2526,9 +2526,9 @@ export function ResultActions({
                         {comparisonHandwritten ? (
                           <ConfidenceLegend className="border-b border-[#e4e7ef] bg-[#f8f9fa] px-4 py-2" />
                         ) : null}
-                        <div className="border-y border-[#e4e7ef] bg-white px-5 py-2 text-[11px] font-bold uppercase tracking-[0.08em] text-[#475467]">Line items</div>
+                        <div className="border-y border-[#e4e7ef] bg-white px-5 py-2 text-[11px] font-bold uppercase tracking-normal text-[#475467]">Line items</div>
                         <table className="w-full min-w-[640px] border-collapse text-[13px]">
-                          <thead className="sticky top-[72px] z-[1] bg-[#f8f9fa] text-[11px] font-semibold uppercase tracking-[0.04em] text-[#475467]">
+                          <thead className="sticky top-[72px] z-[1] bg-[#f8f9fa] text-[11px] font-semibold uppercase tracking-normal text-[#475467]">
                             <tr>
                               {comparisonHandwritten ? (
                                 <th className="w-7 border-b border-[#e4e7ef] px-2 py-2.5" aria-label="Confidence" />
@@ -2654,15 +2654,15 @@ export function ResultActions({
                           <span className={cn("inline-flex h-5 items-center rounded-full border px-2 text-[11px] font-semibold", getOutputBadge(comparisonFile).className)}>
                             {getOutputBadge(comparisonFile).label}
                           </span>
-                          <span className={cn("text-[11px] font-bold uppercase tracking-[0.08em]", documentTypeToneClass(comparisonFile.document_type))}>
+                          <span className={cn("text-[11px] font-bold uppercase tracking-normal", documentTypeToneClass(comparisonFile.document_type))}>
                             {formatDocumentType(comparisonFile.document_type)}
                           </span>
                           {isHandwrittenDocument(comparisonFile) ? <HandwrittenBadge variant="label" /> : null}
                         </div>
-                        <p className="mt-1.5 truncate text-[15px] font-bold tracking-tight text-[var(--data-entity)]">{comparisonFile.filename || "Extracted table"}</p>
+                        <p className="mt-1.5 truncate text-[15px] font-bold tracking-normal text-[var(--data-entity)]">{comparisonFile.filename || "Extracted table"}</p>
                       </div>
                       <div className="shrink-0 text-right">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#475467]">Rows</p>
+                        <p className="text-[11px] font-semibold uppercase tracking-normal text-[#475467]">Rows</p>
                         <p className="mt-0.5 text-2xl font-bold tabular-nums text-[#111827]">{Math.max(comparisonTable.length - 1, 0)}</p>
                       </div>
                     </div>
@@ -2704,7 +2704,7 @@ export function ResultActions({
                               aria-hidden={rowIndex === 0}
                             >
                               {rowIndex === 0 ? (
-                                <span className="text-[10px] font-bold uppercase tracking-[0.06em] text-[#94a3b8]">·</span>
+                                <span className="text-[10px] font-bold uppercase tracking-normal text-[#94a3b8]">·</span>
                               ) : (
                                 <ConfidenceDot tier={rowTier} size={8} withRing />
                               )}
@@ -2739,7 +2739,7 @@ export function ResultActions({
                                 }}
                                 className={cn(
                                   "min-w-[120px] border px-3 py-2 text-left outline-none",
-                                  rowIndex === 0 ? "border-[#e4e7ef] text-[11px] font-bold uppercase tracking-[0.04em] text-[#475467]" : "font-medium",
+                                  rowIndex === 0 ? "border-[#e4e7ef] text-[11px] font-bold uppercase tracking-normal text-[#475467]" : "font-medium",
                                   isUncertain
                                     ? "border-[#eef1f6] border-l-2 border-l-[var(--text-attention)] focus-visible:ring-2 focus-visible:ring-black/15"
                                     : "border-[#eef1f6]",
@@ -2925,7 +2925,7 @@ function BatchStagingBoard({
                   className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}
                 >
                   <RotateCcw className="h-4 w-4" />
-                  New stack
+                  Upload
                 </Button>
                 <Button
                   variant="surface"
@@ -3006,7 +3006,7 @@ function BatchStagingBoard({
               <div className="mt-2 flex flex-wrap gap-2">
                 <span className={reviewBoardMetricClass}>
                   <span className="mr-1.5 text-[var(--workspace-ink)] tabular-nums">{rowCount}</span>
-                  {mode === "idle" ? "Stacks" : "Staged"}
+                  {mode === "idle" ? "Batches" : "Staged"}
                 </span>
                 {mode !== "idle" && stagedPdfCount > 0 ? (
                   <span className={reviewBoardMetricClass}>
@@ -3048,7 +3048,7 @@ function BatchStagingBoard({
                       <td colSpan={12} className="border-b border-[#e4e7ef] p-4">
                         <WorkspaceActivityIndicator
                           title="Refreshing recent documents"
-                          detail="Retrieving the latest stacks and review status."
+                          detail="Retrieving the latest batches and review status."
                         />
                       </td>
                     </tr>

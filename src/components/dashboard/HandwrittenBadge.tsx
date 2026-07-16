@@ -39,7 +39,7 @@ export function HandwrittenBadge({ variant = "pill", className, text }: Handwrit
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 rounded-md border border-amber-300/60 bg-amber-50 px-2 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-amber-900",
+          "inline-flex items-center gap-1.5 rounded-md border border-amber-300/60 bg-amber-50 px-2 py-1 text-[11px] font-bold uppercase tracking-normal text-amber-900",
           className,
         )}
       >
@@ -52,7 +52,7 @@ export function HandwrittenBadge({ variant = "pill", className, text }: Handwrit
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-md border border-amber-300/60 bg-amber-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.04em] text-amber-900",
+        "inline-flex items-center gap-1 rounded-md border border-amber-300/60 bg-amber-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-normal text-amber-900",
         className,
       )}
     >

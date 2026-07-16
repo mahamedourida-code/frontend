@@ -101,7 +101,7 @@ export function OrgSwitcher({ user }: OrgSwitcherProps) {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="start" sideOffset={6} className="w-[248px] rounded-lg">
-          <DropdownMenuLabel className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--workspace-muted)]">
+          <DropdownMenuLabel className="text-[11px] font-semibold uppercase tracking-normal text-[var(--workspace-muted)]">
             Workspaces
           </DropdownMenuLabel>
           {workspaces.map((workspace) => {

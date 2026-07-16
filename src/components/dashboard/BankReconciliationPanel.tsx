@@ -129,7 +129,7 @@ export function BankReconciliationPanel({ data, className }: BankReconciliationP
             {headerCopy.icon}
           </span>
           <div className="leading-tight">
-            <p className="text-[11px] font-bold uppercase tracking-[0.14em]">
+            <p className="text-[11px] font-bold uppercase tracking-normal">
               Balance check
             </p>
             <div className="flex items-center gap-2">
@@ -166,7 +166,7 @@ export function BankReconciliationPanel({ data, className }: BankReconciliationP
               index >= 3 && index < 6 ? "border-t border-border sm:border-t-0" : "",
             )}
           >
-            <dt className="truncate text-[10px] font-semibold uppercase tracking-wider text-gray-500">
+            <dt className="truncate text-[10px] font-semibold uppercase tracking-normal text-gray-500">
               {cell.label}
             </dt>
             <dd

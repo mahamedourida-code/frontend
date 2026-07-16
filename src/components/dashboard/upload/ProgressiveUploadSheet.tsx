@@ -176,13 +176,13 @@ export function ProgressiveUploadSheet({
           <div className="flex items-center gap-3">
             <Symbol name="upload-tray" size="inline" className="h-9 w-9 rounded-lg" alt="" />
             <div className="min-w-0">
-              <p className="text-[11px] font-semibold uppercase text-[var(--workspace-primary)]">New stack</p>
+              <p className="text-[11px] font-semibold uppercase text-[var(--workspace-muted)]">Upload files</p>
               <SheetTitle className="mt-0.5 truncate text-lg font-bold tracking-normal">
                 {selectedCompany ? selectedCompany.name : "Choose a client"}
               </SheetTitle>
             </div>
           </div>
-          <SheetDescription className="sr-only">Add a client document stack to the review board.</SheetDescription>
+          <SheetDescription className="sr-only">Add client source documents to the review board.</SheetDescription>
         </SheetHeader>
 
         <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-5 py-4">
@@ -336,7 +336,7 @@ export function ProgressiveUploadSheet({
                         key={`${file.name}-${file.size}-${index}`}
                         className="flex items-center gap-3 px-3 py-2"
                       >
-                        <span className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-blue-soft)] text-black">
+                        <span className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-black">
                           {previewUrl ? (
                             <img src={previewUrl} alt="" className="h-full w-full object-cover" />
                           ) : pdf ? (

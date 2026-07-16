@@ -200,7 +200,7 @@ function RecapStat({ block, animate }: { block: StatBlock; animate: boolean }) {
         }}
       />
       <div className="relative flex items-start justify-between gap-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--brand-brown-fg)]">
+        <p className="text-xs font-semibold uppercase tracking-normal text-[var(--brand-brown-fg)]">
           {block.label}
         </p>
         <span className="flex size-7 items-center justify-center rounded-full border border-[var(--workspace-selection-border)] bg-[var(--workspace-selection-bg)] text-[var(--brand-brown-deep)] shadow-none">
@@ -209,7 +209,7 @@ function RecapStat({ block, animate }: { block: StatBlock; animate: boolean }) {
       </div>
       <div
         className={cn(
-          "relative mt-2 font-semibold leading-none tracking-tight tabular-nums text-foreground",
+          "relative mt-2 font-semibold leading-none tracking-normal tabular-nums text-foreground",
           block.hero ? "text-4xl sm:text-5xl" : "text-2xl sm:text-3xl",
         )}
       >
@@ -297,10 +297,10 @@ function RecapBody({ metrics }: { metrics: RecapMetrics }) {
         />
         <div className="relative flex items-center gap-2 text-[var(--brand-brown-fg)]">
           <Sparkles className="size-4" />
-          <span className="text-xs font-semibold uppercase tracking-[0.14em]">This month with AxLiner</span>
+          <span className="text-xs font-semibold uppercase tracking-normal">This month with AxLiner</span>
         </div>
         <DialogTitle asChild>
-          <h2 className="relative mt-2 text-2xl font-bold tracking-tight text-[var(--brand-brown-deep)]">
+          <h2 className="relative mt-2 text-2xl font-bold tracking-normal text-[var(--brand-brown-deep)]">
             {monthLabel()}
           </h2>
         </DialogTitle>
@@ -388,7 +388,7 @@ export function MonthlyRecapCard({ className }: { className?: string }) {
           <Sparkles className="size-5" />
         </span>
         <div className="relative min-w-0 flex-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[var(--brand-brown-deep)]">
+          <p className="text-xs font-semibold uppercase tracking-normal text-[var(--brand-brown-deep)]">
             New
           </p>
           <p className="truncate text-[15px] font-bold text-foreground">This month with AxLiner</p>

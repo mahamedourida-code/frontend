@@ -113,7 +113,7 @@ export function WorkspaceFirstRunGuide({
 
           <div className="grid gap-4 pr-10 lg:grid-cols-[0.72fr_1.6fr] lg:items-stretch">
             <div className="min-w-0">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--workspace-muted)]">
+              <p className="text-[11px] font-semibold uppercase tracking-normal text-[var(--workspace-muted)]">
                 Workspace
               </p>
               <h2 id="workspace-first-run-title" className="mt-1 text-[15px] font-semibold text-[var(--workspace-ink)]">

@@ -37,7 +37,7 @@ function OnboardingHintCard({ title, hint, action, className }: OnboardingHintCa
         className,
       )}
     >
-      <h3 className="text-lg font-semibold tracking-tight text-[var(--brand-brown-deep)]">
+      <h3 className="text-lg font-semibold tracking-normal text-[var(--brand-brown-deep)]">
         {title ?? MESSY_DOCS_COPY.uploadTitle}
       </h3>
       <p className="max-w-sm text-sm leading-relaxed text-foreground/75">

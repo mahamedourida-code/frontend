@@ -46,7 +46,7 @@ export const WORKSPACE_WALKTHROUGH_STEPS = [
   },
   {
     target: '[data-workspace-tour="upload"], [data-workspace-tour-fallback="upload"]',
-    title: "Upload a document stack",
+    title: "Upload client documents",
     placement: "right",
   },
   {

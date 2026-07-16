@@ -80,7 +80,7 @@ export function ConfidenceDot({
 export function ConfidenceLegend({ className }: { className?: string }) {
   return (
     <div className={cn("flex items-center gap-3 text-[11px] font-medium text-muted-foreground", className)}>
-      <span className="uppercase tracking-wide">Confidence</span>
+      <span className="uppercase tracking-normal">Confidence</span>
       {(["high", "medium", "low"] as ConfidenceTier[]).map((tier) => (
         <span key={tier} className="inline-flex items-center gap-1.5">
           <span className={cn("size-2 rounded-full", TIER_COLOR[tier])} />

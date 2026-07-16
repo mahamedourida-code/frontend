@@ -104,7 +104,7 @@ export function ShortcutCheatsheet({ open, onOpenChange }: ShortcutCheatsheetPro
                     }
               }
             >
-              <p className="mb-1.5 text-[11px] font-bold uppercase tracking-[0.06em] text-foreground">
+              <p className="mb-1.5 text-[11px] font-bold uppercase tracking-normal text-foreground">
                 {section.title}
               </p>
               <ul className="overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white">

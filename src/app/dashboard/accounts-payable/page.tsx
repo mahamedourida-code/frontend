@@ -1258,7 +1258,7 @@ function AccountsPayableContent() {
                       className="h-24 w-24"
                       alt=""
                     />
-                    <h3 className="mt-4 text-lg font-medium tracking-tight text-slate-950">
+                    <h3 className="mt-4 text-lg font-medium tracking-normal text-slate-950">
                       {items.length ? "Nothing in this view" : "No draft bills yet"}
                     </h3>
                     {!items.length ? (
@@ -1427,7 +1427,7 @@ function AccountsPayableContent() {
                             className="h-24 w-24 sm:h-28 sm:w-28"
                             alt=""
                           />
-                          <h3 className="mt-5 text-xl font-medium tracking-tight text-slate-950">
+                          <h3 className="mt-5 text-xl font-medium tracking-normal text-slate-950">
                             {items.length ? "Nothing in this view" : "No draft bills yet"}
                           </h3>
                           {!items.length ? (
@@ -1573,7 +1573,7 @@ function AccountsPayableContent() {
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-3">
                     <div className="min-w-0">
-                      <h2 className="ax-data-entity text-[19px] font-semibold tracking-tight">{draft.vendor || "Vendor missing"}</h2>
+                      <h2 className="ax-data-entity text-[19px] font-semibold tracking-normal">{draft.vendor || "Vendor missing"}</h2>
                       <p className="mt-1 break-all text-[13px] text-foreground">{activeItem.source_filename}</p>
                       {/* Approval gate — terse audit one-liners. */}
                       {activeItem.submitted_by_email ? (
@@ -1646,7 +1646,7 @@ function AccountsPayableContent() {
                     >
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs font-medium uppercase tracking-wider text-amber-800 dark:text-amber-300">
+                          <p className="text-xs font-medium uppercase tracking-normal text-amber-800 dark:text-amber-300">
                             Possible duplicate
                           </p>
                           <p className="mt-1 text-sm font-normal text-amber-950 dark:text-amber-100">
@@ -1697,7 +1697,7 @@ function AccountsPayableContent() {
                       </div>
                       {dismissDraft?.warningId === warning.id ? (
                         <div className="mt-3 flex flex-col gap-2 rounded-md border border-amber-200 bg-white/80 p-2.5 dark:bg-amber-950/60">
-                          <p className="text-[11px] font-medium uppercase tracking-wider text-amber-800 dark:text-amber-200">
+                          <p className="text-[11px] font-medium uppercase tracking-normal text-amber-800 dark:text-amber-200">
                             Reason for dismissal (optional)
                           </p>
                           <Input
@@ -1732,8 +1732,8 @@ function AccountsPayableContent() {
                   {autoAppliedRule ? (
                     <div className={cn("flex flex-wrap items-start justify-between gap-3 rounded-md border p-3", workspacePanel)}>
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs font-medium uppercase tracking-wider text-[var(--workspace-primary)]">
-                          {autoAppliedRule.mode === "auto_ready" ? "Pre-filled & moved to Ready for your approval" : "Pre-filled from memory"}
+                        <p className="text-xs font-medium uppercase tracking-normal text-[var(--workspace-muted)]">
+                          {autoAppliedRule.mode === "auto_ready" ? "Coding applied: ready for approval" : "Coding applied from vendor rule"}
                         </p>
                         <p className="mt-1 text-sm font-normal text-slate-950">
                           {autoAppliedRule.ruleName}
@@ -2121,19 +2121,19 @@ function AccountsPayableContent() {
                           <thead className="bg-slate-100">
                             <tr>
                               {lineColumns.map(column => (
-                                <th key={column} className="whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-wider text-slate-500">
+                                <th key={column} className="whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-normal text-slate-500">
                                   {column.replaceAll("_", " ")}
                                 </th>
                               ))}
                               {showLineCoding ? (
                                 <>
-                                  <th className="w-[150px] whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-wider text-slate-500">Account</th>
-                                  <th className="w-[120px] whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-wider text-slate-500">Tax</th>
+                                  <th className="w-[150px] whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-normal text-slate-500">Account</th>
+                                  <th className="w-[120px] whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-normal text-slate-500">Tax</th>
                                   {isQuickBooks && classes.length ? (
-                                    <th className="w-[120px] whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-wider text-slate-500">Class</th>
+                                    <th className="w-[120px] whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-normal text-slate-500">Class</th>
                                   ) : null}
                                   {!isQuickBooks && trackingGroups.length ? (
-                                    <th className="w-[120px] whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-wider text-slate-500">Tracking</th>
+                                    <th className="w-[120px] whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-normal text-slate-500">Tracking</th>
                                   ) : null}
                                 </>
                               ) : null}
@@ -2397,7 +2397,7 @@ function AccountsPayableContent() {
               </div>
               {publishResult.failed.length > 0 ? (
                 <div className="rounded-md border border-border">
-                  <p className={cn("border-b px-3 py-2 text-xs font-medium uppercase tracking-wider text-slate-500", workspacePanel)}>
+                  <p className={cn("border-b px-3 py-2 text-xs font-medium uppercase tracking-normal text-slate-500", workspacePanel)}>
                     Failed items
                   </p>
                   <ul className="max-h-[200px] divide-y divide-border overflow-y-auto">
@@ -2416,7 +2416,7 @@ function AccountsPayableContent() {
           ) : (
             <div className="space-y-3">
               <div className="rounded-md border border-border">
-                <p className={cn("border-b px-3 py-2 text-xs font-medium uppercase tracking-wider text-slate-500", workspacePanel)}>
+                <p className={cn("border-b px-3 py-2 text-xs font-medium uppercase tracking-normal text-slate-500", workspacePanel)}>
                   Will publish ({cleanSelectedIds.length})
                 </p>
                 {cleanSelectedIds.length ? (

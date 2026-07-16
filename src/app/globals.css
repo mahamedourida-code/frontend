@@ -206,18 +206,18 @@
     --brand-brown-dark: var(--workspace-primary);
     --brand-brown-deep: var(--workspace-primary-hover);
     --brand-clay: var(--workspace-blue-soft);
-    --brand-clay-hover: #dbeafe;
+    --brand-clay-hover: #dbe8ff;
     --brand-clay-fg: var(--workspace-primary);
-    --brand-clay-ring: #bfdbfe;
+    --brand-clay-ring: #b9d0ff;
     --button-warm: var(--workspace-soft);
     --button-warm-hover: #eef2f8;
     --button-warm-ring: var(--workspace-border);
-    --btn-primary-bg: var(--brand-green);
-    --btn-primary-bg-hover: var(--brand-green-hover);
-    --btn-primary-fg: var(--brand-green-fg);
-    --btn-primary-fg-hover: var(--brand-green-fg);
-    --btn-primary-border: var(--brand-green-ring);
-    --btn-primary-border-hover: var(--brand-green-ring);
+    --btn-primary-bg: #edf4ff;
+    --btn-primary-bg-hover: #dbe8ff;
+    --btn-primary-fg: #174a9c;
+    --btn-primary-fg-hover: #123d82;
+    --btn-primary-border: var(--workspace-primary);
+    --btn-primary-border-hover: var(--workspace-primary-hover);
     --btn-secondary-bg: #ffffff;
     --btn-secondary-fg: var(--workspace-ink);
     --btn-secondary-border: var(--workspace-button-border);
@@ -227,7 +227,10 @@
     --workspace-popout-border: var(--workspace-border);
     --workspace-popout-hover: #ffffff;
     --workspace-selection-bg: var(--workspace-blue-soft);
-    --workspace-selection-border: #bfdbfe;
+    --workspace-selection-border: #b9d0ff;
+    --data-money: var(--workspace-ink);
+    --primary: var(--landing-blue);
+    --primary-foreground: #ffffff;
   }
   .ax-dashboard-content p.text-muted-foreground,
   .ax-dashboard-content li.text-muted-foreground,
@@ -282,8 +285,8 @@
     stroke: #ffffff !important;
   }
   body.ax-workspace .ax-workspace-header [data-variant="glossy"] svg {
-    color: var(--brand-green-fg) !important;
-    stroke: var(--brand-green-fg) !important;
+    color: currentColor !important;
+    stroke: currentColor !important;
   }
 
   /* Workspace text colour grammar: colour data and state, never ordinary prose. */
@@ -448,20 +451,20 @@
   .ax-dashboard-content [data-slot="button"][data-variant="critical"],
   .ax-dashboard-content [data-slot="button"][data-variant="warm"],
   .ax-dashboard-content [data-slot="button"][data-variant="clay"] {
-    border-color: var(--brand-green-ring) !important;
-    background: var(--brand-green) !important;
-    color: var(--brand-green-fg) !important;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.65), 0 0 0 1px var(--brand-green-ring), 0 1px 3px rgba(0,0,0,0.12) !important;
+    border-color: var(--workspace-primary) !important;
+    background: #edf4ff !important;
+    color: #174a9c !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.75), 0 0 0 1px var(--workspace-primary), 0 1px 3px rgba(23,74,156,0.14) !important;
   }
   .ax-dashboard-content [data-slot="button"][data-variant="glossy"]:hover,
   .ax-dashboard-content [data-slot="button"][data-variant="critical"]:hover,
   .ax-dashboard-content [data-slot="button"][data-variant="warm"]:hover,
   .ax-dashboard-content [data-slot="button"][data-variant="clay"]:hover {
-    background: var(--brand-green-hover) !important;
+    background: #dbe8ff !important;
   }
   .ax-dashboard-content [data-slot="button"][data-variant="lime"] {
-    border-color: #84cc16 !important;
-    background-color: #65a30d !important;
+    border-color: rgba(255,255,255,0.42) !important;
+    background-color: #171717 !important;
     background-image: url("/buto.png") !important;
     background-position: center !important;
     background-size: cover !important;
@@ -472,6 +475,7 @@
     border-color: #0a0a0a !important;
     background: #171717 !important;
     color: #ffffff !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 0 0 1px #0a0a0a, 0 1px 3px rgba(0,0,0,0.22) !important;
   }
   .ax-dashboard-content [data-slot="button"][data-variant="default"],
   .ax-dashboard-content [data-slot="button"][data-variant="outline"],
@@ -503,12 +507,11 @@
     animation: fadeInUp 0.5s ease-out forwards;
   }
 
-  /* Content area offset — follows --sidebar-w set by WorkspaceSidebar.
-     Default 56px = the icon rail width (the Tier-2 flyout overlays content,
-     so it never changes this offset). */
+  /* Match the expanded sidebar on first paint; the client updates this token
+     when a returning user has chosen the compact rail. */
   @media (min-width: 768px) {
     .ax-dashboard-content {
-      margin-left: var(--sidebar-w, 56px);
+      margin-left: var(--sidebar-w, 224px);
       transition: margin-left 150ms cubic-bezier(0.23, 1, 0.32, 1);
     }
   }
@@ -677,9 +680,9 @@
   --workspace-topbar-hover: #2b2e2c;
   --workspace-sidebar: #f6f7f5;
   --workspace-sidebar-active: #0a0a0a;
-  --workspace-primary: #1877F2;
-  --workspace-primary-hover: #0b5fcc;
-  --workspace-blue-soft: #eff6ff;
+  --workspace-primary: var(--landing-blue);
+  --workspace-primary-hover: var(--landing-blue-hover);
+  --workspace-blue-soft: #edf4ff;
   --workspace-success: #16a34a;
   --workspace-success-hover: #15803d;
   --workspace-danger: #dc2626;
@@ -705,8 +708,8 @@
   --text-review: #6d28d9;
   --text-tax: #0f766e;
   /* Default text-button / link blue — the utility colour (Refresh, Sync, View…). */
-  --workspace-blue: #1877F2;
-  --workspace-blue-hover: #0b5fcc;
+  --workspace-blue: var(--landing-blue);
+  --workspace-blue-hover: var(--landing-blue-hover);
   --workspace-ink: #111827;
   --workspace-muted: #475467;
   --workspace-soft: #f7f8fc;

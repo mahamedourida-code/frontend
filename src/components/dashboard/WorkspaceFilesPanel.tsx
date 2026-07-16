@@ -115,7 +115,7 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
           <h2 className="text-base font-bold text-foreground">Recent files</h2>
-          <p className="mt-0.5 text-xs font-medium text-muted-foreground">Your latest processed stacks.</p>
+          <p className="mt-0.5 text-xs font-medium text-muted-foreground">Your latest processed batches.</p>
         </div>
         <Link href="/history" className="inline-flex items-center gap-1 text-sm font-semibold text-foreground hover:text-primary">
           View all
@@ -128,7 +128,7 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
           <motion.div key="loading" variants={m.fadeScale} initial="hidden" animate="show" exit="exit">
             <WorkspaceActivityIndicator
               title="Refreshing recent documents"
-              detail="Checking the latest stacks and their review status."
+              detail="Checking the latest batches and their review status."
             />
           </motion.div>
         ) : recentFiles.length === 0 ? (
