@@ -142,7 +142,9 @@ export function WorkspaceSidebar({
     } catch {
       // Local preference is optional.
     }
-    return () => document.documentElement.style.removeProperty("--sidebar-w")
+    return () => {
+      document.documentElement.style.removeProperty("--sidebar-w")
+    }
   }, [collapsed])
 
   const renderItem = (item: SidebarItem) => {

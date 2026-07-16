@@ -394,19 +394,6 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                         <span className="flex-1 text-left text-base font-semibold">Clients</span>
                       </Button>
 
-                      <Button
-                        variant="ghost"
-                        aria-current={isDashboardRouteActive(pathname, "/dashboard/guide", currentHash) ? "page" : undefined}
-                        onClick={() => handleNavigation("/dashboard/guide")}
-                        className={cn(
-                          "ax-interactive h-11 w-full justify-start gap-3 rounded-full px-3 text-foreground hover:bg-accent hover:text-accent-foreground",
-                          isDashboardRouteActive(pathname, "/dashboard/guide", currentHash) && "bg-accent text-accent-foreground",
-                        )}
-                      >
-                        <BookOpenText className="h-5 w-5 text-black" />
-                        <span className="flex-1 text-left text-base font-semibold">Getting started</span>
-                      </Button>
-
                       {AUTHENTICATED_NAV_GROUPS.map((group) => {
                         const GroupIcon = group.icon
                         const containsActiveItem = group.items.some((item) =>
