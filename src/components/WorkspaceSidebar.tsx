@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { type MouseEvent, useEffect, useState } from "react"
 import Link from "next/link"
 import {
   Activity,
@@ -10,7 +10,6 @@ import {
   Inbox,
   Layers3,
   PanelLeftClose,
-  PanelLeftOpen,
   PlugZap,
   ReceiptText,
   Settings,
@@ -148,6 +147,12 @@ export function WorkspaceSidebar({
     }
   }, [collapsed])
 
+  const toggleFromWhitespace = (event: MouseEvent<HTMLElement>) => {
+    const target = event.target as HTMLElement
+    if (target.closest("a, button, input, select, textarea, [role='button']")) return
+    setCollapsed((current) => !current)
+  }
+
   const renderItem = (item: SidebarItem) => {
     const Icon = item.icon
     const isActive = active === item.key
@@ -201,7 +206,8 @@ export function WorkspaceSidebar({
   return (
     <aside
       style={{ width: collapsed ? COLLAPSED_W : EXPANDED_W }}
-      className="fixed inset-y-0 start-0 z-30 hidden overflow-hidden border-r border-[var(--workspace-border)] bg-[var(--workspace-sidebar)] text-[var(--workspace-ink)] transition-[width] duration-150 md:flex md:flex-col"
+      onClick={toggleFromWhitespace}
+      className="fixed inset-y-0 start-0 z-30 hidden cursor-pointer overflow-hidden bg-[var(--workspace-sidebar)] text-[var(--workspace-ink)] transition-[width] duration-150 md:flex md:flex-col"
       aria-label="Workspace navigation"
     >
       <div
@@ -210,25 +216,34 @@ export function WorkspaceSidebar({
           collapsed ? "justify-center" : "gap-2",
         )}
       >
-        <Link
-          href="/dashboard"
-          aria-label="AxLiner workspace"
-          className={cn(
-            "ax-interactive flex min-w-0 items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-white/30",
-            collapsed ? "size-9 justify-center" : "flex-1 px-1",
-          )}
-        >
-          {collapsed ? (
+        {collapsed ? (
+          <button
+            type="button"
+            onClick={() => setCollapsed(false)}
+            aria-label="Expand navigation"
+            aria-controls="workspace-navigation"
+            aria-expanded={false}
+            title="Expand navigation"
+            className="ax-interactive flex size-9 items-center justify-center rounded-md outline-none hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white/30"
+          >
             <AxMark tone="light" className="h-7 w-auto shrink-0" />
-          ) : (
+          </button>
+        ) : (
+          <Link
+            href="/dashboard"
+            aria-label="AxLiner workspace"
+            className="ax-interactive flex min-w-0 flex-1 items-center rounded-md px-1 outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+          >
             <AppLogo tone="light" className="h-6 w-auto max-w-[112px] shrink-0" />
-          )}
-        </Link>
+          </Link>
+        )}
         {!collapsed ? (
           <button
             type="button"
             onClick={() => setCollapsed(true)}
             aria-label="Collapse navigation"
+            aria-controls="workspace-navigation"
+            aria-expanded
             className="ax-interactive flex size-8 items-center justify-center rounded-md text-white/70 hover:bg-white/10 hover:text-white"
           >
             <PanelLeftClose className="size-4" />
@@ -236,19 +251,11 @@ export function WorkspaceSidebar({
         ) : null}
       </div>
 
-      <nav className="flex min-h-0 flex-1 flex-col overflow-y-auto px-2 py-3" aria-label="Workspace sections">
-        {collapsed ? (
-          <button
-            type="button"
-            onClick={() => setCollapsed(false)}
-            aria-label="Expand navigation"
-            title="Expand navigation"
-            className="ax-interactive mb-2 flex h-9 items-center justify-center rounded-md text-[var(--workspace-icon)] hover:bg-white hover:text-[var(--workspace-ink)]"
-          >
-            <PanelLeftOpen className="size-[17px]" />
-          </button>
-        ) : null}
-
+      <nav
+        id="workspace-navigation"
+        className="flex min-h-0 flex-1 flex-col overflow-y-auto border-r border-[var(--workspace-border)] px-2 py-3"
+        aria-label="Workspace sections"
+      >
         <div className="space-y-1">
           {WORK_ITEMS.map(renderItem)}
         </div>
