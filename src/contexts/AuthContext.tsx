@@ -98,7 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const authPages = ['/sign-in', '/sign-up']
 
           if (authPages.some(page => currentPath.includes(page))) {
-            router.replace('/dashboard/start')
+            router.replace('/dashboard')
           }
         }
       } else {
