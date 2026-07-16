@@ -2874,8 +2874,10 @@ function BatchStagingBoard({
     }
   }, [loadRecent, mode])
 
+  const requestedCompanyId = searchParams.get("company_id")
   const recent = [...recentFiles]
     .filter((file) => !isHistoryItemDeleted(file.id))
+    .filter((file) => !requestedCompanyId || file.companyId === requestedCompanyId)
     .sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime())
     .slice(0, 6)
 

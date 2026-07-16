@@ -415,6 +415,7 @@ export function normalizeRecentFiles(response: any): import("./types").RecentBat
       filename: item.filename || item.original_filename || item.output_filename || "Converted batch",
       status: item.status || "completed",
       createdAt,
+      companyId: item.company_id || item.metadata?.company_id || null,
     }]
   })
 }

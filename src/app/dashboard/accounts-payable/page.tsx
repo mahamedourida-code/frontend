@@ -169,6 +169,16 @@ const workspacePanel = "ax-workspace-panel border-[var(--workspace-border)] bg-[
 
 const workspaceTable = "ax-table"
 
+function recommendedQueueFilter(items: AccountsPayableItem[]): QueueFilter {
+  if (items.some(item => item.status === "needs_coding" || item.status === "needs_review")) return "needs_attention"
+  if (items.some(item => item.status === "pending_approval")) return "pending_approval"
+  if (items.some(item => item.status === "ready_to_publish")) return "ready_to_publish"
+  if (items.some(item => item.status === "failed")) return "failed"
+  if (items.some(item => item.status === "published")) return "published"
+  if (items.some(item => item.status === "discarded")) return "discarded"
+  return "needs_attention"
+}
+
 function AccountingDestinationGlyph({
   destination,
   className,
@@ -346,6 +356,7 @@ function AccountsPayableContent() {
   const [dismissing, setDismissing] = useState(false)
   const [discarding, setDiscarding] = useState(false)
   const [pendingConfirmationAction, setPendingConfirmationAction] = useState<PendingConfirmationAction | null>(null)
+  const filterTouchedRef = useRef(false)
   // C8 — calm publish moment for the single-Bill flow (the bulk flow already
   // confirms in its own dialog with the active accounting destination.
   const [publishConfirmation, setPublishConfirmation] = useState<PublishConfirmationState | null>(null)
@@ -370,6 +381,7 @@ function AccountsPayableContent() {
     try {
       const response = await accountsPayableApi.list(undefined, companyId ? { companyId } : undefined)
       setItems(response.items)
+      if (!filterTouchedRef.current) setFilter(recommendedQueueFilter(response.items))
       setActiveId(current => current && response.items.some(item => item.id === current)
         ? current
         : null)
@@ -379,6 +391,10 @@ function AccountsPayableContent() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    filterTouchedRef.current = false
+  }, [companyId])
 
   useEffect(() => {
     if (user) void loadQueue()
@@ -582,6 +598,10 @@ function AccountsPayableContent() {
       })
       .map(({ item }) => item)
   }, [items, filter, clientJobIds, reviewScores, missingInfo])
+  const chooseFilter = (value: QueueFilter) => {
+    filterTouchedRef.current = true
+    setFilter(value)
+  }
   const lineItems = Array.isArray(draft.line_items) ? draft.line_items : []
   // Per-line coding keys live in their own select columns, not the generic data
   // columns — keep them out of the auto-detected text columns.
@@ -1191,7 +1211,7 @@ function AccountsPayableContent() {
               <SegmentedTabs
                 aria-label="Draft bills queue"
                 value={filter}
-                onValueChange={(value) => setFilter(value as QueueFilter)}
+                onValueChange={(value) => chooseFilter(value as QueueFilter)}
                 size="sm"
                 tabs={[
                   { value: "needs_attention", label: "Needs attention", count: counts.needs_coding + counts.needs_review },
@@ -1223,7 +1243,7 @@ function AccountsPayableContent() {
                       <button
                         key={option.value}
                         type="button"
-                        onClick={() => setFilter(option.value)}
+                        onClick={() => chooseFilter(option.value)}
                         className={cn(
                           "ax-interactive flex items-center justify-between rounded-md px-2.5 py-1.5 text-left text-[13px] font-medium",
                           filter === option.value
@@ -1263,7 +1283,12 @@ function AccountsPayableContent() {
                           Upload invoices
                         </Link>
                       </Button>
-                    ) : null}
+                    ) : (
+                      <InlineAction className="mt-4" onClick={() => chooseFilter(recommendedQueueFilter(items))}>
+                        <ListChecks className="size-3.5" />
+                        Open next queue
+                      </InlineAction>
+                    )}
                   </div>
                 ) : (
                   <div className="divide-y divide-border">
@@ -1425,7 +1450,12 @@ function AccountsPayableContent() {
                                 Upload invoices
                               </Link>
                             </Button>
-                          ) : null}
+                          ) : (
+                            <InlineAction className="mt-4" onClick={() => chooseFilter(recommendedQueueFilter(items))}>
+                              <ListChecks className="size-3.5" />
+                              Open next queue
+                            </InlineAction>
+                          )}
                         </div>
                       </td>
                     </tr>

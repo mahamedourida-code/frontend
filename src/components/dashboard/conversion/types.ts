@@ -65,6 +65,7 @@ export type RecentBatchFile = {
   filename: string
   status: string
   createdAt: string
+  companyId?: string | null
 }
 
 export type BookkeeperFigures = { currency?: any; subtotal?: any; vat?: any; total?: any }

@@ -11,6 +11,8 @@ import {
   LoaderCircle,
   RefreshCw,
   Search,
+  Upload,
+  X,
 } from "lucide-react"
 
 import { EmptyState } from "@/components/dashboard/EmptyState"
@@ -18,6 +20,7 @@ import { SegmentedTabs } from "@/components/dashboard/SegmentedTabs"
 import { SkeletonList } from "@/components/dashboard/SkeletonTable"
 import { StatusBadge, type StatusTone } from "@/components/dashboard/StatusBadge"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
+import { Button } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
 import { Input } from "@/components/ui/input"
 import { ocrApi } from "@/lib/api-client"
@@ -87,6 +90,13 @@ function matchesFilter(batch: Batch, filter: QueueFilter) {
   return true
 }
 
+function recommendedFilter(batches: Batch[]): QueueFilter {
+  if (batches.some((batch) => REVIEW_STATUSES.has(batch.status))) return "review"
+  if (batches.some((batch) => ISSUE_STATUSES.has(batch.status))) return "issues"
+  if (batches.some((batch) => ACTIVE_STATUSES.has(batch.status))) return "active"
+  return "all"
+}
+
 function nextAction(status: string) {
   if (REVIEW_STATUSES.has(status)) return "Review"
   if (ISSUE_STATUSES.has(status)) return "Inspect"
@@ -129,6 +139,7 @@ export function BatchesQueue() {
   const [refreshing, setRefreshing] = React.useState(false)
   const [filter, setFilter] = React.useState<QueueFilter>("review")
   const [query, setQuery] = React.useState("")
+  const filterTouchedRef = React.useRef(false)
 
   const load = React.useCallback(async () => {
     setRefreshing(true)
@@ -138,7 +149,9 @@ export function BatchesQueue() {
       const rows: Record<string, any>[] = Array.isArray(response)
         ? response
         : response.jobs || response.history || response.items || response.data || []
-      setBatches(rows.map(toBatch).filter((batch): batch is Batch => batch !== null))
+      const nextBatches = rows.map(toBatch).filter((batch): batch is Batch => batch !== null)
+      setBatches(nextBatches)
+      if (!filterTouchedRef.current) setFilter(recommendedFilter(nextBatches))
     } catch (loadError: any) {
       setError(loadError?.detail || loadError?.message || "Could not load batches")
       setBatches([])
@@ -167,6 +180,10 @@ export function BatchesQueue() {
   }, [batches, filter, query])
 
   const isLoading = batches === null
+  const chooseFilter = (value: QueueFilter) => {
+    filterTouchedRef.current = true
+    setFilter(value)
+  }
 
   return (
     <div className="max-w-4xl space-y-4">
@@ -175,7 +192,7 @@ export function BatchesQueue() {
           aria-label="Filter batch register"
           size="sm"
           value={filter}
-          onValueChange={(value) => setFilter(value as QueueFilter)}
+          onValueChange={(value) => chooseFilter(value as QueueFilter)}
           tabs={[
             { value: "review", label: "Review", count: counts.review },
             { value: "active", label: "In progress", count: counts.active },
@@ -221,7 +238,24 @@ export function BatchesQueue() {
           <EmptyState
             icon={<Inbox />}
             title={query ? "No matching batches" : filter === "all" ? "No batches yet" : `No ${filter === "active" ? "batches in progress" : filter}`}
-            description={query ? "Clear the search or switch the register filter." : undefined}
+            action={query ? (
+              <InlineAction onClick={() => setQuery("")}>
+                <X className="size-3.5" />
+                Clear search
+              </InlineAction>
+            ) : batches.length ? (
+              <InlineAction onClick={() => chooseFilter(recommendedFilter(batches))}>
+                <ArrowRight className="size-3.5" />
+                Open next queue
+              </InlineAction>
+            ) : (
+              <Button asChild variant="glossy" size="sm">
+                <Link href="/dashboard/client#upload-files">
+                  <Upload className="size-3.5" />
+                  Upload
+                </Link>
+              </Button>
+            )}
             compact
           />
         ) : (

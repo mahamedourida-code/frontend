@@ -124,13 +124,17 @@ function companyPriority(company: CompanySummary) {
   return 3
 }
 
-function ActionLink({ company }: { company: CompanySummary }) {
+function companyAction(company: CompanySummary) {
   const encodedId = encodeURIComponent(company.id)
-  const action = company.needsReview > 0
+  return company.needsReview > 0
     ? { href: `/dashboard/client?company_id=${encodedId}`, label: "Review", icon: BookCheck }
     : company.bills > 0
       ? { href: `/dashboard/accounts-payable?company_id=${encodedId}`, label: "Open bills", icon: ReceiptText }
       : { href: `/dashboard/companies/${encodedId}`, label: "Open client", icon: Building2 }
+}
+
+function ActionLink({ company }: { company: CompanySummary }) {
+  const action = companyAction(company)
   const Icon = action.icon
 
   return (
@@ -369,29 +373,33 @@ export function CompaniesTable({
           ) : (
             <>
               <div className="divide-y divide-[var(--workspace-border)]">
-                {displayedCompanies.map((company) => (
-                  <Link
-                    key={company.id}
-                    href={`/dashboard/companies/${encodeURIComponent(company.id)}`}
-                    className="ax-interactive grid min-h-12 grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 px-3 py-2.5 outline-none hover:bg-[var(--workspace-row-hover)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--workspace-primary)]/25 sm:px-4"
-                  >
-                    <span className="flex min-w-0 items-center gap-3">
-                      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[var(--workspace-soft)]">
-                        <Building2 className="size-3.5 text-[var(--workspace-ink)]" />
-                      </span>
-                      <span className="min-w-0">
-                        <span className="ax-data-entity block truncate text-[13px] font-semibold">{company.name}</span>
-                        <span className="block truncate text-[10px] text-[var(--workspace-muted)]">
-                          {company.accountingConnected
-                            ? company.accountingProvider === "xero" ? "Xero" : "QuickBooks"
-                            : "Books not linked"}
+                {displayedCompanies.map((company) => {
+                  const action = companyAction(company)
+                  return (
+                    <Link
+                      key={company.id}
+                      href={action.href}
+                      aria-label={`${action.label}: ${company.name}`}
+                      className="ax-interactive grid min-h-12 grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 px-3 py-2.5 outline-none hover:bg-[var(--workspace-row-hover)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--workspace-primary)]/25 sm:px-4"
+                    >
+                      <span className="flex min-w-0 items-center gap-3">
+                        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[var(--workspace-soft)]">
+                          <Building2 className="size-3.5 text-[var(--workspace-ink)]" />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="ax-data-entity block truncate text-[13px] font-semibold">{company.name}</span>
+                          <span className="block truncate text-[10px] text-[var(--workspace-muted)]">
+                            {company.accountingConnected
+                              ? company.accountingProvider === "xero" ? "Xero" : "QuickBooks"
+                              : "Books not linked"}
+                          </span>
                         </span>
                       </span>
-                    </span>
-                    <HomeQueueState company={company} />
-                    <ChevronRight className="size-4 text-[var(--workspace-muted)]" />
-                  </Link>
-                ))}
+                      <HomeQueueState company={company} />
+                      <ChevronRight className="size-4 text-[var(--workspace-muted)]" />
+                    </Link>
+                  )
+                })}
               </div>
               {visibleCompanies.length > 5 ? (
                 <button
