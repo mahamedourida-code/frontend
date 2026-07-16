@@ -206,31 +206,45 @@
     --brand-brown-dark: var(--workspace-primary);
     --brand-brown-deep: var(--workspace-primary-hover);
     --brand-clay: var(--workspace-blue-soft);
-    --brand-clay-hover: #dbe8ff;
+    --brand-clay-hover: var(--workspace-blue-soft-hover);
     --brand-clay-fg: var(--workspace-primary);
-    --brand-clay-ring: #b9d0ff;
+    --brand-clay-ring: var(--workspace-selection-border);
     --button-warm: var(--workspace-soft);
-    --button-warm-hover: #eef2f8;
+    --button-warm-hover: var(--workspace-button-bg-hover);
     --button-warm-ring: var(--workspace-border);
     --btn-primary-bg: var(--workspace-cta);
     --btn-primary-bg-hover: var(--workspace-cta-hover);
-    --btn-primary-fg: #ffffff;
-    --btn-primary-fg-hover: #ffffff;
+    --btn-primary-fg: var(--workspace-icon-inverse);
+    --btn-primary-fg-hover: var(--workspace-icon-inverse);
     --btn-primary-border: var(--workspace-cta-border);
-    --btn-primary-border-hover: var(--workspace-cta-pressed);
-    --btn-secondary-bg: #ffffff;
+    --btn-primary-border-hover: var(--workspace-primary-hover);
+    --btn-secondary-bg: var(--workspace-button-bg);
     --btn-secondary-fg: var(--workspace-ink);
     --btn-secondary-border: var(--workspace-button-border);
-    --btn-secondary-bg-hover: var(--workspace-soft);
+    --btn-secondary-border-hover: var(--workspace-button-border-hover);
+    --btn-secondary-bg-hover: var(--workspace-button-bg-hover);
     --btn-secondary-fg-hover: var(--workspace-ink);
+    --btn-blue-bg: var(--workspace-primary);
+    --btn-blue-bg-hover: var(--workspace-primary-hover);
+    --btn-blue-bg-active: var(--workspace-cta-pressed);
+    --btn-blue-fg: var(--workspace-icon-inverse);
+    --btn-blue-border: var(--workspace-primary);
+    --btn-blue-border-hover: var(--workspace-primary-hover);
+    --btn-blue-border-active: var(--workspace-cta-pressed);
     --workspace-popout-bg: var(--workspace-soft);
     --workspace-popout-border: var(--workspace-border);
     --workspace-popout-hover: #ffffff;
     --workspace-selection-bg: var(--workspace-blue-soft);
-    --workspace-selection-border: #b9d0ff;
     --data-money: var(--workspace-ink);
-    --primary: var(--landing-blue);
-    --primary-foreground: #ffffff;
+    --primary: var(--workspace-primary);
+    --primary-foreground: var(--workspace-icon-inverse);
+    --status-success-bg: var(--workspace-blue-soft);
+    --status-success-fg: var(--workspace-primary-hover);
+    --chart-1: hsl(214 89% 52%);
+    --chart-2: hsl(214 78% 64%);
+    --chart-3: hsl(215 28% 42%);
+    --chart-4: hsl(212 32% 58%);
+    --chart-5: hsl(217 24% 76%);
   }
   .ax-dashboard-content p.text-muted-foreground,
   .ax-dashboard-content li.text-muted-foreground,
@@ -268,49 +282,61 @@
   .ax-dashboard-content .font-semibold { font-weight: 500; }
   .ax-dashboard-content .font-medium,
   .ax-dashboard-content .font-normal { font-weight: 400; }
-  body.ax-workspace svg {
-    color: #000000 !important;
-    stroke: #000000 !important;
-  }
-  body.ax-workspace svg[fill="currentColor"],
-  body.ax-workspace svg [fill="currentColor"] {
-    fill: #000000 !important;
-  }
-  body.ax-workspace svg[fill="none"],
-  body.ax-workspace svg [fill="none"] {
-    fill: none !important;
-  }
   body.ax-workspace {
-    --btn-primary-bg: var(--workspace-cta);
-    --btn-primary-bg-hover: var(--workspace-cta-hover);
-    --btn-primary-fg: #ffffff;
-    --btn-primary-fg-hover: #ffffff;
-    --btn-primary-border: var(--workspace-cta-border);
-    --btn-primary-border-hover: var(--workspace-cta-pressed);
+    --btn-primary-bg: var(--workspace-primary);
+    --btn-primary-bg-hover: var(--workspace-primary-hover);
+    --btn-primary-fg: var(--workspace-icon-inverse);
+    --btn-primary-fg-hover: var(--workspace-icon-inverse);
+    --btn-primary-border: var(--workspace-primary);
+    --btn-primary-border-hover: var(--workspace-primary-hover);
+    --btn-secondary-bg: var(--workspace-button-bg);
+    --btn-secondary-fg: var(--workspace-ink);
+    --btn-secondary-border: var(--workspace-button-border);
+    --btn-secondary-border-hover: var(--workspace-button-border-hover);
+    --btn-secondary-bg-hover: var(--workspace-button-bg-hover);
+    --btn-secondary-fg-hover: var(--workspace-ink);
+    --btn-blue-bg: var(--workspace-primary);
+    --btn-blue-bg-hover: var(--workspace-primary-hover);
+    --btn-blue-bg-active: var(--workspace-cta-pressed);
+    --btn-blue-fg: var(--workspace-icon-inverse);
+    --btn-blue-border: var(--workspace-primary);
+    --btn-blue-border-hover: var(--workspace-primary-hover);
+    --btn-blue-border-active: var(--workspace-cta-pressed);
+    --status-success-bg: var(--workspace-blue-soft);
+    --status-success-fg: var(--workspace-primary-hover);
+    --chart-1: hsl(214 89% 52%);
+    --chart-2: hsl(214 78% 64%);
+    --chart-3: hsl(215 28% 42%);
+    --chart-4: hsl(212 32% 58%);
+    --chart-5: hsl(217 24% 76%);
   }
   body.ax-workspace [data-slot="button"] svg {
     color: currentColor !important;
     stroke: currentColor !important;
   }
   body.ax-workspace .ax-workspace-header svg {
-    color: #ffffff !important;
-    stroke: #ffffff !important;
+    color: var(--workspace-icon-inverse) !important;
+    stroke: var(--workspace-icon-inverse) !important;
   }
   body.ax-workspace .ax-workspace-sidebar-head svg {
-    color: #ffffff !important;
-    stroke: #ffffff !important;
+    color: var(--workspace-icon-inverse) !important;
+    stroke: var(--workspace-icon-inverse) !important;
   }
-  body.ax-workspace .ax-workspace-header [data-variant="glossy"] svg {
-    color: currentColor !important;
-    stroke: currentColor !important;
+  body.ax-workspace .ax-icon {
+    color: var(--workspace-icon) !important;
+    stroke: var(--workspace-icon) !important;
+  }
+  body.ax-workspace .ax-icon-muted {
+    color: var(--workspace-icon-muted) !important;
+    stroke: var(--workspace-icon-muted) !important;
   }
   body.ax-workspace .ax-blue-icon {
-    color: #1877f2 !important;
-    stroke: #1877f2 !important;
+    color: var(--workspace-icon-action) !important;
+    stroke: var(--workspace-icon-action) !important;
   }
   body.ax-workspace .ax-on-blue-icon {
-    color: #ffffff !important;
-    stroke: #ffffff !important;
+    color: var(--workspace-icon-inverse) !important;
+    stroke: var(--workspace-icon-inverse) !important;
   }
 
   /* Workspace text colour grammar: colour data and state, never ordinary prose. */
@@ -466,55 +492,103 @@
     font-weight: 500;
     color: var(--workspace-ink);
   }
-  .ax-dashboard-content [data-slot="button"] {
-    border-radius: 9999px !important;
+  :is(body.ax-workspace, .ax-dashboard-content) [data-slot="button"] {
+    border-radius: var(--workspace-control-radius) !important;
     font-weight: 600 !important;
     text-decoration: none !important;
+    box-shadow: none !important;
+    translate: 0 0 !important;
+    transition-property: color, background-color, border-color, opacity, scale !important;
   }
-  .ax-dashboard-content [data-slot="button"][data-variant="glossy"],
-  .ax-dashboard-content [data-slot="button"][data-variant="critical"],
-  .ax-dashboard-content [data-slot="button"][data-variant="warm"],
-  .ax-dashboard-content [data-slot="button"][data-variant="clay"] {
-    border-color: var(--workspace-cta-border) !important;
-    background: var(--workspace-cta) !important;
-    color: #ffffff !important;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.24), 0 0 0 1px var(--workspace-cta-border), 0 2px 4px rgba(15,23,42,0.18) !important;
+  :is(body.ax-workspace, .ax-dashboard-content) [data-slot="button"]:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--workspace-primary) 46%, transparent) !important;
+    outline-offset: 2px !important;
   }
-  .ax-dashboard-content [data-slot="button"][data-variant="glossy"]:hover,
-  .ax-dashboard-content [data-slot="button"][data-variant="critical"]:hover,
-  .ax-dashboard-content [data-slot="button"][data-variant="warm"]:hover,
-  .ax-dashboard-content [data-slot="button"][data-variant="clay"]:hover {
-    background: var(--workspace-cta-hover) !important;
+  :is(body.ax-workspace, .ax-dashboard-content) [data-slot="button"]:active:not(:disabled) {
+    scale: 0.97;
   }
-  .ax-dashboard-content [data-slot="button"][data-variant="glossy"]:active,
-  .ax-dashboard-content [data-slot="button"][data-variant="critical"]:active,
-  .ax-dashboard-content [data-slot="button"][data-variant="warm"]:active,
-  .ax-dashboard-content [data-slot="button"][data-variant="clay"]:active {
+  :is(body.ax-workspace, .ax-dashboard-content) [data-slot="button"]:is(
+    [data-variant="glossy"],
+    [data-variant="critical"],
+    [data-variant="warm"],
+    [data-variant="clay"],
+    [data-variant="ink"],
+    [data-variant="lime"],
+    [data-variant="reviewed"],
+    [data-variant="blue"]
+  ) {
+    border-color: var(--workspace-primary) !important;
+    background: var(--workspace-primary) !important;
+    background-image: none !important;
+    color: var(--workspace-icon-inverse) !important;
+  }
+  :is(body.ax-workspace, .ax-dashboard-content) [data-slot="button"]:is(
+    [data-variant="glossy"],
+    [data-variant="critical"],
+    [data-variant="warm"],
+    [data-variant="clay"],
+    [data-variant="ink"],
+    [data-variant="lime"],
+    [data-variant="reviewed"],
+    [data-variant="blue"]
+  ):hover {
+    border-color: var(--workspace-primary-hover) !important;
+    background: var(--workspace-primary-hover) !important;
+  }
+  :is(body.ax-workspace, .ax-dashboard-content) [data-slot="button"]:is(
+    [data-variant="glossy"],
+    [data-variant="critical"],
+    [data-variant="warm"],
+    [data-variant="clay"],
+    [data-variant="ink"],
+    [data-variant="lime"],
+    [data-variant="reviewed"],
+    [data-variant="blue"]
+  ):active {
+    border-color: var(--workspace-cta-pressed) !important;
     background: var(--workspace-cta-pressed) !important;
-    box-shadow: inset 0 2px 3px rgba(15,23,42,0.24), 0 0 0 1px var(--workspace-cta-pressed) !important;
   }
-  .ax-dashboard-content [data-slot="button"][data-variant="lime"] {
-    border-color: rgba(255,255,255,0.42) !important;
-    background-color: #171717 !important;
-    background-image: url("/buto.png") !important;
-    background-position: center !important;
-    background-size: cover !important;
-    color: #ffffff !important;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 0 0 1px rgba(15,23,42,0.38), 0 2px 4px rgba(15,23,42,0.2) !important;
-  }
-  .ax-dashboard-content [data-slot="button"][data-variant="ink"],
-  .ax-dashboard-content [data-slot="button"][data-variant="reviewed"] {
-    border-color: #0a0a0a !important;
-    background: #171717 !important;
-    color: #ffffff !important;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 0 0 1px #0a0a0a, 0 1px 3px rgba(0,0,0,0.22) !important;
-  }
-  .ax-dashboard-content [data-slot="button"][data-variant="default"],
-  .ax-dashboard-content [data-slot="button"][data-variant="outline"],
-  .ax-dashboard-content [data-slot="button"][data-variant="surface"] {
+  :is(body.ax-workspace, .ax-dashboard-content) [data-slot="button"]:is(
+    [data-variant="default"],
+    [data-variant="outline"],
+    [data-variant="surface"],
+    [data-variant="secondary"],
+    [data-variant="purple"]
+  ) {
     border-color: var(--workspace-button-border) !important;
-    background: #ffffff !important;
+    background: var(--workspace-button-bg) !important;
     color: var(--workspace-ink) !important;
+  }
+  :is(body.ax-workspace, .ax-dashboard-content) [data-slot="button"]:is(
+    [data-variant="default"],
+    [data-variant="outline"],
+    [data-variant="surface"],
+    [data-variant="secondary"],
+    [data-variant="purple"]
+  ):hover {
+    border-color: var(--workspace-button-border-hover) !important;
+    background: var(--workspace-button-bg-hover) !important;
+    color: var(--workspace-ink) !important;
+  }
+  :is(body.ax-workspace, .ax-dashboard-content) [data-slot="button"][data-variant="destructive"] {
+    border-color: var(--workspace-danger) !important;
+    background: var(--workspace-danger) !important;
+    color: var(--workspace-icon-inverse) !important;
+  }
+  :is(body.ax-workspace, .ax-dashboard-content) [data-slot="button"][data-variant="destructive"]:hover {
+    border-color: var(--workspace-danger-hover) !important;
+    background: var(--workspace-danger-hover) !important;
+    color: var(--workspace-icon-inverse) !important;
+  }
+  :is(body.ax-workspace, .ax-dashboard-content) [data-slot="button"][data-variant="dangerOutline"] {
+    border-color: var(--workspace-danger) !important;
+    background: var(--workspace-button-bg) !important;
+    color: var(--workspace-danger) !important;
+  }
+  :is(body.ax-workspace, .ax-dashboard-content) [data-slot="button"][data-variant="dangerOutline"]:hover {
+    border-color: var(--workspace-danger-hover) !important;
+    background: var(--workspace-danger-soft) !important;
+    color: var(--workspace-danger-hover) !important;
   }
   /* Section vertical rhythm — 80px mobile / 112px desktop */
   .ax-section {
@@ -543,7 +617,7 @@
      when a returning user has chosen the compact rail. */
   @media (min-width: 768px) {
     .ax-dashboard-content {
-      margin-left: var(--sidebar-w, 224px);
+      margin-left: var(--sidebar-w, 208px);
       transition: margin-left 150ms cubic-bezier(0.23, 1, 0.32, 1);
     }
   }
@@ -601,6 +675,9 @@
     .ax-interactive:active {
       transform: none;
     }
+    :is(body.ax-workspace, .ax-dashboard-content) [data-slot="button"]:active {
+      scale: 1;
+    }
   }
 
   /* Gradient text */
@@ -625,7 +702,7 @@
   }
 
   .ax-workspace-header {
-    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.12), 0 5px 14px rgba(15, 23, 42, 0.06);
+    box-shadow: none;
   }
 
   .ax-page-bg::before {
@@ -703,8 +780,8 @@
   --brand-green-hover: #a7f3d0;
   --brand-green-fg: #064e3b;
   --brand-green-ring: #10b981;
-  --brand-link: #1877F2;
-  --brand-link-hover: #0b5fcc;
+  --brand-link: var(--landing-blue);
+  --brand-link-hover: var(--landing-blue-hover);
   /* Devin-matched bright accent blue for landing-page heading accents + links. */
   --landing-blue: #317cff;
   --landing-blue-hover: #1f63e0;
@@ -712,18 +789,21 @@
   --workspace-topbar-hover: #2d485f;
   --workspace-topbar-border: #334f67;
   --workspace-sidebar: #f6f7f5;
-  --workspace-sidebar-active: #0a0a0a;
+  --workspace-sidebar-active: #111827;
   --workspace-primary: var(--landing-blue);
   --workspace-primary-hover: var(--landing-blue-hover);
-  --workspace-cta: #1877f2;
-  --workspace-cta-hover: #166fe5;
-  --workspace-cta-pressed: #145dbf;
-  --workspace-cta-border: #1264d8;
+  --workspace-indicator: #8bb8ff;
+  --workspace-cta: var(--workspace-primary);
+  --workspace-cta-hover: var(--workspace-primary-hover);
+  --workspace-cta-pressed: #174fbe;
+  --workspace-cta-border: var(--workspace-primary);
   --workspace-blue-soft: #edf4ff;
-  --workspace-success: #16a34a;
-  --workspace-success-hover: #15803d;
-  --workspace-danger: #dc2626;
-  --workspace-danger-hover: #b91c1c;
+  --workspace-blue-soft-hover: #dbeafe;
+  --workspace-success: var(--workspace-primary);
+  --workspace-success-hover: var(--workspace-primary-hover);
+  --workspace-danger: #d92d20;
+  --workspace-danger-hover: #b42318;
+  --workspace-danger-soft: #fef3f2;
   --workspace-warning: #d97706;
   --workspace-warning-hover: #b45309;
   --workspace-purple: #7c3aed;
@@ -736,22 +816,30 @@
   --data-reference: #7c3aed;  /* violet — reference & document numbers (invoice no., ref) */
   --data-date: #0e7490;       /* cyan — dates (issue / statement / period) */
   --data-due: #b45309;        /* amber — due dates & deadlines (time-sensitive) */
-  --data-money: #047857;      /* emerald — amounts, totals, balances (money) */
+  --data-money: #111827;
   --text-action: var(--workspace-blue);
   --text-working: #1d4ed8;
-  --text-success: #15803d;
+  --text-success: #1d4ed8;
   --text-attention: #b45309;
   --text-danger: #b42318;
   --text-review: #6d28d9;
-  --text-tax: #0f766e;
+  --text-tax: #1d4ed8;
   /* Default text-button / link blue — the utility colour (Refresh, Sync, View…). */
-  --workspace-blue: var(--landing-blue);
-  --workspace-blue-hover: var(--landing-blue-hover);
+  --workspace-blue: var(--workspace-primary);
+  --workspace-blue-hover: var(--workspace-primary-hover);
   --workspace-ink: #111827;
   --workspace-muted: #475467;
   --workspace-soft: #f7f8fc;
   --workspace-border: #e4e7ef;
+  --workspace-button-bg: #ffffff;
+  --workspace-button-bg-hover: #f8fafc;
   --workspace-button-border: #d0d5dd;
+  --workspace-button-border-hover: #98a2b3;
+  --workspace-control-radius: 8px;
+  --workspace-icon: #344054;
+  --workspace-icon-muted: #667085;
+  --workspace-icon-action: var(--workspace-primary);
+  --workspace-icon-inverse: #ffffff;
   --workspace-row-hover: #f7f8fc;
   --workspace-table-header: #f6f7fb;
   --workspace-table-head: #475467;
@@ -765,8 +853,7 @@
   --workspace-selection-bg: #eff6ff;
   --workspace-selection-border: #bfdbfe;
   --button-ink: #171717;
-  /* Light clay is reserved for special actions such as Upgrade. It stays
-     quieter than the primary mint while keeping a clear brown definition. */
+  /* Light clay remains available to public supporting actions. */
   --brand-clay: #eadcc8;
   --brand-clay-hover: #dfccb2;
   --brand-clay-fg: #2f2418;
@@ -777,11 +864,8 @@
   --button-surface: #f4f5f5;
   --button-surface-hover: #e7e9e8;
   --button-surface-ring: #cbd1ce;
-  /* Button system — Devin-style monochrome on the marketing site: black
-     primary, white thin-border secondary that inverts to black on hover. The
-     workspace (.ax-dashboard-content) overrides these to a Facebook-blue
-     primary + black secondary. Defined in :root only so site buttons never
-     theme-flip. */
+  /* Marketing stays monochrome. Authenticated workspace surfaces override
+     these tokens with flat blue, neutral, and danger controls. */
   --btn-primary-bg: #0a0a0a;
   --btn-primary-bg-hover: #ffffff;
   --btn-primary-fg: #ffffff;
@@ -791,8 +875,16 @@
   --btn-secondary-bg: #ffffff;
   --btn-secondary-fg: #0a0a0a;
   --btn-secondary-border: #0a0a0a;
+  --btn-secondary-border-hover: #0a0a0a;
   --btn-secondary-bg-hover: #0a0a0a;
   --btn-secondary-fg-hover: #ffffff;
+  --btn-blue-bg: var(--landing-blue);
+  --btn-blue-bg-hover: var(--landing-blue-hover);
+  --btn-blue-bg-active: #174fbe;
+  --btn-blue-fg: #ffffff;
+  --btn-blue-border: var(--landing-blue);
+  --btn-blue-border-hover: var(--landing-blue-hover);
+  --btn-blue-border-active: #174fbe;
   /* Soft new brown — used only for the cycling-word text animations. */
   --soft-brown: #b8997a;
   --ax-marketing-page: #ffffff;

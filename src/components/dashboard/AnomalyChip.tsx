@@ -14,26 +14,29 @@ import { cn } from "@/lib/utils"
  * instance carries a one-line, plain-English `reason` shown on hover/focus —
  * the chip never relies on a bare colour to convey meaning.
  *
- * Tone maps to the brand's three-state palette:
- *   good    → emerald   (clean / high confidence)
- *   caution → amber     (review recommended)
- *   risk    → rose      (flagged / verify before use)
+ * Tone maps to the workspace state palette:
+ *   good    -> AxLiner blue (clean / high confidence)
+ *   caution -> amber (review recommended)
+ *   risk    -> red (flagged / verify before use)
  *
  * Reason strings live in `@/lib/anomaly-reasons` so the language is centralized.
  */
 
 export type AnomalyTone = "good" | "caution" | "risk"
 
-const TONE_DOT: Record<AnomalyTone, string> = {
-  good: "bg-emerald-500",
-  caution: "bg-amber-400",
-  risk: "bg-rose-500",
+export const anomalyDotClasses: Record<AnomalyTone, string> = {
+  good: "bg-[var(--workspace-primary)]",
+  caution: "bg-[var(--workspace-warning)]",
+  risk: "bg-[var(--workspace-danger)]",
 }
 
-const TONE_PILL: Record<AnomalyTone, string> = {
-  good: "border-emerald-200 bg-emerald-50 text-emerald-900",
-  caution: "border-amber-200 bg-amber-50 text-amber-900",
-  risk: "border-rose-200 bg-rose-50 text-rose-900",
+export const anomalyToneClasses: Record<AnomalyTone, string> = {
+  good:
+    "border-[color-mix(in_srgb,var(--workspace-primary)_28%,transparent)] bg-[color-mix(in_srgb,var(--workspace-primary)_7%,white)] text-[var(--workspace-primary-hover)]",
+  caution:
+    "border-[color-mix(in_srgb,var(--workspace-warning)_32%,transparent)] bg-[color-mix(in_srgb,var(--workspace-warning)_8%,white)] text-[var(--workspace-warning-hover)]",
+  risk:
+    "border-[color-mix(in_srgb,var(--workspace-danger)_30%,transparent)] bg-[color-mix(in_srgb,var(--workspace-danger)_7%,white)] text-[var(--workspace-danger)]",
 }
 
 type CommonProps = {
@@ -92,7 +95,7 @@ export function AnomalyDot({
           style={{ width: size, height: size }}
           className={cn(
             "inline-block shrink-0 rounded-full",
-            TONE_DOT[tone],
+            anomalyDotClasses[tone],
             withRing && "ring-2 ring-background",
             className,
           )}
@@ -120,7 +123,7 @@ export function AnomalyChip({
         type="button"
         className={cn(
           "inline-flex h-6 cursor-help items-center rounded-full border px-2.5 text-xs font-medium leading-none whitespace-nowrap",
-          TONE_PILL[tone],
+          anomalyToneClasses[tone],
           className,
         )}
       >

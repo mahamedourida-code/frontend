@@ -30,8 +30,9 @@ function PageHeader({
 }: PageHeaderProps) {
   return (
     <div
+      data-slot="page-header"
       className={cn(
-        "mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between",
+        "mb-5 grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start",
         compact && "mb-4 gap-2.5",
         stickyActions && Boolean(actions) && "sticky top-14 z-30 -mx-4 border-b border-[var(--workspace-border)] bg-white/[0.96] px-4 py-3 backdrop-blur-md sm:-mx-5 sm:px-5 lg:-mx-7 lg:px-7 xl:-mx-8 xl:px-8",
         className,
@@ -62,7 +63,13 @@ function PageHeader({
         ) : null}
       </div>
       {actions ? (
-        <div className={cn("flex flex-wrap items-center gap-2 sm:shrink-0 sm:pt-0.5", actionsClassName)}>
+        <div
+          data-slot="page-header-actions"
+          className={cn(
+            "flex max-w-full flex-wrap items-center justify-end gap-1.5 justify-self-end [&_[data-slot=button]]:h-8 [&_[data-slot=button]]:px-3 [&_[data-slot=button]]:text-[13px] [&_svg]:size-4 sm:flex-nowrap sm:pt-0.5",
+            actionsClassName,
+          )}
+        >
           {actions}
         </div>
       ) : null}

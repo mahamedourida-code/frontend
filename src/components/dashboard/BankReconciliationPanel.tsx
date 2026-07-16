@@ -98,8 +98,8 @@ export function BankReconciliationPanel({ data, className }: BankReconciliationP
 
   const headerTone = {
     balanced:
-      "border-emerald-200 bg-emerald-50 text-emerald-900",
-    off: "border-amber-200 bg-amber-50 text-amber-900",
+      "border-[color-mix(in_srgb,var(--workspace-primary)_28%,transparent)] bg-[color-mix(in_srgb,var(--workspace-primary)_7%,white)] text-[var(--workspace-primary-hover)]",
+    off: "border-[color-mix(in_srgb,var(--workspace-warning)_32%,transparent)] bg-[color-mix(in_srgb,var(--workspace-warning)_8%,white)] text-[var(--workspace-warning-hover)]",
     info: "border-border bg-muted/40 text-foreground",
   }[headerCopy.tone]
 
@@ -121,8 +121,8 @@ export function BankReconciliationPanel({ data, className }: BankReconciliationP
           <span
             className={cn(
               "inline-flex size-7 items-center justify-center rounded-full",
-              headerCopy.tone === "balanced" && "bg-emerald-500 text-white",
-              headerCopy.tone === "off" && "bg-amber-500 text-white",
+              headerCopy.tone === "balanced" && "bg-[var(--workspace-primary)] text-white",
+              headerCopy.tone === "off" && "bg-[var(--workspace-warning)] text-white",
               headerCopy.tone === "info" && "bg-muted text-muted-foreground",
             )}
           >
@@ -173,8 +173,8 @@ export function BankReconciliationPanel({ data, className }: BankReconciliationP
               className={cn(
                 "mt-1 truncate font-mono text-sm tabular-nums",
                 cell.emphasis ? "font-bold" : "font-semibold",
-                cell.tone === "positive" && "text-emerald-700",
-                cell.tone === "negative" && "text-amber-700",
+                cell.tone === "positive" && "text-[var(--workspace-primary-hover)]",
+                cell.tone === "negative" && "text-[var(--workspace-warning-hover)]",
                 (cell.tone === "default" || !cell.tone) && "text-gray-900",
               )}
               title={cell.value}

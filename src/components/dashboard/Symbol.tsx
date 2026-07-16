@@ -63,16 +63,22 @@ type SymbolTone =
   | "teal"
   | "slate"
 
+const PRIMARY_TONE =
+  "border-[color-mix(in_srgb,var(--workspace-primary)_24%,transparent)] bg-[color-mix(in_srgb,var(--workspace-primary)_7%,white)] text-[var(--workspace-icon-action)]"
+
 const toneClasses: Record<SymbolTone, string> = {
-  emerald: "border-emerald-200 bg-emerald-50 text-black",
-  sky: "border-sky-200 bg-sky-50 text-black",
-  violet: "border-violet-200 bg-violet-50 text-black",
-  amber: "border-amber-200 bg-amber-50 text-black",
-  rose: "border-rose-200 bg-rose-50 text-black",
-  cyan: "border-cyan-200 bg-cyan-50 text-black",
-  indigo: "border-indigo-200 bg-indigo-50 text-black",
-  teal: "border-teal-200 bg-teal-50 text-black",
-  slate: "border-slate-200 bg-slate-50 text-black",
+  emerald: PRIMARY_TONE,
+  sky: PRIMARY_TONE,
+  violet: PRIMARY_TONE,
+  amber:
+    "border-[color-mix(in_srgb,var(--workspace-warning)_30%,transparent)] bg-[color-mix(in_srgb,var(--workspace-warning)_8%,white)] text-[var(--workspace-warning-hover)]",
+  rose:
+    "border-[color-mix(in_srgb,var(--workspace-danger)_28%,transparent)] bg-[color-mix(in_srgb,var(--workspace-danger)_7%,white)] text-[var(--workspace-danger)]",
+  cyan: PRIMARY_TONE,
+  indigo: PRIMARY_TONE,
+  teal: PRIMARY_TONE,
+  slate:
+    "border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-[var(--workspace-icon)]",
 }
 
 type SymbolMeta = {
@@ -215,7 +221,7 @@ export function Symbol({ name, size = "medium", className, alt = "" }: SymbolPro
         className,
       )}
     >
-      <Icon className="size-[56%] text-black" strokeWidth={2.1} aria-hidden="true" />
+      <Icon className="size-[56%]" strokeWidth={2.1} aria-hidden="true" />
     </span>
   )
 }

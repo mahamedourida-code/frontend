@@ -58,7 +58,7 @@ function StatusBadge({ tone, children, icon, showIcon = true, size = "md", class
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border font-semibold leading-none whitespace-nowrap shadow-[inset_0_1px_0_rgba(255,255,255,0.62)]",
+        "inline-flex items-center rounded-full border font-semibold leading-none whitespace-nowrap shadow-none",
         sizeClasses[size],
         toneClasses[tone],
         className,

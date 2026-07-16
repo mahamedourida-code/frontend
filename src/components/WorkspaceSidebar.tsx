@@ -17,7 +17,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
-import { AxMark } from "@/components/AppIcon"
+import { AppLogo, AxMark } from "@/components/AppIcon"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import { useCurrentHash } from "@/hooks/useCurrentHash"
 import { cn } from "@/lib/utils"
@@ -175,7 +175,15 @@ export function WorkspaceSidebar({
           <span className="absolute left-1.5 top-1/2 h-3.5 w-0.5 -translate-y-1/2 rounded-full bg-[var(--workspace-primary)]" />
         ) : null}
         <span className="relative flex shrink-0 items-center justify-center">
-          <Icon className="size-[17px] text-black" />
+          <Icon
+            className={cn(
+              "size-[17px]",
+              isActive
+                ? "text-[var(--workspace-icon-action)]"
+                : "text-[var(--workspace-icon)]",
+            )}
+            strokeWidth={isActive ? 2 : 1.8}
+          />
           {showDot ? (
             <span className="absolute -right-1 -top-1 size-1.5 rounded-full bg-[var(--workspace-warning)] ring-2 ring-[var(--workspace-sidebar)]" />
           ) : null}
@@ -206,19 +214,22 @@ export function WorkspaceSidebar({
           href="/dashboard"
           aria-label="AxLiner workspace"
           className={cn(
-            "ax-interactive flex min-w-0 items-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-white/30",
-            collapsed ? "size-9 justify-center" : "flex-1 gap-2 px-1",
+            "ax-interactive flex min-w-0 items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-white/30",
+            collapsed ? "size-9 justify-center" : "flex-1 px-1",
           )}
         >
-          <AxMark className="h-8 w-auto shrink-0" />
-          {!collapsed ? <span className="truncate text-[17px] font-semibold">AxLiner</span> : null}
+          {collapsed ? (
+            <AxMark tone="light" className="h-7 w-auto shrink-0" />
+          ) : (
+            <AppLogo tone="light" className="h-6 w-auto max-w-[112px] shrink-0" />
+          )}
         </Link>
         {!collapsed ? (
           <button
             type="button"
             onClick={() => setCollapsed(true)}
             aria-label="Collapse navigation"
-            className="ax-interactive flex size-8 items-center justify-center rounded-full text-white/70 hover:bg-white/10 hover:text-white"
+            className="ax-interactive flex size-8 items-center justify-center rounded-md text-white/70 hover:bg-white/10 hover:text-white"
           >
             <PanelLeftClose className="size-4" />
           </button>
@@ -232,7 +243,7 @@ export function WorkspaceSidebar({
             onClick={() => setCollapsed(false)}
             aria-label="Expand navigation"
             title="Expand navigation"
-            className="ax-interactive mb-2 flex h-9 items-center justify-center rounded-md text-[var(--workspace-muted)] hover:bg-white hover:text-[var(--workspace-ink)]"
+            className="ax-interactive mb-2 flex h-9 items-center justify-center rounded-md text-[var(--workspace-icon)] hover:bg-white hover:text-[var(--workspace-ink)]"
           >
             <PanelLeftOpen className="size-[17px]" />
           </button>

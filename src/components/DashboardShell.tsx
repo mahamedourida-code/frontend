@@ -30,8 +30,6 @@ type DashboardShellProps = {
   showBack?: boolean
 }
 
-const paidPlans = new Set(["pro", "max", "mega", "business", "enterprise"])
-
 function formatPlan(plan?: string | null) {
   if (!plan) return "Free"
   if (plan === "pro") return "Standard"
@@ -111,7 +109,6 @@ export function DashboardShell({
 
   const availableCredits = credits?.available_credits ?? billingStatus?.credits?.available_credits ?? null
   const plan = billingStatus?.plan || "free"
-  const isPaid = paidPlans.has(plan)
 
   const activeJob = useMemo(() => {
     if (processingState.status === "processing") {
@@ -170,7 +167,7 @@ export function DashboardShell({
                     size="icon"
                     onClick={() => router.back()}
                     aria-label="Go back"
-                    className="size-9 text-white/80 hover:bg-white/10 hover:text-white [&_svg]:text-white"
+                    className="size-9 border-transparent bg-transparent text-white/80 hover:border-transparent hover:bg-white/10 hover:text-white [&_svg]:text-white"
                   >
                     <ChevronLeft className="size-[18px]" />
                   </Button>
@@ -192,7 +189,7 @@ export function DashboardShell({
                     type="button"
                     onClick={() => setCmdOpen(true)}
                     aria-label="Search workspace"
-                    className="ax-interactive inline-flex size-9 items-center justify-center rounded-full text-white/84 hover:bg-white/10 hover:text-white"
+                    className="ax-interactive inline-flex size-9 items-center justify-center rounded-md text-white/84 hover:bg-white/10 hover:text-white"
                   >
                     <Search className="size-[18px]" />
                   </button>
@@ -206,12 +203,12 @@ export function DashboardShell({
                     <Link
                       href={activeJob.href}
                       aria-label={`${activeJob.label}, ${activeJob.progress}`}
-                      className="ax-interactive relative hidden size-9 items-center justify-center rounded-full text-white/84 hover:bg-white/10 hover:text-white lg:inline-flex"
+                      className="ax-interactive relative hidden size-9 items-center justify-center rounded-md text-white/84 hover:bg-white/10 hover:text-white lg:inline-flex"
                     >
                       {activeJob.ready ? <Clock3 className="size-[17px]" /> : <Loader2 className="size-[17px] animate-spin" />}
                       <span
                         aria-hidden="true"
-                        className="absolute right-1 top-1 size-1.5 rounded-full bg-[#74a7ff] ring-2 ring-[var(--workspace-topbar)]"
+                        className="absolute right-1 top-1 size-1.5 rounded-full bg-[var(--workspace-indicator)] ring-2 ring-[var(--workspace-topbar)]"
                       />
                     </Link>
                   </TooltipTrigger>
@@ -235,12 +232,6 @@ export function DashboardShell({
               </Button>
 
               <NotificationsBell />
-
-              {!isPaid ? (
-                <Button asChild variant="lime" size="sm" className="hidden h-9 px-4 sm:inline-flex">
-                  <Link href="/pricing">Upgrade</Link>
-                </Button>
-              ) : null}
 
               <AccountMenu
                 user={user}

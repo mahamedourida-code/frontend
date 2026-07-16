@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import { AnomalyDot } from "@/components/dashboard/AnomalyChip"
+import { AnomalyDot, anomalyDotClasses } from "@/components/dashboard/AnomalyChip"
 import { confidenceCopy } from "@/lib/anomaly-reasons"
 import { CONFIDENCE_TIER_LABEL, type ConfidenceTier } from "@/lib/handwritten"
 import { cn } from "@/lib/utils"
@@ -18,9 +18,9 @@ type ConfidenceDotProps = {
 }
 
 const TIER_COLOR: Record<ConfidenceTier, string> = {
-  high: "bg-emerald-500",
-  medium: "bg-amber-400",
-  low: "bg-rose-500",
+  high: anomalyDotClasses.good,
+  medium: anomalyDotClasses.caution,
+  low: anomalyDotClasses.risk,
 }
 
 const TIER_SHORT: Record<ConfidenceTier, string> = {

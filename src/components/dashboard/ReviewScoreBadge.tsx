@@ -3,7 +3,7 @@
 import * as React from "react"
 import { motion } from "framer-motion"
 
-import { AnomalyChip, type AnomalyTone } from "@/components/dashboard/AnomalyChip"
+import { AnomalyChip, anomalyToneClasses } from "@/components/dashboard/AnomalyChip"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import type { ReviewScore } from "@/lib/review-score"
 import { cn } from "@/lib/utils"
@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
 /**
  * AxLiner Review Score badge (C1) — a small High / Review / Flagged pill that
  * sits on every AP/review item. It builds directly on the C7 `AnomalyChip`
- * tone palette (emerald / amber / rose), so the composite indicator reads in
+ * tone palette (AxLiner blue / amber / red), so the composite indicator reads in
  * the same calm three-state language as the individual anomaly chips.
  *
  * When the score has contributing signals, the badge becomes a popover trigger
@@ -52,7 +52,7 @@ export function ReviewScoreBadge({
           aria-label={`Review score: ${score.label}. ${score.signals.length} signal${score.signals.length === 1 ? "" : "s"} — why this needs review`}
           className={cn(
             "ax-interactive inline-flex h-5 cursor-pointer items-center gap-1.5 rounded-full border px-2.5 text-xs font-medium leading-none whitespace-nowrap",
-            TONE_PILL[score.tone],
+            anomalyToneClasses[score.tone],
             className,
           )}
         >
@@ -91,10 +91,4 @@ export function ReviewScoreBadge({
       </PopoverContent>
     </Popover>
   )
-}
-
-const TONE_PILL: Record<AnomalyTone, string> = {
-  good: "border-emerald-200 bg-emerald-50 text-emerald-900",
-  caution: "border-amber-200 bg-amber-50 text-amber-900",
-  risk: "border-rose-200 bg-rose-50 text-rose-900",
 }
