@@ -45,9 +45,10 @@ export default function DashboardPage() {
   }, [])
 
   useEffect(() => {
-    if (!user) return
+    if (!user || !activeWorkspace?.id) return
     let mounted = true
-    ocrApi.getDashboard("30d")
+    setActivity([])
+    ocrApi.getDashboard("30d", activeWorkspace.id)
       .then((summary) => {
         if (!mounted) return
         setActivity(summary.chart.map((point) => ({
@@ -60,7 +61,7 @@ export default function DashboardPage() {
     return () => {
       mounted = false
     }
-  }, [user?.id])
+  }, [user?.id, activeWorkspace?.id])
 
   if (loading || !user) {
     return <DashboardRouteLoader label="Loading workspace" />
@@ -93,6 +94,7 @@ export default function DashboardPage() {
         <WorkspaceOverview companies={companies} activity={activity} />
         <CompaniesTable
           workspaceId={activeWorkspace?.id}
+          canManage={activeWorkspace?.role === "owner"}
           refreshKey={clientsRefreshKey}
           onCompanyCountChange={handleCompanyCountChange}
           onCompaniesLoaded={setCompanies}

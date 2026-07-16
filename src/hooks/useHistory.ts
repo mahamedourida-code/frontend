@@ -26,7 +26,7 @@ interface UseHistoryReturn {
   total: number
 }
 
-export function useHistory(): UseHistoryReturn {
+export function useHistory(workspaceId?: string, enabled = true): UseHistoryReturn {
   const [jobs, setJobs] = useState<HistoryJob[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -34,11 +34,19 @@ export function useHistory(): UseHistoryReturn {
   const [total, setTotal] = useState(0)
 
   const fetchHistory = useCallback(async () => {
+    if (!enabled) {
+      setJobs([])
+      setIsLoading(false)
+      setError(null)
+      setHasMore(false)
+      setTotal(0)
+      return
+    }
     setIsLoading(true)
     setError(null)
 
     try {
-      const response = await ocrApi.getHistory(50, 0)
+      const response = await ocrApi.getHistory(50, 0, workspaceId)
       const historyJobs = Array.isArray(response)
         ? response
         : response.jobs || response.history || response.items || response.data || []
@@ -64,7 +72,7 @@ export function useHistory(): UseHistoryReturn {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [enabled, workspaceId])
 
   // Fetch on mount
   useEffect(() => {

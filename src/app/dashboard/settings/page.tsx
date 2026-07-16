@@ -309,9 +309,10 @@ function SettingsContent() {
   }
 
   const loadVendorRules = async () => {
+    if (!activeWorkspace?.id) return
     setVendorRulesLoading(true)
     try {
-      const response = await vendorMemoryApi.list()
+      const response = await vendorMemoryApi.list(activeWorkspace.id)
       setVendorRules(response.rules)
       setVendorDrafts(Object.fromEntries(
         response.rules.map(rule => [rule.id, { ...rule.suggested_fields }])
@@ -324,10 +325,10 @@ function SettingsContent() {
   }
 
   useEffect(() => {
-    if (user && activeSection === 'vendors') {
+    if (user && activeWorkspace?.id && activeSection === 'vendors') {
       void loadVendorRules()
     }
-  }, [user, activeSection])
+  }, [user, activeWorkspace?.id, activeSection])
 
   const updateVendorDraft = (ruleId: string, field: keyof VendorRuleFields, value: string) => {
     setVendorDrafts(current => ({

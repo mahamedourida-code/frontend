@@ -16,6 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { WorkspaceSidebar, type WorkspaceSidebarItemKey } from "@/components/WorkspaceSidebar"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
+import { useWorkspaces } from "@/hooks/useWorkspaces"
 import { ocrApi, type RecoverableJobSummary } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
 
@@ -59,6 +60,7 @@ export function DashboardShell({
   const [cmdOpen, setCmdOpen] = useState(false)
   const [cheatsheetOpen, setCheatsheetOpen] = useState(false)
   const { state: processingState } = useProcessingState()
+  const { activeWorkspace } = useWorkspaces(user)
   const [recoverableJob, setRecoverableJob] = useState<RecoverableJobSummary | null>(null)
   const { billingStatus, credits, isLoading: billingLoading } = useBillingStatus({
     enabled: Boolean(user),
@@ -67,10 +69,11 @@ export function DashboardShell({
   })
 
   useEffect(() => {
-    if (!user) return
+    if (!user || !activeWorkspace?.id) return
 
     let mounted = true
-    ocrApi.getLatestRecoverableJob()
+    setRecoverableJob(null)
+    ocrApi.getLatestRecoverableJob(activeWorkspace.id)
       .then((data) => {
         if (!mounted) return
         const job = data.job
@@ -81,7 +84,7 @@ export function DashboardShell({
     return () => {
       mounted = false
     }
-  }, [user?.id])
+  }, [activeWorkspace?.id, user?.id])
 
   useEffect(() => {
     document.body.classList.add("ax-workspace")

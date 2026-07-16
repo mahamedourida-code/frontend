@@ -2812,6 +2812,7 @@ export function ResultActions({
  */
 function BatchStagingBoard({
   uploadedFiles,
+  workspaceId,
   pdfPageCounts,
   isProcessing,
   isUploading,
@@ -2825,6 +2826,7 @@ function BatchStagingBoard({
   onConvert,
 }: {
   uploadedFiles: File[]
+  workspaceId?: string
   pdfPageCounts: Record<number, number>
   isProcessing: boolean
   isUploading: boolean
@@ -2850,15 +2852,20 @@ function BatchStagingBoard({
 
   const loadRecent = useCallback(async () => {
     setRecentLoading(true)
+    if (!workspaceId) {
+      setRecentFiles([])
+      setRecentLoading(false)
+      return
+    }
     try {
-      const response = await ocrApi.getHistory(50, 0)
+      const response = await ocrApi.getHistory(50, 0, workspaceId)
       setRecentFiles(normalizeRecentFiles(response))
     } catch {
       setRecentFiles([])
     } finally {
       setRecentLoading(false)
     }
-  }, [])
+  }, [workspaceId])
 
   useEffect(() => {
     if (mode === "idle") void loadRecent()
@@ -3365,6 +3372,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
           {!hasResults ? (
             <BatchStagingBoard
               uploadedFiles={uploadedFiles}
+              workspaceId={workspaceId}
               pdfPageCounts={pdfPageCounts}
               isProcessing={isProcessing}
               isUploading={isUploading}

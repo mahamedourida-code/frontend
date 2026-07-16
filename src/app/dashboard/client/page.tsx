@@ -9,6 +9,7 @@ import { toast } from "sonner"
 import { accountsPayableApi, ocrApi, quickBooksApi } from "@/lib/api-client"
 import type {
   AppLimits,
+  DocumentMode,
   JobDocumentRecord,
   QuickBooksConnectionStatus,
   QuickBooksReferenceItem,
@@ -67,6 +68,16 @@ type PendingReceiptPublish = {
   resolve: (value: boolean) => void
 }
 
+const ROUTABLE_DOCUMENT_MODES = new Set<DocumentMode>([
+  "auto",
+  "table",
+  "invoice",
+  "receipt",
+  "bank_statement",
+  "notes",
+  "invoice_receipt",
+])
+
 function ProcessImagesFallback() {
   return <DashboardRouteLoader label="Loading conversion workspace" />
 }
@@ -120,6 +131,10 @@ export function ProcessImagesContent() {
   const { activeWorkspace } = useWorkspaces(user)
   const router = useRouter()
   const searchParams = useSearchParams()
+  const requestedMode = searchParams.get("type")
+  const requestedDocumentMode: DocumentMode = requestedMode && ROUTABLE_DOCUMENT_MODES.has(requestedMode as DocumentMode)
+    ? requestedMode as DocumentMode
+    : "auto"
   
   // Get state management from context
   const { state: processingState, updateState, clearState } = useProcessingState()
@@ -175,9 +190,13 @@ export function ProcessImagesContent() {
     if (typeof window !== "undefined") return window.localStorage.getItem("axliner:selectedCompanyId") || ""
     return ""
   })
-  const [outputMode, setOutputMode] = useState<WorkspaceOutputMode>("table")
+  const [outputMode, setOutputMode] = useState<WorkspaceOutputMode>(
+    requestedDocumentMode === "notes" ? "text" : "table",
+  )
   const reviewedExportFormat: "xlsx" | "csv" | "txt" =
-    outputMode === "csv"
+    outputMode === "text"
+      ? "txt"
+      : outputMode === "csv"
       ? "csv"
       : "xlsx"
   const {
@@ -265,14 +284,14 @@ export function ProcessImagesContent() {
   }, [])
 
   useEffect(() => {
-    if (!user || !jobId) {
+    if (!user || !jobId || !activeWorkspace?.id) {
       setDraftBillItemIds({})
       return
     }
 
     let cancelled = false
     setDraftBillItemIds({})
-    accountsPayableApi.list()
+    accountsPayableApi.list(undefined, { workspaceId: activeWorkspace?.id })
       .then(response => {
         if (cancelled) return
         const handedOff = response.items.reduce<Record<string, string>>((items, item) => {
@@ -286,7 +305,14 @@ export function ProcessImagesContent() {
     return () => {
       cancelled = true
     }
-  }, [jobId, user?.id])
+  }, [activeWorkspace?.id, jobId, user?.id])
+
+  useEffect(() => {
+    setOutputMode(current => {
+      if (requestedDocumentMode === "notes") return "text"
+      return current === "text" ? "table" : current
+    })
+  }, [requestedDocumentMode])
 
   useEffect(() => {
     if (entitlementLimits) setLimits(entitlementLimits)
@@ -297,10 +323,10 @@ export function ProcessImagesContent() {
   }, [maxUploadFiles])
 
   useEffect(() => {
-    if (authLoading || !user) return
+    if (authLoading || !user || !activeWorkspace?.id) return
 
     let mounted = true
-    ocrApi.getLatestRecoverableJob()
+    ocrApi.getLatestRecoverableJob(activeWorkspace.id)
       .then((data) => {
         if (!mounted) return
         const job = data.job
@@ -311,7 +337,7 @@ export function ProcessImagesContent() {
     return () => {
       mounted = false
     }
-  }, [authLoading, user?.id])
+  }, [activeWorkspace?.id, authLoading, user?.id])
 
   useEffect(() => {
     const requestedJobId = searchParams.get("job_id")
@@ -898,10 +924,12 @@ export function ProcessImagesContent() {
 
       const response = await uploadBatch(uploadedFiles, {
         outputFormat:
-          outputMode === 'csv'
+          outputMode === 'text'
+            ? 'txt'
+            : outputMode === 'csv'
             ? 'csv'
             : 'xlsx',
-        documentMode: "auto",
+        documentMode: requestedDocumentMode,
         ocrLanguage: typeof window !== "undefined" ? window.localStorage.getItem("ocrLanguage") || "en" : "en",
         workspaceId: activeWorkspace?.id,
         companyId: selectedCompanyId || undefined,
@@ -937,7 +965,7 @@ export function ProcessImagesContent() {
       })
       showApiErrorToast(error, errorContext)
     }
-  }, [uploadedFiles, uploadBatch, connectWebSocket, maxUploadFiles, router, outputMode, activeWorkspace?.id, selectedCompanyId, createFilePreviewUrl, noCredits])
+  }, [uploadedFiles, uploadBatch, connectWebSocket, maxUploadFiles, router, outputMode, activeWorkspace?.id, selectedCompanyId, createFilePreviewUrl, noCredits, requestedDocumentMode])
 
   const handleCancelProcessing = useCallback(async () => {
     await cancelProcessing()
@@ -1690,22 +1718,22 @@ Best regards`
 
   const loadQuickBooksReferences = useCallback(async (sync = false) => {
     try {
-      let connection = await quickBooksApi.status()
+      let connection = await quickBooksApi.status(activeWorkspace?.id)
       if (sync && connection.connected) {
-        connection = await quickBooksApi.sync()
+        connection = await quickBooksApi.sync(activeWorkspace?.id)
       }
       setQuickBooksConnection(connection)
       if (!connection.connected) {
         setQuickBooksReferences([])
         return
       }
-      const response = await quickBooksApi.references()
+      const response = await quickBooksApi.references(undefined, activeWorkspace?.id)
       setQuickBooksReferences(response.items)
     } catch {
       setQuickBooksConnection(null)
       setQuickBooksReferences([])
     }
-  }, [])
+  }, [activeWorkspace?.id])
 
   useEffect(() => {
     if (!user || !jobDocuments.some(document => (
@@ -1802,7 +1830,7 @@ Best regards`
     (visibleResultFiles && visibleResultFiles.length > 0)
     || jobDocuments.length > 0
   )
-  const isTextOutput = false
+  const isTextOutput = outputMode === "text"
   const effectiveOutputMode = outputMode
   const displayResultFiles = visibleResultFiles?.map((file, index) => {
     const trace = file.file_id ? resultSourceTrace[file.file_id] : undefined
@@ -1904,7 +1932,7 @@ Best regards`
         isDragging={isDragging}
         outputMode={effectiveOutputMode}
         onOutputModeChange={setOutputMode}
-        documentMode="auto"
+        documentMode={requestedDocumentMode}
         isUploading={isUploading}
         isProcessing={isProcessing}
         isComplete={Boolean(isComplete)}

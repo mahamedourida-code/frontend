@@ -230,7 +230,7 @@ export type DetectedDocumentMode = ResolvedDocumentMode | 'needs_manual_selectio
 export interface BatchConvertRequest {
   images: ImageData[]
   output_format?: 'xlsx' | 'csv' | 'txt'
-  consolidation_strategy?: 'separate' | 'single_file' | 'single_sheet'
+  consolidation_strategy?: 'consolidated' | 'separate' | 'concatenated'
   document_mode?: DocumentMode
 }
 
@@ -786,8 +786,8 @@ export interface DashboardSummaryResponse {
 }
 
 export interface UploadBatchMultipartOptions {
-  output_format?: string
-  consolidation_strategy?: string
+  output_format?: 'xlsx' | 'csv' | 'txt'
+  consolidation_strategy?: 'consolidated' | 'separate' | 'concatenated'
   document_mode?: DocumentMode
   ocr_language?: string
   workspace_id?: string
@@ -913,9 +913,15 @@ export const ocrApi = {
     return response.data
   },
 
-  getDashboard: async (range: DashboardRange = '7d'): Promise<DashboardSummaryResponse> => {
+  getDashboard: async (
+    range: DashboardRange = '7d',
+    workspaceId?: string,
+  ): Promise<DashboardSummaryResponse> => {
     const response = await apiClient.get<DashboardSummaryResponse>('/api/v1/jobs/dashboard', {
-      params: { range },
+      params: {
+        range,
+        ...(workspaceId ? { workspace_id: workspaceId } : {}),
+      },
     })
     return response.data
   },
@@ -1142,8 +1148,10 @@ export const ocrApi = {
     return response.data
   },
 
-  getLatestRecoverableJob: async (): Promise<JobRecoveryResponse> => {
-    const response = await apiClient.get<JobRecoveryResponse>('/api/v1/jobs/recover/latest')
+  getLatestRecoverableJob: async (workspaceId?: string): Promise<JobRecoveryResponse> => {
+    const response = await apiClient.get<JobRecoveryResponse>('/api/v1/jobs/recover/latest', {
+      params: workspaceId ? { workspace_id: workspaceId } : undefined,
+    })
     return response.data
   },
 
@@ -1190,9 +1198,13 @@ export const ocrApi = {
   /**
    * Get job history for authenticated user
    */
-  getHistory: async (limit: number = 50, offset: number = 0): Promise<any> => {
+  getHistory: async (limit: number = 50, offset: number = 0, workspaceId?: string): Promise<any> => {
     const response = await apiClient.get(`/api/v1/jobs/history`, {
-      params: { limit, offset }
+      params: {
+        limit,
+        offset,
+        ...(workspaceId ? { workspace_id: workspaceId } : {}),
+      },
     })
     return response.data
   },
@@ -1315,12 +1327,13 @@ export const vendorMemoryApi = {
 export const accountsPayableApi = {
   list: async (
     status?: AccountsPayableStatus,
-    options?: { duplicatesOnly?: boolean; companyId?: string },
+    options?: { duplicatesOnly?: boolean; companyId?: string; workspaceId?: string },
   ): Promise<{ items: AccountsPayableItem[]; total: number }> => {
     const params: Record<string, string | boolean> = {}
     if (status) params.status = status
     if (options?.duplicatesOnly) params.duplicates_only = true
     if (options?.companyId) params.company_id = options.companyId
+    if (options?.workspaceId) params.workspace_id = options.workspaceId
     const response = await apiClient.get<{ items: AccountsPayableItem[]; total: number }>('/api/v1/accounts-payable', {
       params: Object.keys(params).length ? params : undefined,
     })
@@ -1395,10 +1408,18 @@ export const accountsPayableApi = {
     return response.data
   },
 
-  listPurchaseOrders: async (vendor?: string): Promise<{ purchase_orders: PurchaseOrder[]; total: number }> => {
+  listPurchaseOrders: async (
+    vendor?: string,
+    workspaceId?: string,
+  ): Promise<{ purchase_orders: PurchaseOrder[]; total: number }> => {
     const response = await apiClient.get<{ purchase_orders: PurchaseOrder[]; total: number }>(
       '/api/v1/accounts-payable/purchase-orders',
-      { params: vendor ? { vendor } : undefined },
+      {
+        params: {
+          ...(vendor ? { vendor } : {}),
+          ...(workspaceId ? { workspace_id: workspaceId } : {}),
+        },
+      },
     )
     return response.data
   },

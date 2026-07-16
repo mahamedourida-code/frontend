@@ -72,12 +72,12 @@ function monthLabel(): string {
  * Falls back gracefully: dashboard volume always works; the AP-derived metrics
  * (pre-coded %, duplicates) become `null` when there are no AP items this month.
  */
-async function computeRecap(): Promise<RecapMetrics> {
+async function computeRecap(workspaceId: string): Promise<RecapMetrics> {
   const monthStart = startOfThisMonth()
 
   const [dashboard, apResult] = await Promise.all([
-    ocrApi.getDashboard("30d").catch(() => null),
-    accountsPayableApi.list().catch(() => ({ items: [], total: 0 })),
+    ocrApi.getDashboard("30d", workspaceId).catch(() => null),
+    accountsPayableApi.list(undefined, { workspaceId }).catch(() => ({ items: [], total: 0 })),
   ])
 
   const invoicesReviewed = dashboard?.stats?.thisMonthProcessed ?? 0
@@ -345,7 +345,13 @@ function RecapBody({ metrics }: { metrics: RecapMetrics }) {
  * Entry-point card for the dashboard overview. Opens the recap in a dialog.
  * Self-contained: fetches its own metrics lazily the first time it's opened.
  */
-export function MonthlyRecapCard({ className }: { className?: string }) {
+export function MonthlyRecapCard({
+  className,
+  workspaceId,
+}: {
+  className?: string
+  workspaceId: string
+}) {
   const [open, setOpen] = React.useState(false)
   const [metrics, setMetrics] = React.useState<RecapMetrics | null>(null)
   const [loading, setLoading] = React.useState(false)
@@ -353,11 +359,11 @@ export function MonthlyRecapCard({ className }: { className?: string }) {
   const load = React.useCallback(async () => {
     setLoading(true)
     try {
-      setMetrics(await computeRecap())
+      setMetrics(await computeRecap(workspaceId))
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [workspaceId])
 
   const handleOpenChange = React.useCallback(
     (next: boolean) => {

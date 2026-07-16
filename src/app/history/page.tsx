@@ -71,10 +71,20 @@ function historyStatusTone(status: string | null | undefined): "success" | "erro
   return "neutral"
 }
 
+function isDownloadableJob(job: HistoryJob): boolean {
+  return Boolean(
+    (job.status === "completed" || job.status === "partially_completed")
+    && job.result_url,
+  )
+}
+
 function HistoryContent() {
   const { user } = useAuth()
   const { activeWorkspace } = useWorkspaces(user)
-  const { jobs, isLoading, error, refresh } = useHistory()
+  const { jobs, isLoading, error, refresh } = useHistory(
+    activeWorkspace?.id,
+    Boolean(activeWorkspace?.id),
+  )
   const router = useRouter()
   const searchParams = useSearchParams()
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -136,7 +146,7 @@ function HistoryContent() {
   // Quick-scan tallies for the stat tiles — derived only, no extra fetching.
   const stats = React.useMemo(() => {
     const total = filteredJobs.length
-    const ready = filteredJobs.filter((job) => job.status === "completed" && job.result_url).length
+    const ready = filteredJobs.filter(isDownloadableJob).length
     const working = filteredJobs.filter((job) => job.status === "processing" || job.status === "queued").length
     const issues = filteredJobs.filter((job) => job.status === "failed" || job.status === "cancelled").length
     return { total, ready, working, issues }
@@ -313,7 +323,9 @@ function HistoryContent() {
       header: () => "Status",
       cell: ({ row }) => {
         const status = row.original.status
-        const label = status === "completed" ? "Ready" : (status?.replace(/_/g, " ") || "Unknown")
+        const label = status === "completed" || status === "partially_completed"
+          ? "Ready"
+          : (status?.replace(/_/g, " ") || "Unknown")
         return <StatusBadge tone={historyStatusTone(status)}>{label}</StatusBadge>
       },
       enableSorting: false,
@@ -322,7 +334,7 @@ function HistoryContent() {
       id: "actions",
       cell: ({ row }) => {
         const job = row.original
-        const isDownloadable = job.status === "completed" && job.result_url
+        const isDownloadable = isDownloadableJob(job)
         const isDismissable = job.status === "failed" || job.status === "cancelled"
         const onDelete = () => {
           const jobId = resolveJobId(job)
@@ -404,7 +416,7 @@ function HistoryContent() {
 
     const completedJobs = selectedRows
       .map((row) => row.original)
-      .filter((job) => job.status === 'completed' && job.result_url)
+      .filter(isDownloadableJob)
 
     if (completedJobs.length === 0) {
       toast.error('No completed files available for download')
@@ -422,7 +434,7 @@ function HistoryContent() {
 
   const handleDownloadAll = async () => {
     const completedJobs = filteredJobs.filter(
-      (job) => job.status === 'completed' && job.result_url
+      isDownloadableJob
     )
 
     if (completedJobs.length === 0) {
@@ -692,7 +704,7 @@ function HistoryContent() {
           </div>
           <div className="flex items-center gap-1 lg:gap-2 w-full lg:w-auto justify-between lg:justify-end">
             {/* Download all button */}
-            {filteredJobs.filter(job => job.status === 'completed' && job.result_url).length > 0 && (
+            {filteredJobs.filter(isDownloadableJob).length > 0 && (
               <>
                 <Button
                   variant="ink"
@@ -701,7 +713,7 @@ function HistoryContent() {
                   className="h-8 text-xs"
                 >
                   <DownloadCloud className="h-3 w-3 lg:mr-1" />
-                  <span className="hidden sm:inline">All ({filteredJobs.filter(job => job.status === 'completed').length})</span>
+                  <span className="hidden sm:inline">All ({filteredJobs.filter(isDownloadableJob).length})</span>
                   <span className="sm:hidden">All</span>
                 </Button>
                 <Button

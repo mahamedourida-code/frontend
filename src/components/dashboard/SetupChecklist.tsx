@@ -133,7 +133,7 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
           ? safe(() => vendorMemoryApi.list(workspaceId), { rules: [], total: 0 })
           : Promise.resolve({ rules: [], total: 0 }),
         // 7 — Purchase orders imported.
-        safe(() => accountsPayableApi.listPurchaseOrders(), { purchase_orders: [], total: 0 }),
+        safe(() => accountsPayableApi.listPurchaseOrders(undefined, workspaceId), { purchase_orders: [], total: 0 }),
         // 8 — Billing / plan.
         safe(() => billingApi.getStatus(), null),
       ])
@@ -170,7 +170,7 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
           id: "email",
           label: "Email-in address",
           icon: <AtSign />,
-          href: "/dashboard/inbox",
+          href: "/dashboard/inbox?view=channels&section=email#email-in-address",
           state: emailDone ? "done" : "todo",
           cta: "Set up",
           doneNote: emailAddress?.address ?? undefined,
@@ -179,7 +179,7 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
           id: "client-links",
           label: "Client upload links",
           icon: <Link2 />,
-          href: "/dashboard/inbox",
+          href: "/dashboard/inbox?view=channels#client-upload-links",
           state: activeLinks.length > 0 ? "done" : "todo",
           cta: "Create a link",
           doneNote: activeLinks.length > 0 ? `${activeLinks.length} active` : undefined,
@@ -188,7 +188,7 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
           id: "reviewer",
           label: "Invite a reviewer",
           icon: <Users />,
-          href: "/dashboard/inbox",
+          href: "/dashboard/inbox?view=access",
           state: activeReviewers.length > 0 ? "done" : "todo",
           cta: "Invite",
           doneNote:
@@ -200,7 +200,7 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
           id: "sources",
           label: "Connect Drive or Dropbox",
           icon: <FolderSync />,
-          href: "/dashboard/inbox",
+          href: "/dashboard/inbox?view=channels&section=folders#watched-folders",
           state: sourceDone ? "done" : "todo",
           cta: "Connect",
         },

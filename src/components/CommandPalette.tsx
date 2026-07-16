@@ -134,14 +134,17 @@ function searchText(item: CommandItem): string {
 
 function recentJobToItem(job: HistoryJob, index: number): CommandItem {
   const name = job.filename || `Job ${job.original_job_id || job.id || index + 1}`
+  const jobId = job.job_id || job.id || job.original_job_id
   return {
-    id: `doc-${job.original_job_id || job.id || index}`,
+    id: `doc-${jobId || index}`,
     group: "documents",
     label: name,
-    hint: "Open in Activity",
+    hint: jobId ? "Open batch" : "Open in Activity",
     keywords: job.status ?? "",
     icon: FileText,
-    href: "/history",
+    href: jobId
+      ? `/dashboard/client?job_id=${encodeURIComponent(String(jobId))}`
+      : "/history",
   }
 }
 
@@ -181,9 +184,9 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
 
   // Live sources: recent documents (history) + this workspace's clients. Both only
   // load while the palette is mounted (i.e. open), so the dashboard never pays for them.
-  const { jobs } = useHistory()
   const { user } = useAuth()
   const { activeWorkspace } = useWorkspaces(user)
+  const { jobs } = useHistory(activeWorkspace?.id, Boolean(activeWorkspace?.id))
   const [companies, setCompanies] = useState<CompanySummary[]>([])
 
   useEffect(() => {

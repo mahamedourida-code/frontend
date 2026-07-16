@@ -377,10 +377,15 @@ function AccountsPayableContent() {
   }, [authLoading, user, router])
 
   const loadQueue = async () => {
+    if (!activeWorkspace?.id) return
     setLoading(true)
     try {
-      const response = await accountsPayableApi.list(undefined, companyId ? { companyId } : undefined)
+      const response = await accountsPayableApi.list(undefined, {
+        companyId: companyId || undefined,
+        workspaceId: activeWorkspace.id,
+      })
       setItems(response.items)
+      setSelectedReadyIds(current => current.filter(id => response.items.some(item => item.id === id)))
       if (!filterTouchedRef.current) setFilter(recommendedQueueFilter(response.items))
       setActiveId(current => current && response.items.some(item => item.id === current)
         ? current
@@ -397,8 +402,8 @@ function AccountsPayableContent() {
   }, [companyId])
 
   useEffect(() => {
-    if (user) void loadQueue()
-  }, [user?.id, companyId])
+    if (user && activeWorkspace?.id) void loadQueue()
+  }, [user?.id, activeWorkspace?.id, companyId])
 
   const loadAccountingDestination = async (sync = false) => {
     if (!sync) {
@@ -440,7 +445,7 @@ function AccountsPayableContent() {
     setPoLoading(true)
     try {
       const vendorName = String(draft.vendor || "").trim() || undefined
-      const response = await accountsPayableApi.listPurchaseOrders(vendorName)
+      const response = await accountsPayableApi.listPurchaseOrders(vendorName, activeWorkspace?.id)
       setPoList(response.purchase_orders)
     } catch {
       toast.error("Could not load purchase orders.")

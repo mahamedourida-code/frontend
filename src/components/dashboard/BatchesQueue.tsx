@@ -133,7 +133,7 @@ function BatchRow({ batch }: { batch: Batch }) {
   )
 }
 
-export function BatchesQueue() {
+export function BatchesQueue({ workspaceId }: { workspaceId: string }) {
   const [batches, setBatches] = React.useState<Batch[] | null>(null)
   const [error, setError] = React.useState<string | null>(null)
   const [refreshing, setRefreshing] = React.useState(false)
@@ -145,7 +145,7 @@ export function BatchesQueue() {
     setRefreshing(true)
     setError(null)
     try {
-      const response = await ocrApi.getHistory(50, 0)
+      const response = await ocrApi.getHistory(50, 0, workspaceId)
       const rows: Record<string, any>[] = Array.isArray(response)
         ? response
         : response.jobs || response.history || response.items || response.data || []
@@ -158,7 +158,7 @@ export function BatchesQueue() {
     } finally {
       setRefreshing(false)
     }
-  }, [])
+  }, [workspaceId])
 
   React.useEffect(() => {
     void load()

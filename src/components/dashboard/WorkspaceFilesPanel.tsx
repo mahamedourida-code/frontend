@@ -56,7 +56,13 @@ function normalizeFiles(response: any): WorkspaceFile[] {
   })
 }
 
-export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
+export function WorkspaceFilesPanel({
+  refreshKey,
+  workspaceId,
+}: {
+  refreshKey?: string
+  workspaceId: string
+}) {
   const m = useMotionTokens()
   const [files, setFiles] = useState<WorkspaceFile[]>([])
   const [loading, setLoading] = useState(true)
@@ -65,7 +71,7 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
   const loadHistory = useCallback(async () => {
     setLoading(true)
     try {
-      const response = await ocrApi.getHistory(50, 0)
+      const response = await ocrApi.getHistory(50, 0, workspaceId)
       const normalized = normalizeFiles(response)
       setFiles(normalized)
       // Self-heal the durable delete set against what the server actually returns.
@@ -75,7 +81,7 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [workspaceId])
 
   useEffect(() => {
     void loadHistory()
