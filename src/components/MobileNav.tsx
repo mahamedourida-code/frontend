@@ -32,6 +32,7 @@ import {
   Menu,
   BookCheck,
   ChevronRight,
+  CircleHelp,
   Home,
   LogIn,
   Activity,
@@ -73,48 +74,20 @@ type MobileNavItem = {
   }>
 }
 
-type AuthenticatedNavGroupKey = "work" | "records" | "manage"
-
-type AuthenticatedNavGroup = {
-  key: AuthenticatedNavGroupKey
+const AUTHENTICATED_NAV_ITEMS: Array<{
   label: string
+  href: string
   icon: NavIcon
-  items: Array<{
-    label: string
-    href: string
-    icon: NavIcon
-  }>
-}
-
-const AUTHENTICATED_NAV_GROUPS: AuthenticatedNavGroup[] = [
-  {
-    key: "work",
-    label: "Work",
-    icon: Inbox,
-    items: [
-      { label: "Inbox", href: "/dashboard/inbox", icon: Inbox },
-      { label: "Review board", href: "/dashboard/client", icon: BookCheck },
-      { label: "Draft bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
-    ],
-  },
-  {
-    key: "records",
-    label: "Records",
-    icon: Activity,
-    items: [
-      { label: "Batches", href: "/dashboard/batches", icon: Layers },
-      { label: "Activity", href: "/history", icon: Activity },
-    ],
-  },
-  {
-    key: "manage",
-    label: "Manage",
-    icon: Settings,
-    items: [
-      { label: "Connections", href: "/dashboard/integrations", icon: PlugZap },
-      { label: "Settings", href: "/dashboard/settings", icon: Settings },
-    ],
-  },
+}> = [
+  { label: "Clients", href: "/dashboard", icon: Building2 },
+  { label: "Inbox", href: "/dashboard/inbox", icon: Inbox },
+  { label: "Review", href: "/dashboard/client", icon: BookCheck },
+  { label: "Draft bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
+  { label: "Batches", href: "/dashboard/batches", icon: Layers },
+  { label: "Activity", href: "/history", icon: Activity },
+  { label: "Start here", href: "/dashboard/guide", icon: CircleHelp },
+  { label: "Connections", href: "/dashboard/integrations", icon: PlugZap },
+  { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 
 function isDashboardRouteActive(pathname: string, href: string, currentHash = "") {
@@ -134,11 +107,6 @@ function isDashboardRouteActive(pathname: string, href: string, currentHash = ""
 export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInClick, user }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [audiencesOpen, setAudiencesOpen] = useState(false)
-  const [authenticatedGroupsOpen, setAuthenticatedGroupsOpen] = useState<Record<AuthenticatedNavGroupKey, boolean>>({
-    work: true,
-    records: false,
-    manage: false,
-  })
   const router = useRouter()
   const pathname = usePathname()
   const currentHash = useCurrentHash()
@@ -147,18 +115,6 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
   useEffect(() => {
     setIsOpen(false)
   }, [pathname])
-
-  useEffect(() => {
-    if (!isAuthenticated) return
-    const activeGroup = AUTHENTICATED_NAV_GROUPS.find((group) =>
-      group.items.some((item) => isDashboardRouteActive(pathname, item.href, currentHash)),
-    )
-    if (!activeGroup) return
-
-    setAuthenticatedGroupsOpen((current) =>
-      current[activeGroup.key] ? current : { ...current, [activeGroup.key]: true },
-    )
-  }, [currentHash, isAuthenticated, pathname])
 
   const handleNavigation = (href: string) => {
     router.push(href)
@@ -265,8 +221,8 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
   }> = isAuthenticated
     ? [
         { label: "Clients", icon: Building2, active: pathname === "/dashboard" || pathname.startsWith("/dashboard/companies/"), onClick: () => handleNavigation("/dashboard") },
-        { label: "Review", icon: BookCheck, active: pathname === "/dashboard/client", onClick: () => handleNavigation("/dashboard/client") },
-        { label: "Inbox", icon: Inbox, active: pathname === "/dashboard/inbox", onClick: () => handleNavigation("/dashboard/inbox") },
+        { label: "Upload", icon: Upload, active: pathname === "/dashboard/client" && currentHash === "#upload-files", onClick: () => handleNavigation("/dashboard/client#upload-files") },
+        { label: "Review", icon: BookCheck, active: isDashboardRouteActive(pathname, "/dashboard/client", currentHash), onClick: () => handleNavigation("/dashboard/client") },
       ]
     : [
         { label: "Home", icon: Home, active: pathname === "/", onClick: () => handleNavigation("/") },
@@ -295,13 +251,16 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 variant="ghost"
                 size="sm"
                 aria-current={item.active ? "page" : undefined}
+                data-workspace-tour={isAuthenticated && item.label === "Upload" ? "upload" : undefined}
                 onClick={item.onClick}
                 className={cn(
                   "ax-interactive h-14 min-w-0 flex-col gap-1 rounded-full px-1.5 text-[10px] font-semibold",
                   isAuthenticated
-                    ? item.active
-                      ? "bg-accent text-accent-foreground shadow-sm hover:bg-accent hover:text-accent-foreground"
-                      : "text-foreground hover:bg-accent hover:text-accent-foreground"
+                    ? item.label === "Upload"
+                      ? "ax-mobile-upload bg-[#1877f2] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.24),0_0_0_1px_#1264d8,0_2px_4px_rgba(15,23,42,0.16)] hover:bg-[#166fe5] hover:text-white active:scale-[0.97]"
+                      : item.active
+                        ? "bg-accent text-accent-foreground shadow-sm hover:bg-accent hover:text-accent-foreground"
+                        : "text-foreground hover:bg-accent hover:text-accent-foreground"
                     : item.active
                       ? "bg-accent text-accent-foreground shadow-sm hover:bg-accent hover:text-accent-foreground"
                       : "text-foreground hover:bg-accent hover:text-accent-foreground"
@@ -363,103 +322,36 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 </div>
               )}
 
-              {isAuthenticated && (
-                <div className="border-b border-border px-3 py-3">
-                  <Button
-                    variant="glossy"
-                    className="mx-auto h-10 w-[11.25rem] justify-center font-bold"
-                    onClick={() => handleNavigation("/dashboard/client#upload-files")}
-                  >
-                    <Upload className="h-4 w-4 text-black" />
-                    Upload files
-                  </Button>
-                </div>
-              )}
-
               {/* Navigation Items */}
               <div className="flex-1 overflow-y-auto py-3">
-                <nav className="space-y-1 px-3">
+                <nav className="px-3">
                   {isAuthenticated ? (
-                    <>
-                      <Button
-                        variant="ghost"
-                        aria-current={isDashboardRouteActive(pathname, "/dashboard", currentHash) ? "page" : undefined}
-                        onClick={() => handleNavigation("/dashboard")}
-                        className={cn(
-                          "ax-interactive h-11 w-full justify-start gap-3 rounded-full px-3 text-foreground hover:bg-accent hover:text-accent-foreground",
-                          isDashboardRouteActive(pathname, "/dashboard", currentHash) && "bg-accent text-accent-foreground",
-                        )}
-                      >
-                        <Building2 className="h-5 w-5 text-black" />
-                        <span className="flex-1 text-left text-base font-semibold">Clients</span>
-                      </Button>
-
-                      {AUTHENTICATED_NAV_GROUPS.map((group) => {
-                        const GroupIcon = group.icon
-                        const containsActiveItem = group.items.some((item) =>
-                          isDashboardRouteActive(pathname, item.href, currentHash),
-                        )
-                        const groupOpen = authenticatedGroupsOpen[group.key]
-
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {AUTHENTICATED_NAV_ITEMS.map((item) => {
+                        const ItemIcon = item.icon
+                        const isActive = isDashboardRouteActive(pathname, item.href, currentHash)
                         return (
-                          <Collapsible
-                            key={group.key}
-                            open={groupOpen}
-                            onOpenChange={(open) =>
-                              setAuthenticatedGroupsOpen((current) => ({ ...current, [group.key]: open }))
-                            }
+                          <Button
+                            key={item.href}
+                            asChild
+                            variant="ghost"
+                            className={cn(
+                              "ax-interactive h-[74px] min-w-0 flex-col gap-2 rounded-lg border border-transparent px-2 text-[12px] font-semibold hover:border-border hover:bg-accent",
+                              isActive && "border-[var(--workspace-selection-border)] bg-[var(--workspace-selection-bg)] text-foreground",
+                            )}
                           >
-                            <CollapsibleTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                className={cn(
-                                  "ax-interactive h-11 w-full justify-start gap-3 rounded-full px-3 text-foreground hover:bg-accent hover:text-accent-foreground",
-                                  containsActiveItem && "bg-accent/60",
-                                )}
-                              >
-                                <GroupIcon className="h-5 w-5 text-black" />
-                                <span className="flex-1 text-left text-base font-semibold">{group.label}</span>
-                                <ChevronRight
-                                  className={cn(
-                                    "h-4 w-4 text-black transition-transform duration-150 ease-out",
-                                    groupOpen && "rotate-90",
-                                  )}
-                                  aria-hidden="true"
-                                />
-                              </Button>
-                            </CollapsibleTrigger>
-                            <CollapsibleContent className="ml-5 space-y-1 border-l border-border pb-1 pl-2 pr-1">
-                              {group.items.map((item) => {
-                                const ItemIcon = item.icon
-                                const isActive = isDashboardRouteActive(pathname, item.href, currentHash)
-
-                                return (
-                                  <Button
-                                    key={item.href}
-                                    asChild
-                                    variant="ghost"
-                                    size="sm"
-                                    className={cn(
-                                      "ax-interactive h-10 w-full justify-start gap-2.5 rounded-full px-3 text-[15px] font-medium hover:bg-accent",
-                                      isActive && "bg-accent text-accent-foreground",
-                                    )}
-                                  >
-                                    <Link
-                                      href={item.href}
-                                      aria-current={isActive ? "page" : undefined}
-                                      onClick={() => setIsOpen(false)}
-                                    >
-                                      <ItemIcon className="h-4 w-4 text-black" />
-                                      <span className="truncate">{item.label}</span>
-                                    </Link>
-                                  </Button>
-                                )
-                              })}
-                            </CollapsibleContent>
-                          </Collapsible>
+                            <Link
+                              href={item.href}
+                              aria-current={isActive ? "page" : undefined}
+                              onClick={() => setIsOpen(false)}
+                            >
+                              <ItemIcon className="size-5 text-black" />
+                              <span className="w-full text-center leading-tight">{item.label}</span>
+                            </Link>
+                          </Button>
                         )
                       })}
-                    </>
+                    </div>
                   ) : (
                     mainNavItems
                       .filter(item => item.show !== false)

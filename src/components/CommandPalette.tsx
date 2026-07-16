@@ -83,7 +83,7 @@ const GROUP_ORDER: CommandGroup[] = [
 // Navigate: every accountant workspace route (mirrors WorkspaceSidebar).
 const NAVIGATE_ITEMS: CommandItem[] = [
   { id: "nav-companies", group: "workspace", label: "Clients", hint: "Workspace", keywords: "companies customers home", icon: Building2, href: "/dashboard" },
-  { id: "nav-guide", group: "workspace", label: "Getting started", hint: "Workspace guide", keywords: "guide help onboarding workflow docs", icon: BookOpen, href: "/dashboard/guide" },
+  { id: "nav-guide", group: "workspace", label: "Start here", hint: "Getting started", keywords: "guide help onboarding workflow docs", icon: BookOpen, href: "/dashboard/guide" },
   { id: "nav-inbox", group: "collect", label: "Inbox", hint: "Incoming files", keywords: "intake client submissions", icon: Inbox, href: "/dashboard/inbox" },
   { id: "nav-upload", group: "collect", label: "Upload files", hint: "Source documents", keywords: "new add files import scan batches", icon: Upload, href: "/dashboard/client#upload-files" },
   { id: "nav-stacks", group: "review", label: "Batches", hint: "Processing and review", keywords: "batches jobs processing", icon: Layers, href: "/dashboard/batches" },
@@ -107,7 +107,7 @@ const ACT_ITEMS: CommandItem[] = [
   { id: "act-import-pos",  group: "act", label: "Import purchase orders",   hint: "Settings",               keywords: "po pos bills coding",           icon: FileSpreadsheet, href: "/dashboard/settings?section=accounting" },
 ]
 
-const RESTING_ITEM_IDS = new Set(["nav-upload", "nav-inbox", "nav-review", "nav-bills"])
+const RESTING_ITEM_IDS = new Set(["nav-guide", "nav-upload", "nav-review"])
 
 function fuzzyScore(haystack: string, query: string): number {
   // Subsequence fuzzy match; returns -1 for no match, lower = better (tighter span).
@@ -219,8 +219,8 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
     // Resting state stays deliberately short; typing searches every route.
     return [
       ...staticItems.filter((item) => RESTING_ITEM_IDS.has(item.id)),
-      ...clientItems.slice(0, 3),
-      ...documentItems.slice(0, 3),
+      ...clientItems.slice(0, 2),
+      ...documentItems.slice(0, 2),
     ]
   }, [query, clientItems, documentItems])
 
@@ -274,7 +274,7 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
         event.preventDefault()
         inputRef.current?.focus()
       }}
-      className="top-[12vh] max-w-[34rem] translate-y-0 gap-0 overflow-hidden border-[var(--workspace-border)] bg-white p-0 shadow-[0_20px_60px_rgba(15,23,42,0.22)] sm:top-[16vh] sm:max-w-[34rem]"
+      className="top-[12vh] max-w-[31rem] translate-y-0 gap-0 overflow-hidden border-[var(--workspace-border)] bg-white p-0 shadow-[0_20px_60px_rgba(15,23,42,0.22)] sm:top-[16vh] sm:max-w-[31rem]"
     >
           <DialogTitle className="sr-only">Find in workspace</DialogTitle>
           <DialogDescription className="sr-only">
@@ -288,8 +288,8 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
                 ref={inputRef}
                 value={query}
                 onChange={e => setQuery(e.target.value)}
-                placeholder="Find a client, batch, or action"
-                aria-label="Find a client, batch, or action"
+                placeholder="Search workspace"
+                aria-label="Search workspace"
                 className="flex-1 bg-transparent text-[14px] font-medium text-foreground outline-none placeholder:text-muted-foreground"
               />
               <kbd className="hidden rounded-md border border-border bg-muted px-1.5 py-0.5 font-sans text-xs font-semibold text-muted-foreground sm:block">
@@ -298,7 +298,7 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
             </div>
 
             {/* Results */}
-            <div ref={listRef} className="max-h-[min(25rem,58vh)] overflow-y-auto py-1.5">
+            <div ref={listRef} className="max-h-[min(22rem,54vh)] overflow-y-auto py-1.5">
               {results.length === 0 ? (
                 <p className="px-4 py-8 text-center text-[15px] font-medium text-muted-foreground">
                   No results for &ldquo;{query}&rdquo;

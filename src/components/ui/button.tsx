@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
  * The site/workspace values live in globals.css (`--btn-*`).
  */
 const BTN_PRIMARY =
-  "border border-[var(--btn-primary-border)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] hover:bg-[var(--btn-primary-bg-hover)] hover:text-[var(--btn-primary-fg-hover)] hover:border-[var(--btn-primary-border-hover)]"
+  "border border-[var(--btn-primary-border)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.24),0_0_0_1px_var(--btn-primary-border),0_2px_4px_0_rgba(15,23,42,0.18)] hover:border-[var(--btn-primary-border-hover)] hover:bg-[var(--btn-primary-bg-hover)] hover:text-[var(--btn-primary-fg-hover)] active:scale-[0.97] active:translate-y-px active:shadow-[inset_0_2px_3px_0_rgba(15,23,42,0.24),0_0_0_1px_var(--btn-primary-border-hover)]"
 
 const BTN_SECONDARY =
   "border border-[var(--btn-secondary-border)] bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-fg)] hover:bg-[var(--btn-secondary-bg-hover)] hover:text-[var(--btn-secondary-fg-hover)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.75),0_1px_2px_0_rgba(16,24,40,0.05),0_1px_3px_0_rgba(16,24,40,0.09)] hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_2px_4px_0_rgba(16,24,40,0.07),0_4px_10px_-2px_rgba(16,24,40,0.12)] hover:-translate-y-px active:translate-y-0 active:shadow-[inset_0_1px_2px_0_rgba(16,24,40,0.08),0_1px_1px_0_rgba(16,24,40,0.05)]"
@@ -38,9 +38,9 @@ const buttonVariants = cva(
         ink: BTN_PRIMARY,
         lime: BTN_PRIMARY,
         reviewed: BTN_PRIMARY,
-        // Facebook-blue CTA (marketing nav auth) — inverts to white on hover.
+        // Facebook-blue CTA (marketing nav auth) with a darker hover/press.
         blue:
-          "border border-[var(--workspace-blue)] bg-[var(--workspace-blue)] text-white hover:bg-white hover:text-[var(--workspace-blue)]",
+          "border border-[#1877f2] bg-[#1877f2] text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.24),0_0_0_1px_#1264d8,0_2px_4px_0_rgba(15,23,42,0.18)] hover:border-[#166fe5] hover:bg-[#166fe5] hover:text-white active:scale-[0.97] active:translate-y-px active:bg-[#145dbf] active:shadow-[inset_0_2px_3px_0_rgba(15,23,42,0.24),0_0_0_1px_#104da0]",
         // Smart / vendor-memory accent — outline purple that fills on hover.
         purple:
           "border border-[var(--workspace-purple)] bg-white text-[var(--workspace-purple)] hover:bg-[var(--workspace-purple)] hover:text-white",

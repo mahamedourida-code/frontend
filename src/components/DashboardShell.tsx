@@ -3,7 +3,7 @@
 import { type ReactNode, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { ChevronLeft, Clock3, Loader2, Plus, Search, Upload } from "lucide-react"
+import { ChevronLeft, Clock3, Loader2, Search, Upload } from "lucide-react"
 
 import { AccountMenu } from "@/components/AccountMenu"
 import { CommandPalette } from "@/components/CommandPalette"
@@ -12,6 +12,7 @@ import { MobileNav } from "@/components/MobileNav"
 import { NotificationsBell } from "@/components/NotificationsBell"
 import { OrgSwitcher } from "@/components/OrgSwitcher"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { WorkspaceSidebar, type WorkspaceSidebarItemKey } from "@/components/WorkspaceSidebar"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
@@ -159,60 +160,65 @@ export function DashboardShell({
       <WorkspaceSidebar activeItem={activeItem} user={user} />
 
       <div className="ax-dashboard-content relative z-10 min-w-0">
-        <header className="ax-workspace-header sticky top-0 z-40 h-14 border-b border-white/10 bg-[var(--workspace-topbar)] text-white [&_svg]:text-white">
+        <header className="ax-workspace-header sticky top-0 z-40 h-14 border-b border-[var(--workspace-topbar-border)] bg-[var(--workspace-topbar)] text-white [&_svg]:text-white">
           <div className="flex h-full min-w-0 items-center gap-2 px-3 sm:px-4 lg:px-5">
             {showBack ? (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => router.back()}
-                aria-label="Go back"
-                className="size-9 text-white/80 hover:bg-white/10 hover:text-white [&_svg]:text-white"
-              >
-                <ChevronLeft className="size-[18px]" />
-              </Button>
+              <Tooltip delayDuration={350}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => router.back()}
+                    aria-label="Go back"
+                    className="size-9 text-white/80 hover:bg-white/10 hover:text-white [&_svg]:text-white"
+                  >
+                    <ChevronLeft className="size-[18px]" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={8}>Back</TooltipContent>
+              </Tooltip>
             ) : null}
 
             <OrgSwitcher user={user} />
 
-            <div className="me-auto min-w-0 md:hidden">
+            <div className="me-auto min-w-0">
               <p className="truncate text-[14px] font-semibold text-white">{title}</p>
             </div>
 
-            <div className="me-auto hidden min-w-0 flex-1 px-1 md:flex lg:px-3">
-              <button
-                type="button"
-                onClick={() => setCmdOpen(true)}
-                aria-label="Open command palette"
-                className="ax-interactive inline-flex h-9 w-full max-w-[440px] items-center gap-2 rounded-full border border-white/14 bg-white/[0.07] px-3.5 text-[13px] font-medium text-white/68 hover:border-white/28 hover:bg-white/[0.11] hover:text-white"
-              >
-                <Search className="size-4 shrink-0" />
-                <span className="truncate">Find a client, batch, or action</span>
-                <kbd className="ms-auto hidden h-5 shrink-0 items-center rounded border border-white/12 bg-black/10 px-1.5 font-sans text-[10px] font-semibold text-white/56 lg:inline-flex">
-                  Ctrl K
-                </kbd>
-              </button>
-            </div>
-
             <div className="ms-auto flex min-w-0 items-center gap-1 sm:gap-1.5">
-              <button
-                type="button"
-                onClick={() => setCmdOpen(true)}
-                aria-label="Search workspace"
-                className="ax-interactive inline-flex size-9 items-center justify-center rounded-full text-white/84 hover:bg-white/10 hover:text-white md:hidden"
-              >
-                <Search className="size-[18px]" />
-              </button>
+              <Tooltip delayDuration={350}>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={() => setCmdOpen(true)}
+                    aria-label="Search workspace"
+                    className="ax-interactive inline-flex size-9 items-center justify-center rounded-full text-white/84 hover:bg-white/10 hover:text-white"
+                  >
+                    <Search className="size-[18px]" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={8}>Search (Ctrl K)</TooltipContent>
+              </Tooltip>
 
               {activeJob && pathname !== "/dashboard/client" ? (
-                <Link
-                  href={activeJob.href}
-                  className="ax-interactive hidden h-8 items-center gap-1.5 rounded-full border border-white/14 bg-white/[0.07] px-2.5 text-[11px] font-semibold text-white/86 hover:border-white/24 hover:bg-white/12 lg:inline-flex"
-                >
-                  {activeJob.ready ? <Clock3 className="size-3.5" /> : <Loader2 className="size-3.5 animate-spin" />}
-                  <span className="max-w-28 truncate">{activeJob.label}</span>
-                  <span className="tabular-nums text-white/60">{activeJob.progress}</span>
-                </Link>
+                <Tooltip delayDuration={350}>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href={activeJob.href}
+                      aria-label={`${activeJob.label}, ${activeJob.progress}`}
+                      className="ax-interactive relative hidden size-9 items-center justify-center rounded-full text-white/84 hover:bg-white/10 hover:text-white lg:inline-flex"
+                    >
+                      {activeJob.ready ? <Clock3 className="size-[17px]" /> : <Loader2 className="size-[17px] animate-spin" />}
+                      <span
+                        aria-hidden="true"
+                        className="absolute right-1 top-1 size-1.5 rounded-full bg-[#74a7ff] ring-2 ring-[var(--workspace-topbar)]"
+                      />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" sideOffset={8}>
+                    {activeJob.label}: {activeJob.progress}
+                  </TooltipContent>
+                </Tooltip>
               ) : null}
 
               <Button
@@ -220,12 +226,12 @@ export function DashboardShell({
                 variant="glossy"
                 size="sm"
                 onClick={startBatch}
+                data-workspace-tour="upload"
                 aria-label="Upload source documents"
-                className="h-9 px-3 text-[12px] font-semibold max-sm:size-9 max-sm:px-0 [&_svg]:text-[var(--workspace-primary)]"
+                className="hidden h-9 px-3.5 text-[13px] font-semibold sm:inline-flex [&_svg]:text-white"
               >
-                <Plus className="hidden size-4 sm:block" />
-                <Upload className="size-4 sm:hidden" />
-                <span className="hidden sm:inline">Upload</span>
+                <Upload className="size-4" />
+                <span>Upload</span>
               </Button>
 
               <NotificationsBell />

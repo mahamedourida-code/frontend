@@ -212,12 +212,12 @@
     --button-warm: var(--workspace-soft);
     --button-warm-hover: #eef2f8;
     --button-warm-ring: var(--workspace-border);
-    --btn-primary-bg: #edf4ff;
-    --btn-primary-bg-hover: #dbe8ff;
-    --btn-primary-fg: #174a9c;
-    --btn-primary-fg-hover: #123d82;
-    --btn-primary-border: var(--workspace-primary);
-    --btn-primary-border-hover: var(--workspace-primary-hover);
+    --btn-primary-bg: var(--workspace-cta);
+    --btn-primary-bg-hover: var(--workspace-cta-hover);
+    --btn-primary-fg: #ffffff;
+    --btn-primary-fg-hover: #ffffff;
+    --btn-primary-border: var(--workspace-cta-border);
+    --btn-primary-border-hover: var(--workspace-cta-pressed);
     --btn-secondary-bg: #ffffff;
     --btn-secondary-fg: var(--workspace-ink);
     --btn-secondary-border: var(--workspace-button-border);
@@ -280,7 +280,23 @@
   body.ax-workspace svg [fill="none"] {
     fill: none !important;
   }
+  body.ax-workspace {
+    --btn-primary-bg: var(--workspace-cta);
+    --btn-primary-bg-hover: var(--workspace-cta-hover);
+    --btn-primary-fg: #ffffff;
+    --btn-primary-fg-hover: #ffffff;
+    --btn-primary-border: var(--workspace-cta-border);
+    --btn-primary-border-hover: var(--workspace-cta-pressed);
+  }
+  body.ax-workspace [data-slot="button"] svg {
+    color: currentColor !important;
+    stroke: currentColor !important;
+  }
   body.ax-workspace .ax-workspace-header svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+  }
+  body.ax-workspace .ax-workspace-sidebar-head svg {
     color: #ffffff !important;
     stroke: #ffffff !important;
   }
@@ -451,16 +467,23 @@
   .ax-dashboard-content [data-slot="button"][data-variant="critical"],
   .ax-dashboard-content [data-slot="button"][data-variant="warm"],
   .ax-dashboard-content [data-slot="button"][data-variant="clay"] {
-    border-color: var(--workspace-primary) !important;
-    background: #edf4ff !important;
-    color: #174a9c !important;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.75), 0 0 0 1px var(--workspace-primary), 0 1px 3px rgba(23,74,156,0.14) !important;
+    border-color: var(--workspace-cta-border) !important;
+    background: var(--workspace-cta) !important;
+    color: #ffffff !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.24), 0 0 0 1px var(--workspace-cta-border), 0 2px 4px rgba(15,23,42,0.18) !important;
   }
   .ax-dashboard-content [data-slot="button"][data-variant="glossy"]:hover,
   .ax-dashboard-content [data-slot="button"][data-variant="critical"]:hover,
   .ax-dashboard-content [data-slot="button"][data-variant="warm"]:hover,
   .ax-dashboard-content [data-slot="button"][data-variant="clay"]:hover {
-    background: #dbe8ff !important;
+    background: var(--workspace-cta-hover) !important;
+  }
+  .ax-dashboard-content [data-slot="button"][data-variant="glossy"]:active,
+  .ax-dashboard-content [data-slot="button"][data-variant="critical"]:active,
+  .ax-dashboard-content [data-slot="button"][data-variant="warm"]:active,
+  .ax-dashboard-content [data-slot="button"][data-variant="clay"]:active {
+    background: var(--workspace-cta-pressed) !important;
+    box-shadow: inset 0 2px 3px rgba(15,23,42,0.24), 0 0 0 1px var(--workspace-cta-pressed) !important;
   }
   .ax-dashboard-content [data-slot="button"][data-variant="lime"] {
     border-color: rgba(255,255,255,0.42) !important;
@@ -469,6 +492,7 @@
     background-position: center !important;
     background-size: cover !important;
     color: #ffffff !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 0 0 1px rgba(15,23,42,0.38), 0 2px 4px rgba(15,23,42,0.2) !important;
   }
   .ax-dashboard-content [data-slot="button"][data-variant="ink"],
   .ax-dashboard-content [data-slot="button"][data-variant="reviewed"] {
@@ -676,12 +700,17 @@
   /* Devin-matched bright accent blue for landing-page heading accents + links. */
   --landing-blue: #317cff;
   --landing-blue-hover: #1f63e0;
-  --workspace-topbar: #1b1d1c;
-  --workspace-topbar-hover: #2b2e2c;
+  --workspace-topbar: #23384a;
+  --workspace-topbar-hover: #2d485f;
+  --workspace-topbar-border: #334f67;
   --workspace-sidebar: #f6f7f5;
   --workspace-sidebar-active: #0a0a0a;
   --workspace-primary: var(--landing-blue);
   --workspace-primary-hover: var(--landing-blue-hover);
+  --workspace-cta: #1877f2;
+  --workspace-cta-hover: #166fe5;
+  --workspace-cta-pressed: #145dbf;
+  --workspace-cta-border: #1264d8;
   --workspace-blue-soft: #edf4ff;
   --workspace-success: #16a34a;
   --workspace-success-hover: #15803d;

@@ -113,7 +113,7 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
 
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild className="h-9 gap-2 rounded-md px-2 text-[13px]">
-          <Link href="/dashboard/guide"><BookOpen className="size-4 text-black" />Workspace guide</Link>
+          <Link href="/dashboard/guide"><BookOpen className="size-4 text-black" />Start here</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="h-9 gap-2 rounded-md px-2 text-[13px]">
           <Link href="/contact"><LifeBuoy className="size-4 text-black" />Support</Link>

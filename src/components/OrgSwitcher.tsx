@@ -73,9 +73,9 @@ export function OrgSwitcher({ user }: OrgSwitcherProps) {
 
   if (isLoading && !activeWorkspace) {
     return (
-      <div className="hidden h-9 w-[168px] items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 md:flex">
+      <div className="hidden size-9 items-center justify-center rounded-full border border-white/15 bg-white/5 md:flex">
         <Loader2 className="size-4 animate-spin text-white/70" />
-        <span className="text-[13px] font-semibold text-white/70">Workspace</span>
+        <span className="sr-only">Loading workspace</span>
       </div>
     )
   }
@@ -88,15 +88,16 @@ export function OrgSwitcher({ user }: OrgSwitcherProps) {
             type="button"
             disabled={busy}
             aria-label="Switch workspace"
+            title={`Workspace: ${activeName}`}
             className={cn(
-              "ax-interactive group hidden h-9 max-w-[230px] cursor-pointer items-center gap-2 rounded-full border border-white/16 bg-white/[0.07] px-2.5 text-white outline-none hover:border-white/30 hover:bg-white/[0.11] focus-visible:ring-2 focus-visible:ring-white/30 md:inline-flex",
+              "ax-interactive group hidden size-9 cursor-pointer items-center justify-center rounded-full border border-white/16 bg-white/[0.07] text-white outline-none hover:border-white/30 hover:bg-white/[0.11] focus-visible:ring-2 focus-visible:ring-white/30 md:inline-flex xl:h-9 xl:w-auto xl:max-w-[210px] xl:justify-start xl:gap-2 xl:px-2.5",
             )}
           >
             <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-white">
               {busy ? <Loader2 className="size-4 animate-spin text-white" /> : <Building2 className="size-4 text-white" />}
             </span>
-            <span className="max-w-[160px] truncate text-[13px] font-semibold text-white">{activeName}</span>
-            <ChevronsUpDown className="ms-auto size-3.5 shrink-0 text-white/60 group-hover:text-white" />
+            <span className="hidden max-w-[142px] truncate text-[13px] font-semibold text-white xl:inline">{activeName}</span>
+            <ChevronsUpDown className="ms-auto hidden size-3.5 shrink-0 text-white/60 group-hover:text-white xl:block" />
           </button>
         </DropdownMenuTrigger>
 
@@ -193,7 +194,7 @@ export function OrgSwitcher({ user }: OrgSwitcherProps) {
               onClick={() => void handleCreate()}
               disabled={creating || newName.trim().length < 2}
             >
-              {creating ? <Loader2 className="size-4 animate-spin text-black" /> : <Plus className="size-4 text-black" />}
+              {creating ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
               Create workspace
             </Button>
           </DialogFooter>

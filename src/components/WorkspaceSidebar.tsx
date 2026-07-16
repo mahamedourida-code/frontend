@@ -6,12 +6,12 @@ import {
   Activity,
   BookCheck,
   Building2,
+  CircleHelp,
   Inbox,
   Layers3,
   PanelLeftClose,
   PanelLeftOpen,
   PlugZap,
-  Plus,
   ReceiptText,
   Settings,
   type LucideIcon,
@@ -62,6 +62,7 @@ type VisibleItemKey =
   | "activity"
   | "integrations"
   | "settings"
+  | "guide"
 
 type SidebarItem = {
   key: VisibleItemKey
@@ -70,14 +71,14 @@ type SidebarItem = {
   icon: LucideIcon
 }
 
-const EXPANDED_W = 224
-const COLLAPSED_W = 68
+const EXPANDED_W = 208
+const COLLAPSED_W = 64
 const STORAGE_KEY = "axliner:sidebarCollapsed"
 
 const WORK_ITEMS: SidebarItem[] = [
   { key: "companies", label: "Clients", href: "/dashboard", icon: Building2 },
   { key: "inbox", label: "Inbox", href: "/dashboard/inbox", icon: Inbox },
-  { key: "review", label: "Review board", href: "/dashboard/client", icon: BookCheck },
+  { key: "review", label: "Review", href: "/dashboard/client", icon: BookCheck },
   { key: "accounts_payable", label: "Draft bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
 ]
 
@@ -87,6 +88,7 @@ const RECORD_ITEMS: SidebarItem[] = [
 ]
 
 const MANAGE_ITEMS: SidebarItem[] = [
+  { key: "guide", label: "Start here", href: "/dashboard/guide", icon: CircleHelp },
   { key: "integrations", label: "Connections", href: "/dashboard/integrations", icon: PlugZap },
   { key: "settings", label: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
@@ -124,7 +126,6 @@ export function WorkspaceSidebar({
   const reviewCount = state.processingComplete && Array.isArray(state.processedFiles)
     ? state.processedFiles.length
     : 0
-  const batchEntryActive = BATCH_ENTRY_ITEMS.has(activeItem) || currentHash === "#upload-files"
 
   useEffect(() => {
     try {
@@ -163,11 +164,11 @@ export function WorkspaceSidebar({
           item.key === "companies" ? "clients" : item.key === "review" ? "review" : undefined
         }
         className={cn(
-          "ax-interactive relative flex h-9 items-center rounded-full border outline-none focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/25",
+          "ax-interactive relative flex h-9 items-center rounded-md border outline-none focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/25",
           collapsed ? "justify-center px-0" : "gap-2.5 px-3 text-[13px]",
           isActive
-            ? "border-[var(--workspace-selection-border)] bg-white font-semibold text-[var(--workspace-ink)]"
-            : "border-transparent font-medium text-[var(--workspace-muted)] hover:border-[var(--workspace-border)] hover:bg-white hover:text-[var(--workspace-ink)]",
+            ? "border-[var(--workspace-selection-border)] bg-[var(--workspace-selection-bg)] font-semibold text-[var(--workspace-ink)]"
+            : "border-transparent font-medium text-[var(--workspace-muted)] hover:bg-white hover:text-[var(--workspace-ink)]",
         )}
       >
         {isActive && !collapsed ? (
@@ -197,7 +198,7 @@ export function WorkspaceSidebar({
     >
       <div
         className={cn(
-          "flex h-14 shrink-0 items-center border-b border-white/10 bg-[var(--workspace-topbar)] px-2.5 text-white",
+          "ax-workspace-sidebar-head flex h-14 shrink-0 items-center border-b border-[var(--workspace-topbar-border)] bg-[var(--workspace-topbar)] px-2.5 text-white",
           collapsed ? "justify-center" : "gap-2",
         )}
       >
@@ -230,34 +231,18 @@ export function WorkspaceSidebar({
             type="button"
             onClick={() => setCollapsed(false)}
             aria-label="Expand navigation"
-            className="ax-interactive mb-2 flex h-9 items-center justify-center rounded-full text-[var(--workspace-muted)] hover:bg-white hover:text-[var(--workspace-ink)]"
+            title="Expand navigation"
+            className="ax-interactive mb-2 flex h-9 items-center justify-center rounded-md text-[var(--workspace-muted)] hover:bg-white hover:text-[var(--workspace-ink)]"
           >
             <PanelLeftOpen className="size-[17px]" />
           </button>
         ) : null}
 
-        <Link
-          href="/dashboard/client#upload-files"
-          data-workspace-tour="upload"
-          aria-current={batchEntryActive ? "page" : undefined}
-          title={collapsed ? "Upload" : undefined}
-          className={cn(
-            "ax-interactive mb-4 flex h-9 items-center justify-center rounded-full border border-[var(--workspace-primary)] bg-[var(--workspace-blue-soft)] font-semibold text-[#174a9c] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_1px_2px_rgba(23,74,156,0.12)] hover:bg-[#dbe8ff]",
-            collapsed ? "px-0" : "gap-2 px-3 text-[13px]",
-            batchEntryActive && "ring-2 ring-[var(--workspace-primary)]/20",
-          )}
-        >
-          <Plus className="size-4 text-[var(--workspace-primary)]" />
-          {!collapsed ? <span>Upload</span> : null}
-        </Link>
-
         <div className="space-y-1">
-          {!collapsed ? <p className="px-3 pb-1 text-[10px] font-semibold uppercase text-[var(--workspace-muted)]">Work</p> : null}
           {WORK_ITEMS.map(renderItem)}
         </div>
 
-        <div className="mt-4 space-y-1 border-t border-[var(--workspace-border)] pt-3">
-          {!collapsed ? <p className="px-3 pb-1 text-[10px] font-semibold uppercase text-[var(--workspace-muted)]">Records</p> : null}
+        <div className="mt-3 space-y-1 border-t border-[var(--workspace-border)] pt-3">
           {RECORD_ITEMS.map(renderItem)}
         </div>
 
