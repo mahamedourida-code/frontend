@@ -3,7 +3,6 @@
 import { Suspense, useCallback, useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { motion } from "framer-motion"
 import {
   AlertTriangle,
   ArrowLeft,
@@ -162,7 +161,7 @@ function FormField({
 }) {
   return (
     <label className="block">
-      <span className={cn("mb-2 flex items-center gap-1.5 text-[12px] font-bold tracking-tight", labelTone || "text-[#111827]")}>
+      <span className={cn("mb-1 flex items-center gap-1.5 text-[12px] font-bold tracking-normal", labelTone || "text-[#111827]")}>
         {label}
         {saving ? <Loader2 className="size-3 animate-spin text-[var(--brand-brown-fg)]" /> : null}
       </span>
@@ -172,7 +171,7 @@ function FormField({
         onBlur={(event) => {
           if (event.target.value !== value) onSave(event.target.value)
         }}
-        className={cn("h-11 w-full rounded-md border border-[#d4d4d4] bg-white px-3 text-[14px] font-semibold outline-none transition focus:border-[var(--workspace-blue)] focus:ring-2 focus:ring-black/15", fieldValueClass(label))}
+        className={cn("h-9 w-full rounded-md border border-[#d4d4d4] bg-white px-3 text-[13px] font-semibold outline-none transition focus:border-[var(--workspace-blue)] focus:ring-2 focus:ring-black/15", fieldValueClass(label))}
         placeholder="—"
       />
     </label>
@@ -417,16 +416,16 @@ function DocumentReviewContent() {
       showBack={false}
     >
       <div className="min-h-[calc(100svh-5rem)] bg-background text-[#111827]">
-        <header className="mb-6 rounded-lg border border-[#e5e5e5] bg-white/95 shadow-sm backdrop-blur">
-          <div className="mx-auto flex max-w-[1560px] flex-wrap items-center gap-3 px-5 py-3 sm:px-7">
-          <Button asChild variant="surface" size="sm" className="h-9 px-3 text-xs">
+        <header className="sticky top-14 z-30 -mx-3 mb-3 border-y border-[#e5e5e5] bg-white/[0.95] shadow-[0_8px_22px_-22px_rgba(15,23,42,0.55)] backdrop-blur supports-[backdrop-filter]:bg-white/[0.88] sm:-mx-5 lg:-mx-6">
+          <div className="mx-auto flex max-w-[1560px] flex-wrap items-center gap-2.5 px-3 py-2 sm:px-5 lg:px-6">
+          <Button asChild variant="surface" size="sm" className="h-8 px-3 text-xs">
             <Link href={`/dashboard/client?job_id=${jobId}`}>
               <ArrowLeft className="size-4" />
-              Review
+              Batch
             </Link>
           </Button>
           <span
-            className="flex size-9 shrink-0 items-center justify-center rounded-full"
+            className="flex size-8 shrink-0 items-center justify-center rounded-full"
             style={{ backgroundColor: `${accent}14`, color: accent }}
           >
             {docType === "receipt" ? <Receipt className="size-4" /> : docType === "table" ? <ScanLine className="size-4" /> : <FileText className="size-4" />}
@@ -436,11 +435,16 @@ function DocumentReviewContent() {
               <span className={cn("inline-flex h-5 items-center whitespace-nowrap rounded-full border px-2 text-[11px] font-semibold leading-none", STATUS_STYLE[status] || STATUS_STYLE.needs_review)}>
                 {STATUS_LABEL[status] || status}
               </span>
-              <span className={cn("text-[11px] font-bold uppercase tracking-[0.08em]", TYPE_TONE[docType] || "text-[#475467]")}>
+              <span className={cn("text-[11px] font-bold uppercase tracking-normal", TYPE_TONE[docType] || "text-[#475467]")}>
                 {TYPE_LABEL[docType] || "Document"}
               </span>
+              {uncertainSet.size > 0 ? (
+                <span className="text-[11px] font-semibold text-[var(--text-attention)]">
+                  {uncertainSet.size} field{uncertainSet.size === 1 ? "" : "s"} to check
+                </span>
+              ) : null}
             </div>
-            <p className="mt-0.5 max-w-[42ch] truncate text-[15px] font-bold tracking-tight">{doc.original_filename}</p>
+            <p className="mt-0.5 max-w-[42ch] truncate text-[14px] font-bold tracking-normal">{doc.original_filename}</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Button
@@ -448,21 +452,21 @@ function DocumentReviewContent() {
               variant="surface"
               onClick={() => void download()}
               disabled={downloading}
-              className="h-9 px-3 text-xs"
+              className="h-8 px-3 text-xs"
             >
               {downloading ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
-              Download
+              XLSX
             </Button>
             {canSendToBills ? (
               <Button
                 type="button"
-                variant="surface"
+                variant="glossy"
                 onClick={() => void sendToBills()}
                 disabled={sendingBill || sentToBills}
-                className="h-9 px-3 text-xs"
+                className="h-8 px-3 text-xs"
               >
                 {sendingBill ? <Loader2 className="size-4 animate-spin" /> : null}
-                {sentToBills ? "Sent to bills" : "Send to draft bills"}
+                {sentToBills ? "Draft bill created" : "Create draft bill"}
               </Button>
             ) : null}
             {canMarkReady ? (
@@ -471,7 +475,7 @@ function DocumentReviewContent() {
                 variant="glossy"
                 onClick={() => void markReady()}
                 disabled={markingReady}
-                className="h-9 px-4 text-xs"
+                className="h-8 px-4 text-xs"
               >
                 {markingReady ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
                 Mark ready
@@ -481,16 +485,11 @@ function DocumentReviewContent() {
           </div>
         </header>
 
-      <motion.main
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-        className="mx-auto grid max-w-[1560px] gap-6 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]"
-      >
+      <main className="mx-auto grid max-w-[1560px] gap-3 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]">
         {/* Source preview — sticky on desktop */}
-        <div className="lg:sticky lg:top-[84px] lg:self-start">
+        <div className="lg:sticky lg:top-[8.25rem] lg:self-start">
           <div className="overflow-hidden rounded-lg border border-[#e5e5e5] bg-white shadow-sm">
-            <div className="border-b border-[#e5e5e5] px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.08em] text-[#475467]">
+            <div className="border-b border-[#e5e5e5] px-4 py-2.5 text-[11px] font-bold uppercase tracking-normal text-[#475467]">
               Source document
             </div>
             <div className="flex max-h-[78vh] items-center justify-center overflow-auto bg-[#f5f5f5] p-4">
@@ -507,9 +506,9 @@ function DocumentReviewContent() {
         </div>
 
         <div className="overflow-hidden rounded-lg border border-[#e5e5e5] bg-white shadow-sm">
-          <div className="border-b border-[#e5e5e5] px-7 py-7">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-              <div className="grid min-w-0 flex-1 grid-cols-2 gap-x-5 gap-y-5 lg:grid-cols-3">
+          <div className="border-b border-[#e5e5e5] px-4 py-4 sm:px-5">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
+              <div className="grid min-w-0 flex-1 grid-cols-2 gap-x-4 gap-y-3 lg:grid-cols-3">
                 {headerFields.length ? (
                   headerFields.map((field) => (
                     <FormField
@@ -522,17 +521,17 @@ function DocumentReviewContent() {
                   ))
                 ) : (
                   <div className="col-span-2 lg:col-span-3">
-                    <span className="mb-2 block text-[12px] font-bold tracking-tight text-[#475467]">Document</span>
-                    <p className="ax-data-entity truncate text-[15px] font-bold tracking-tight">
+                    <span className="mb-2 block text-[12px] font-bold tracking-normal text-[#475467]">Document</span>
+                    <p className="ax-data-entity truncate text-[15px] font-bold tracking-normal">
                       {data.vendor_name || data.merchant || data.account_holder || data.bank_name || doc.original_filename}
                     </p>
                   </div>
                 )}
               </div>
-              <div className="w-full shrink-0 lg:w-52">
-                <p className="text-[12px] font-bold tracking-tight text-[#475467] lg:text-right">{totalLabel}</p>
-                <div className="mt-2 flex h-12 items-center justify-end rounded-md border border-[#d4d4d4] bg-[#f5f5f5] px-3">
-                  <span className="ax-data-money truncate text-[20px] font-extrabold" title={totalDisplay}>{totalDisplay}</span>
+              <div className="w-full shrink-0 lg:w-44">
+                <p className="text-[12px] font-bold tracking-normal text-[#475467] lg:text-right">{totalLabel}</p>
+                <div className="mt-1 flex h-10 items-center justify-end rounded-md border border-[#d4d4d4] bg-[#f5f5f5] px-3">
+                  <span className="ax-data-money truncate text-[18px] font-extrabold" title={totalDisplay}>{totalDisplay}</span>
                 </div>
               </div>
             </div>
@@ -541,15 +540,15 @@ function DocumentReviewContent() {
           {/* Line items */}
           {lineItems ? (
             lineItems.rows.length ? (
-              <div className="overflow-x-auto">
+              <div className="max-h-[58svh] overflow-auto">
                 <table className="w-full min-w-[720px] border-collapse">
-                  <thead>
+                  <thead className="sticky top-0 z-[2]">
                     <tr className="border-b border-[#e5e5e5] bg-[#f5f5f5]">
                       {lineItems.columns.map(([label], index) => (
                         <th
                           key={label}
                           className={cn(
-                            "px-4 py-3 text-[12px] font-bold tracking-tight text-[#475467]",
+                            "px-4 py-3 text-[12px] font-bold tracking-normal text-[#475467]",
                             index >= lineItems.numericFrom ? "text-right" : "text-left",
                           )}
                         >
@@ -577,7 +576,7 @@ function DocumentReviewContent() {
                                     }
                                   }}
                                   className={cn(
-                                    "h-10 w-full min-w-[80px] rounded-md border bg-white px-2.5 text-[14px] text-[#111827] outline-none transition focus:border-[var(--brand-brown-fg)] focus:ring-2 focus:ring-black/15",
+                                    "h-9 w-full min-w-[80px] rounded-md border bg-white px-2.5 text-[13px] text-[#111827] outline-none transition focus:border-[var(--brand-brown-fg)] focus:ring-2 focus:ring-black/15",
                                     isUncertain ? "border-rose-400 ring-1 ring-rose-300/60" : "border-[#e5e5e5]",
                                     numeric && "text-right tabular-nums",
                                     isAmount && "ax-data-money font-bold",
@@ -605,11 +604,11 @@ function DocumentReviewContent() {
 
           {/* Raw extracted table (table / notes documents) — clean spreadsheet */}
           {!lineItems && reviewGrid ? (
-            <div className="overflow-x-auto">
+            <div className="max-h-[58svh] overflow-auto">
               <table className="w-full min-w-[640px] border-collapse text-[13px]">
                 <tbody>
                   {reviewGrid.map((row, rowIndex) => (
-                    <tr key={rowIndex} className={rowIndex === 0 ? "bg-[#f5f5f5] font-semibold" : "bg-white transition-colors hover:bg-[#f5f5f5]"}>
+                    <tr key={rowIndex} className={rowIndex === 0 ? "sticky top-0 z-[2] bg-[#f5f5f5] font-semibold" : "bg-white transition-colors hover:bg-[#f5f5f5]"}>
                       {row.map((cell, cellIndex) => {
                         const isUncertain = rowIndex !== 0 && uncertainSet.has(`${rowIndex}:${cellIndex}`)
                         return (
@@ -630,9 +629,9 @@ function DocumentReviewContent() {
                                   }
                                 }}
                                 className={cn(
-                                  "h-10 w-full min-w-[110px] rounded-md border px-2.5 text-[13px] outline-none transition focus:border-[var(--brand-brown-fg)] focus:bg-white focus:ring-2 focus:ring-black/15",
+                                  "h-9 w-full min-w-[110px] rounded-md border px-2.5 text-[13px] outline-none transition focus:border-[var(--brand-brown-fg)] focus:bg-white focus:ring-2 focus:ring-black/15",
                                   isUncertain ? "border-rose-400 bg-white ring-1 ring-rose-300/60" : "border-transparent bg-transparent",
-                                  rowIndex === 0 ? "text-[12px] font-bold tracking-tight text-[#475467]" : "font-medium text-[#111827]",
+                                  rowIndex === 0 ? "text-[12px] font-bold tracking-normal text-[#475467]" : "font-medium text-[#111827]",
                                 )}
                               />
                               {isUncertain && (
@@ -654,8 +653,8 @@ function DocumentReviewContent() {
 
           {/* Totals block */}
           {showInvoiceTotals ? (
-            <div className="px-7 py-7">
-              <div className="ml-auto w-full max-w-[360px]">
+            <div className="px-4 py-4 sm:px-5">
+              <div className="ml-auto w-full max-w-[320px]">
                 <div className="flex items-center justify-between gap-4 py-2 text-[14px]">
                   <span className="shrink-0 font-semibold text-[#475467]">Subtotal</span>
                   <span className="ax-data-money min-w-0 truncate text-right" title={money(data.subtotal)}>{money(data.subtotal)}</span>
@@ -665,14 +664,14 @@ function DocumentReviewContent() {
                   <span className="ax-data-tax min-w-0 truncate text-right" title={money(data.tax_vat_amount)}>{money(data.tax_vat_amount)}</span>
                 </div>
                 <div className="flex items-center justify-between gap-4 border-t-2 border-[#111827] pt-3">
-                  <span className="shrink-0 text-[18px] font-extrabold tracking-tight text-[#111827]">TOTAL</span>
+                  <span className="shrink-0 text-[18px] font-extrabold tracking-normal text-[#111827]">TOTAL</span>
                   <span className="ax-data-money min-w-0 truncate text-right text-[22px] font-extrabold" title={money(data.total)}>{money(data.total)}</span>
                 </div>
               </div>
             </div>
           ) : null}
         </div>
-      </motion.main>
+      </main>
       </div>
     </DashboardShell>
   )

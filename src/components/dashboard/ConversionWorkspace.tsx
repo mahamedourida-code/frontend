@@ -598,13 +598,13 @@ function ExtractedTable({ rows }: { rows: any[][] }) {
 }
 
 const reviewBoardActionBarClass =
-  "scroll-mt-20 flex flex-col gap-4 rounded-lg border border-[var(--workspace-border)] bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+  "sticky top-14 z-20 scroll-mt-20 flex flex-col gap-2 border-y border-[var(--workspace-border)] bg-white/[0.95] px-3 py-2.5 shadow-[0_8px_22px_-20px_rgba(15,23,42,0.55)] backdrop-blur supports-[backdrop-filter]:bg-white/[0.88] sm:flex-row sm:items-center sm:justify-between sm:px-4"
 const reviewBoardShellClass =
-  "overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white"
+  "relative rounded-lg border border-[var(--workspace-border)] bg-white"
 const reviewBoardTopbarClass =
-  "flex min-h-12 flex-col gap-2 border-b border-[var(--workspace-border)] bg-white px-5 sm:flex-row sm:items-center sm:justify-between"
+  "flex min-h-11 flex-col gap-2 rounded-t-lg border-b border-[var(--workspace-border)] bg-white px-3 sm:flex-row sm:items-center sm:justify-between sm:px-4"
 const reviewBoardBandClass =
-  "border-b border-[var(--workspace-border)] bg-white px-5 py-4 text-[12px] text-[var(--workspace-muted)]"
+  "border-b border-[var(--workspace-border)] bg-[var(--workspace-table-header)] px-3 py-2 text-[11px] font-medium text-[var(--workspace-muted)] sm:px-4"
 const reviewBoardTableClass =
   "ax-table w-full min-w-[1120px] text-left text-[13px]"
 const reviewBoardHeadCellClass =
@@ -616,11 +616,34 @@ const reviewBoardRowClass =
 const reviewBoardMenuClass =
   "absolute right-0 top-11 z-30 space-y-1.5 rounded-md border border-[var(--workspace-border)] bg-white p-2 shadow-[0_8px_30px_rgba(0,0,0,0.12)]"
 const reviewBoardMobileCardClass =
-  "border-b border-[var(--workspace-border)] bg-white p-3 last:border-b-0"
+  "border-b border-[var(--workspace-border)] bg-white px-3 py-3 last:border-b-0"
 const reviewBoardMetricClass =
   "inline-flex h-6 items-center text-[11px] font-semibold text-[var(--workspace-muted)]"
 const reviewBoardDash =
   <span className="text-[var(--workspace-muted)]/60">-</span>
+
+function resultConfidence(file: ResultFile) {
+  const flaggedFields = (file.uncertain_cells?.length || 0) + (file.review_flags?.length || 0)
+  if (flaggedFields > 0) {
+    return {
+      tone: "caution" as const,
+      label: `${flaggedFields} field${flaggedFields === 1 ? "" : "s"}`,
+      reason: "These extracted fields have low confidence and need a reviewer.",
+    }
+  }
+  if (file.requires_review || file.review_status === "needs_review") {
+    return {
+      tone: "caution" as const,
+      label: "Review",
+      reason: "Check the highlighted fields before marking this document ready.",
+    }
+  }
+  return {
+    tone: "good" as const,
+    label: "Checked",
+    reason: "No field-level confidence exceptions were reported.",
+  }
+}
 
 export function ResultPreviewPanel({
   isComplete,
@@ -1166,7 +1189,7 @@ export function ResultActions({
   )
   const resultFilterTabs = ([
     { value: "all", label: "All", count: filterCounts.all },
-    { value: "needs_review", label: "Review", count: filterCounts.needs_review },
+    { value: "needs_review", label: "Needs review", count: filterCounts.needs_review },
     { value: "ready", label: "Ready", count: filterCounts.ready },
     { value: "edited", label: "Edited", count: filterCounts.edited },
     { value: "published", label: "Published", count: filterCounts.published },
@@ -1175,7 +1198,7 @@ export function ResultActions({
     tab.value === "all" || tab.count > 0 || tab.value === resultFilter
   ))
   const reviewMetrics = [
-    { label: "Review", value: filterCounts.needs_review },
+    { label: "need review", value: filterCounts.needs_review },
     { label: "Ready", value: filterCounts.ready },
     { label: "Edited", value: filterCounts.edited },
     { label: "Dupes", value: unresolvedDuplicateCount },
@@ -1473,7 +1496,11 @@ export function ResultActions({
       {isComplete ? (
         <div id="reviewed-outputs" className={reviewBoardActionBarClass}>
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-[var(--workspace-ink)]">Review board</p>
+            <p className="text-sm font-semibold text-[var(--workspace-ink)]">
+              {filterCounts.needs_review > 0
+                ? `${filterCounts.needs_review} exception${filterCounts.needs_review === 1 ? "" : "s"} left`
+                : "Batch reviewed"}
+            </p>
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:justify-end">
             {editedCount > 0 && !isTextOutput ? (
@@ -1536,7 +1563,7 @@ export function ResultActions({
             <details className="group relative">
               <summary className={cn(buttonVariants({ variant: "glossy", size: "default" }), "h-9 cursor-pointer list-none gap-2 px-4 text-sm [&::-webkit-details-marker]:hidden", workspacePrimaryControlClass)}>
                 <Send className="h-4 w-4" />
-                Export
+                Export reviewed
                 <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
               </summary>
               <div className={cn(reviewBoardMenuClass, "w-64")}>
@@ -1548,7 +1575,7 @@ export function ResultActions({
                   className={cn("h-9 w-full justify-start gap-2 px-3 text-xs", workspaceNormalControlClass)}
                 >
                   {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-                  {unresolvedDuplicateCount > 0 ? "Resolve dupes" : "Download"}
+                  {unresolvedDuplicateCount > 0 ? "Resolve duplicates" : "Download reviewed stack"}
                 </Button>
                 {onSendToAccountsPayable && unsentReadyInvoiceEntries.length ? (
                   <Button
@@ -1591,7 +1618,7 @@ export function ResultActions({
       <div className="pt-3">
         <div className={reviewBoardShellClass}>
           <div className={reviewBoardTopbarClass}>
-            <div className="flex min-h-12 flex-wrap items-stretch gap-4">
+            <div className="flex min-h-11 max-w-full flex-wrap items-stretch gap-4 overflow-x-auto">
               {resultFilterTabs.map((tab) => {
                 const active = resultFilter === tab.value
                 return (
@@ -1600,7 +1627,7 @@ export function ResultActions({
                     type="button"
                     onClick={() => setResultFilter(tab.value)}
                     className={cn(
-                      "ax-interactive relative inline-flex h-12 items-center gap-1.5 border-b-2 px-0 text-[13px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/20",
+                      "ax-interactive relative inline-flex h-11 shrink-0 items-center gap-1.5 border-b-2 px-0 text-[13px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/20",
                       active
                         ? "border-[var(--workspace-primary)] text-[var(--workspace-primary)]"
                         : "border-transparent text-[#475467] hover:text-[#111827]",
@@ -1637,26 +1664,88 @@ export function ResultActions({
             />
           ) : (
             <div className={reviewBoardBandClass}>
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <span className="font-semibold text-[var(--workspace-ink)]">Results</span>
-                <span className="tabular-nums">
-                  {filteredResultEntries.length}/{filterCounts.all} shown
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                <span className="font-semibold text-[var(--workspace-ink)] tabular-nums">
+                  {filteredResultEntries.length} of {filterCounts.all}
                 </span>
-              </div>
-              <div className="mt-2 flex flex-wrap gap-2">
                 {reviewMetrics.map((metric) => (
                   <span key={metric.label} className={reviewBoardMetricClass}>
                     <span className="mr-1.5 text-[var(--workspace-ink)] tabular-nums">{metric.value}</span>
-                    {metric.label}
+                    {metric.label.toLowerCase()}
                   </span>
                 ))}
               </div>
             </div>
           )}
 
-          <div className="overflow-x-auto">
+          <div className="divide-y divide-[var(--workspace-border)] lg:hidden">
+            {filteredResultEntries.length ? filteredResultEntries.map(({ file, index, fileKey, badge, edited, duplicateWarning }) => {
+              const summary = resultSummary(file)
+              const displayState = edited && !["failed", "published"].includes(badge.state) ? "edited" as const : badge.state
+              const statusLabel = displayState === "edited" ? "Edited" : badge.label
+              const reviewLevel = deriveReviewLevel(file, badge)
+              const issue = resultIssue(file, badge, reviewLevel, duplicateWarning)
+              const confidence = resultConfidence(file)
+              const canMarkReady = Boolean(file.document_id && !["ready", "published", "failed", "deleted"].includes(file.review_status || ""))
+              const docHref = jobId && file.document_id ? `/dashboard/document?job=${jobId}&doc=${file.document_id}` : null
+
+              return (
+                <article key={`mobile-${fileKey}`} className={cn(reviewBoardMobileCardClass, "border-l-[3px]", rowAccentClass(displayState, duplicateWarning))}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      {docHref ? (
+                        <Link href={docHref} className="block truncate text-sm font-semibold text-[var(--workspace-ink)]">
+                          {file.filename || `Document ${index + 1}`}
+                        </Link>
+                      ) : (
+                        <button type="button" onClick={() => openComparison(index)} className="block max-w-full truncate text-left text-sm font-semibold text-[var(--workspace-ink)]">
+                          {file.filename || `Document ${index + 1}`}
+                        </button>
+                      )}
+                      <p className="mt-1 truncate text-xs font-medium text-[var(--workspace-muted)]">
+                        {formatDocumentType(file.document_type)}{summary.identity ? ` - ${summary.identity}` : ""}
+                      </p>
+                    </div>
+                    <span className={cn("inline-flex h-5 shrink-0 items-center rounded-full border px-2 text-[11px] font-semibold", statusChipClass(displayState))}>
+                      {statusLabel}
+                    </span>
+                  </div>
+                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+                    <span className="ax-data-money font-semibold">{formatCellValue(summary.amount)}</span>
+                    <span className={cn("font-semibold", issue.className)}>{issue.label}</span>
+                    <AnomalyChip tone={confidence.tone} label={confidence.label} reason={confidence.reason} />
+                    <span className="ml-auto flex items-center gap-2">
+                      {canMarkReady ? (
+                        <Button type="button" variant="glossy" size="sm" onClick={() => void onMarkDocumentReady?.(file)} className="h-8 px-3 text-xs">
+                          Mark ready
+                        </Button>
+                      ) : null}
+                      {docHref ? (
+                        <Button asChild variant="surface" size="sm" className="h-8 px-3 text-xs">
+                          <Link href={docHref}>Review</Link>
+                        </Button>
+                      ) : (
+                        <Button type="button" variant="surface" size="sm" onClick={() => openComparison(index)} className="h-8 px-3 text-xs">
+                          Review
+                        </Button>
+                      )}
+                    </span>
+                  </div>
+                </article>
+              )
+            }) : (
+              <div className="px-4 py-8 text-center">
+                <p className="text-sm font-medium text-[var(--workspace-muted)]">No documents in this view.</p>
+                <Button type="button" size="sm" variant="surface" onClick={() => setResultFilter("all")} className="mt-3 h-8 px-4 text-xs">
+                  Show all
+                </Button>
+              </div>
+            )}
+          </div>
+
+          <div className="hidden max-h-[calc(100svh-15rem)] overflow-auto lg:block">
             <table className="w-full min-w-[1120px] border-separate border-spacing-0 text-left text-[13px] text-[#111827]">
-              <thead className="bg-[#f8f9fa] text-[11px] font-semibold uppercase text-[#475467]">
+              <thead className="sticky top-0 z-[5] bg-[#f8f9fa] text-[11px] font-semibold uppercase text-[#475467]">
                 <tr>
                   <th className="w-14 border-b border-[#cfd4d9] px-3 py-2.5">View</th>
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5">Document</th>
@@ -1667,8 +1756,8 @@ export function ResultActions({
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5">Date</th>
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5">Due date</th>
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5 text-right">Total</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Check</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Trust</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Exception</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Confidence</th>
                   <th className="w-28 border-b border-[#cfd4d9] px-3 py-2.5 text-right">Action</th>
                 </tr>
               </thead>
@@ -1767,13 +1856,12 @@ export function ResultActions({
                       </td>
                       <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                         {(() => {
-                          const pct = file.certainty ?? 100
-                          const tone: "good" | "caution" | "risk" = pct >= 90 ? "good" : pct >= 70 ? "caution" : "risk"
+                          const confidence = resultConfidence(file)
                           return (
                             <AnomalyChip
-                              tone={tone}
-                              label={`${pct}%`}
-                              reason={pct >= 90 ? "High certainty — all fields extracted cleanly." : pct >= 70 ? "Some fields may need a quick check." : "Low certainty — review flagged cells before exporting."}
+                              tone={confidence.tone}
+                              label={confidence.label}
+                              reason={confidence.reason}
                             />
                           )
                         })()}
@@ -2055,7 +2143,7 @@ export function ResultActions({
                   <div className="border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-4 py-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
-                        <p className="text-xs font-semibold text-foreground">QuickBooks destination</p>
+                        <p className="text-xs font-semibold text-foreground">Publishing destination</p>
                         <p className="mt-1 max-w-xl text-[11px] text-muted-foreground">
                           Expense for paid receipts; Bill for payables.
                         </p>
@@ -2068,14 +2156,14 @@ export function ResultActions({
                     </div>
                     {receiptPublication?.status === "published" ? (
                       <p className="mt-3 text-xs text-foreground">
-                        Published to QuickBooks as {receiptPublication.remote_entity_type}.
+                        Published as {receiptPublication.remote_entity_type}.
                         {receiptPublication.attachment_status === "attached" ? " Source attached." : " Source attachment pending review."}
                       </p>
                     ) : !["ready", "published"].includes(comparisonFile.review_status || "") ? (
                       <p className="mt-3 text-xs text-muted-foreground">Mark ready to publish.</p>
                     ) : !quickBooksConnection?.connected ? (
                       <div className="mt-3 flex flex-wrap items-center gap-2">
-                        <p className="text-xs text-muted-foreground">Connect QuickBooks before publishing receipts.</p>
+                        <p className="text-xs text-muted-foreground">Connect the accounting destination for this receipt.</p>
                         <InlineAction asChild>
                           <a href="/dashboard/integrations">Open integrations</a>
                         </InlineAction>
@@ -2201,7 +2289,7 @@ export function ResultActions({
                             onClick={() => void onRefreshQuickBooksReferences?.()}
                             className="px-1"
                           >
-                            Refresh QuickBooks lists
+                            Refresh accounting lists
                           </InlineAction>
                         </div>
                       </div>

@@ -64,7 +64,6 @@ import {
 type PendingReceiptPublish = {
   file: any
   request: ReceiptQuickBooksPublishRequest
-  origin: { x: number; y: number } | null
   resolve: (value: boolean) => void
 }
 
@@ -131,7 +130,7 @@ export function ProcessImagesContent() {
   const [filePreviewUrls, setFilePreviewUrls] = useState<{[key: number]: string}>({})
   const [pdfPageCounts, setPdfPageCounts] = useState<{[key: number]: number}>({})
   const [workspaceBanner, setWorkspaceBanner] = useState<WorkspaceBanner | null>(null)
-  // C8 — calm publish moment after a receipt is posted to QuickBooks.
+  // Calm publish receipt after the accounting entry is created.
   const [publishConfirmation, setPublishConfirmation] = useState<PublishConfirmationState | null>(null)
   const [pendingDeleteDocument, setPendingDeleteDocument] = useState<any | null>(null)
   const [deleteBatchOpen, setDeleteBatchOpen] = useState(false)
@@ -1722,14 +1721,8 @@ Best regards`
     request: ReceiptQuickBooksPublishRequest,
   ): Promise<boolean> => {
     if (!jobId || !file?.document_id) return false
-    // Anchor the paired success burst on the Publish button the reviewer just clicked.
-    const trigger = document.activeElement as HTMLElement | null
-    const origin = trigger && typeof trigger.getBoundingClientRect === "function"
-      ? (() => { const r = trigger.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 } })()
-      : null
-
     return new Promise<boolean>((resolve) => {
-      setPendingReceiptPublish({ file, request, origin, resolve })
+      setPendingReceiptPublish({ file, request, resolve })
     })
   }, [jobId])
 
@@ -1745,7 +1738,7 @@ Best regards`
       setPendingReceiptPublish(null)
       return
     }
-    const { file, request, origin, resolve } = pendingReceiptPublish
+    const { file, request, resolve } = pendingReceiptPublish
     const isExpense = request.destination === "expense"
     setReceiptPublishBusy(true)
     try {
@@ -1758,13 +1751,13 @@ Best regards`
       setPublishConfirmation({
         kind: isExpense ? "expense" : "bill",
         attached: response.document.quickbooks_receipt_publication?.attachment_status === "attached",
-        origin,
+        destination: "QuickBooks",
       })
       resolve(true)
     } catch (error: any) {
       setWorkspaceBanner({
         title: "Receipt was not published",
-        description: error?.detail || error?.message || "Review the QuickBooks selections and try again.",
+        description: error?.detail || error?.message || "Review the accounting selections and try again.",
         tone: "error",
       })
       resolve(false)
@@ -2002,7 +1995,7 @@ Best regards`
           <DialogContent className="gap-5 rounded-md sm:max-w-md" showCloseButton={!receiptPublishBusy}>
             <DialogHeader>
               <DialogTitle className="text-base font-medium">
-                Publish reviewed receipt to QuickBooks
+                Publish reviewed receipt
               </DialogTitle>
               <DialogDescription className="text-sm leading-6 text-foreground">
                 {pendingReceiptPublish.request.destination === "expense"

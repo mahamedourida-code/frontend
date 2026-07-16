@@ -351,11 +351,10 @@ function AccountsPayableContent() {
   const [discarding, setDiscarding] = useState(false)
   const [pendingConfirmationAction, setPendingConfirmationAction] = useState<PendingConfirmationAction | null>(null)
   // C8 — calm publish moment for the single-Bill flow (the bulk flow already
-  // confirms in its own dialog). Holds the entry kind + attachment + burst origin.
+  // confirms in its own dialog with the active accounting destination.
   const [publishConfirmation, setPublishConfirmation] = useState<PublishConfirmationState | null>(null)
   const publishTriggerRef = useRef<HTMLButtonElement | null>(null)
   const confirmPublishRef = useRef<HTMLButtonElement | null>(null)
-  const activePublishRef = useRef<HTMLButtonElement | null>(null)
   const burstTimeoutRef = useRef<number | null>(null)
 
   useEffect(() => {
@@ -953,20 +952,15 @@ function AccountsPayableContent() {
       }
       const response = await accountsPayableApi.publish(activeItem.id)
       mergeItem(response.item)
-      // The shared confirmation is QuickBooks-specific. Xero keeps the calm
-      // publish result in-page and uses a destination-aware toast here.
-      if (!retryAttachment && isQuickBooks) {
-        const anchor = activePublishRef.current
-        const origin = anchor
-          ? (() => { const r = anchor.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 } })()
-          : null
+      if (!retryAttachment) {
+        const publication = isQuickBooks ? response.item.quickbooks_publication : xeroPublication(response.item)
         setPublishConfirmation({
           kind: "bill",
-          attached: response.item.quickbooks_publication?.attachment_status === "attached",
-          origin,
+          attached: publication?.attachment_status === "attached",
+          destination: isQuickBooks ? "QuickBooks" : "Xero",
         })
       } else {
-        toast.success(retryAttachment ? `Source document attached in ${destinationName}.` : `Draft bill published to ${destinationName}.`)
+        toast.success(`Source document attached in ${destinationName}.`)
       }
     } catch (error: any) {
       toast.error(error?.detail || error?.message || "Could not publish this draft bill.")
@@ -1135,10 +1129,13 @@ function AccountsPayableContent() {
   if (authLoading || !user) return <DashboardRouteLoader label="Loading draft bills" />
 
   return (
-    <DashboardShell activeItem="accounts_payable" title="Draft bills" user={user} contentClassName="max-w-none px-3 py-4 sm:px-5 lg:px-6">
-      <div className="space-y-6">
+    <DashboardShell activeItem="accounts_payable" title="Draft bills" user={user} contentClassName="max-w-none px-3 py-3 sm:px-5 lg:px-6">
+      <div className="space-y-3">
+        <div className="sticky top-14 z-30 -mx-3 border-b border-border bg-background/[0.95] px-3 py-2 shadow-[0_8px_22px_-22px_rgba(15,23,42,0.55)] backdrop-blur supports-[backdrop-filter]:bg-background/[0.88] sm:-mx-5 sm:px-5 lg:-mx-6 lg:px-6">
         <PageHeader
           title="Draft bills"
+          compact
+          className="mb-2 items-center"
           actions={selectedReadyIds.length ? (
             <MotionButton
               ref={publishTriggerRef}
@@ -1173,7 +1170,7 @@ function AccountsPayableContent() {
         <div className="flex flex-wrap items-center justify-end gap-4">
           {clientId ? (
             <InlineAction tone="neutral" onClick={() => router.push("/dashboard/accounts-payable")}>
-              Clear filter
+              Clear client
             </InlineAction>
           ) : null}
           {accountingConnection?.connected ? (
@@ -1182,17 +1179,19 @@ function AccountsPayableContent() {
             </InlineAction>
           ) : null}
           <InlineAction tone="brand" onClick={() => router.push("/dashboard/integrations")}>
-            Manage integration
+            Manage destination
           </InlineAction>
         </div>
+        </div>
 
-        <div className="space-y-6">
+        <div className="space-y-3">
           <WorkspaceSection
             icon={<TableIcon />}
-            title="Draft bill queue"
+            title="Bill queue"
+            compact
             contentClassName="p-0"
           >
-            <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5 sm:px-6">
+            <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2.5 sm:px-4">
               <SegmentedTabs
                 aria-label="Draft bills queue"
                 value={filter}
@@ -1244,7 +1243,7 @@ function AccountsPayableContent() {
             </div>
 
             <div className="border-t border-border">
-              <div className="lg:hidden">
+              <div className="max-h-[58svh] overflow-y-auto lg:hidden">
                 {loading ? (
                   <div className="p-4">
                     <WorkspaceActivityIndicator
@@ -1334,20 +1333,14 @@ function AccountsPayableContent() {
                               </div>
                             </div>
 
-                            <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-                              <div className="rounded-md border border-border bg-background px-2.5 py-2">
-                                <p className="font-medium text-foreground/60">Bill</p>
-                                <p className="mt-0.5 truncate font-mono text-slate-950">{ledgerValue(item.draft_data.invoice_number)}</p>
-                              </div>
-                              <div className="rounded-md border border-border bg-background px-2.5 py-2">
-                                <p className="font-medium text-foreground/60">Due</p>
-                                <p className="mt-0.5 text-slate-950">{shortDate(item.draft_data.due_date)}</p>
-                              </div>
-                              <div className="col-span-2 rounded-md border border-border bg-background px-2.5 py-2">
-                                <p className="font-medium text-foreground/60">Account</p>
-                                <p className="mt-0.5 truncate text-slate-950">{ledgerValue(item.draft_data.account_category)}</p>
-                              </div>
-                            </div>
+                            <dl className="mt-3 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1.5 border-y border-border py-2 text-xs">
+                              <dt className="font-medium text-foreground/60">Bill</dt>
+                              <dd className="truncate text-right font-mono text-slate-950">{ledgerValue(item.draft_data.invoice_number)}</dd>
+                              <dt className="font-medium text-foreground/60">Due</dt>
+                              <dd className="text-right text-slate-950">{shortDate(item.draft_data.due_date)}</dd>
+                              <dt className="font-medium text-foreground/60">Account</dt>
+                              <dd className="truncate text-right text-slate-950">{ledgerValue(item.draft_data.account_category)}</dd>
+                            </dl>
 
                             {issueBadges.length ? (
                               <div className="mt-3 flex flex-wrap gap-1.5">
@@ -1396,9 +1389,9 @@ function AccountsPayableContent() {
                 )}
               </div>
 
-              <div className="hidden overflow-x-auto lg:block">
+              <div className="hidden max-h-[58svh] overflow-auto lg:block">
               <table className={cn("w-full min-w-[1320px] text-left text-xs", workspaceTable)}>
-                <thead className="border-b border-slate-200 bg-slate-50">
+                <thead className="sticky top-0 z-[5] border-b border-slate-200 bg-slate-50">
                   <tr>
                     <th className="w-10 px-4 py-3" />
                     <th className="min-w-[180px] px-4 py-3">Supplier</th>
@@ -1572,12 +1565,13 @@ function AccountsPayableContent() {
             <WorkspaceSection
               tone="active"
               symbol="code-map-to-account"
-              title="Prepare draft bill"
+              title={activeItem.status === "pending_approval" ? "Approval review" : activeItem.status === "ready_to_publish" ? "Ready to publish" : "Code draft bill"}
+              compact
               contentClassName="p-0"
             >
-              <div className="p-4 sm:p-5">
-                <div className="space-y-5">
-                  <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
+              <div className="max-h-[calc(100svh-9rem)] overflow-y-auto p-3 sm:p-4">
+                <div className="space-y-3">
+                  <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-3">
                     <div className="min-w-0">
                       <h2 className="ax-data-entity text-[19px] font-semibold tracking-tight">{draft.vendor || "Vendor missing"}</h2>
                       <p className="mt-1 break-all text-[13px] text-foreground">{activeItem.source_filename}</p>
@@ -1872,12 +1866,6 @@ function AccountsPayableContent() {
                           ))}
                         </SelectContent>
                       </Select>
-                      {draft.account_ref_id ? (
-                        <div className="flex items-center gap-2 pt-1">
-                          <Symbol name="code-4000-chip" size="inline" className="h-12 w-12" alt="" />
-                          <span className="text-xs font-normal text-slate-600">Mapped to your chart of accounts.</span>
-                        </div>
-                      ) : null}
                     </div>
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between gap-2">
@@ -1915,12 +1903,6 @@ function AccountsPayableContent() {
                           ))}
                         </SelectContent>
                       </Select>
-                      {draft.tax_code_ref_id ? (
-                        <div className="flex items-center gap-2 pt-1">
-                          <Symbol name="code-rate-20-tile" size="inline" className="h-12 w-12" alt="" />
-                          <span className="text-xs font-normal text-slate-600">Tax rate applied to this bill.</span>
-                        </div>
-                      ) : null}
                     </div>
                     {coreFields.map(([field, label, placeholder]) => (
                       <div key={field} className="space-y-1.5">
@@ -2044,15 +2026,6 @@ function AccountsPayableContent() {
                           )
                         })
                       )}
-                    </div>
-                  ) : null}
-
-                  {draft.due_date ? (
-                    <div className="flex items-center gap-4 py-1">
-                      <Symbol name="code-aging-timeline" size="medium" className="h-24 w-24 sm:h-28 sm:w-28" alt="" />
-                      <div>
-                        <p className="text-sm font-medium text-slate-950">Payment due {shortDate(draft.due_date)}</p>
-                      </div>
                     </div>
                   ) : null}
 
@@ -2288,35 +2261,7 @@ function AccountsPayableContent() {
                     )}
                   </div>
 
-                  {/* Approval gate — awaiting-approval state. */}
-                  {activeItem.status === "pending_approval" ? (
-                    <div className="flex items-center gap-4 py-1">
-                      <Symbol name="approved-stamp" size="medium" className="h-24 w-24 sm:h-28 sm:w-28" alt="" />
-                      <div className="space-y-1">
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-white px-2.5 py-0.5 text-xs font-medium text-violet-700">
-                          <Symbol name="code-period-close" size="inline" className="size-4" alt="" />
-                          Awaiting approval
-                        </span>
-                        {activeItem.submitted_by_email ? (
-                          <p className="text-xs font-medium text-slate-950">Prepared by {activeItem.submitted_by_email}</p>
-                        ) : null}
-                      </div>
-                    </div>
-                  ) : null}
-
-                  {activeItem.status === "ready_to_publish" && !activeLocked ? (
-                    <div className="flex items-center gap-4 py-1">
-                      <Symbol name="success-bill-ready" size="medium" className="h-28 w-28 sm:h-32 sm:w-32" alt="" />
-                      <div className="space-y-1">
-                        <p className="text-base font-medium text-slate-950">Coded and ready</p>
-                        {activeItem.approved_by_email ? (
-                          <p className="text-xs font-medium text-slate-950">Approved by {activeItem.approved_by_email}</p>
-                        ) : null}
-                      </div>
-                    </div>
-                  ) : null}
-
-                  <div className="sticky bottom-0 z-10 -mx-4 -mb-4 flex flex-wrap justify-end gap-2 border-t border-border bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:relative sm:bottom-auto sm:mx-0 sm:mb-0 sm:bg-transparent sm:px-0 sm:py-4 sm:backdrop-blur-0 sm:supports-[backdrop-filter]:bg-transparent">
+                  <div className="sticky bottom-0 z-10 -mx-3 -mb-3 flex flex-wrap items-center justify-end gap-2 border-t border-border bg-background/[0.96] px-3 py-2.5 shadow-[0_-8px_20px_-20px_rgba(15,23,42,0.55)] backdrop-blur supports-[backdrop-filter]:bg-background/[0.88] sm:-mx-4 sm:-mb-4 sm:px-4">
                     {!activeLocked ? (
                       <>
                         {activeItem.status === "pending_approval" ? (
@@ -2359,7 +2304,6 @@ function AccountsPayableContent() {
                                 </InlineAction>
                                 {isApprover ? (
                                   <MotionButton
-                                    ref={activePublishRef}
                                     variant="glossy"
                                     onClick={requestPublishActive}
                                     disabled={saving || !accountingConnection?.connected || activeHasDuplicate}

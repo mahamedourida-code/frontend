@@ -1,10 +1,8 @@
 "use client"
 
 import { useEffect, useState, type ChangeEvent, type DragEvent, type FormEvent } from "react"
-import { AnimatePresence, motion } from "framer-motion"
 import {
   ArrowRight,
-  FileStack,
   FileImage,
   FileText,
   FolderUp,
@@ -23,7 +21,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
-import { useMotionTokens } from "@/lib/motion"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
 import { companyApi, type CompanySummary } from "@/lib/api-client"
 import { Symbol } from "@/components/dashboard/Symbol"
@@ -59,19 +56,10 @@ type ProgressiveUploadSheetProps = {
   onCancel: () => void
 }
 
-const workspacePrimaryControlClass =
-  "border border-[var(--workspace-primary)] bg-[var(--workspace-primary)] text-white hover:border-[var(--workspace-primary-hover)] hover:bg-[var(--workspace-primary-hover)] focus-visible:ring-[var(--workspace-primary)]/30"
-
 function fileSize(bytes: number) {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`
 }
-
-const intakeOptions = [
-  { Icon: FileStack, label: "Inbox" },
-  { Icon: FolderUp, label: "Folder" },
-  { Icon: FileText, label: "Receipt" },
-]
 
 export function ProgressiveUploadSheet({
   open,
@@ -101,7 +89,6 @@ export function ProgressiveUploadSheet({
   onProcess,
   onCancel,
 }: ProgressiveUploadSheetProps) {
-  const m = useMotionTokens()
   const [companies, setCompanies] = useState<CompanySummary[]>([])
   const [companiesLoading, setCompaniesLoading] = useState(false)
   const [companiesError, setCompaniesError] = useState("")
@@ -184,29 +171,29 @@ export function ProgressiveUploadSheet({
     <Sheet open={open} onOpenChange={(nextOpen) => {
       if (!busy) onOpenChange(nextOpen)
     }}>
-      <SheetContent className="w-full gap-0 bg-[var(--workspace-popout-bg)] sm:max-w-[800px]">
-        <SheetHeader className="border-b border-[var(--workspace-popout-border)] px-6 py-5 pr-12">
-          <div className="flex items-start gap-3">
-            <Symbol name="upload-tray" size="inline" className="mt-0.5 h-11 w-11 rounded-xl" alt="" />
+      <SheetContent className="w-full gap-0 bg-[var(--workspace-popout-bg)] sm:max-w-[640px]">
+        <SheetHeader className="border-b border-[var(--workspace-popout-border)] px-5 py-4 pr-12">
+          <div className="flex items-center gap-3">
+            <Symbol name="upload-tray" size="inline" className="h-9 w-9 rounded-lg" alt="" />
             <div className="min-w-0">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--workspace-primary)]">Client stack</p>
-              <SheetTitle className="mt-1 text-xl font-bold tracking-tight">
-                {selectedCompany ? selectedCompany.name : "Upload documents"}
+              <p className="text-[11px] font-semibold uppercase text-[var(--workspace-primary)]">New stack</p>
+              <SheetTitle className="mt-0.5 truncate text-lg font-bold tracking-normal">
+                {selectedCompany ? selectedCompany.name : "Choose a client"}
               </SheetTitle>
             </div>
           </div>
-          <SheetDescription className="sr-only">Upload documents for review.</SheetDescription>
+          <SheetDescription className="sr-only">Add a client document stack to the review board.</SheetDescription>
         </SheetHeader>
 
-        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-5">
+        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-5 py-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-1.5 block text-xs font-semibold text-foreground">Client</span>
+              <span className="mb-1 block text-xs font-semibold text-foreground">Client</span>
               <select
                 value={selectedCompanyId}
                 onChange={(event) => onSelectedCompanyIdChange(event.target.value)}
                 disabled={busy || companiesLoading || !workspaceId}
-                className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-ring/40"
+                className="h-9 w-full rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground outline-none focus-visible:border-[var(--workspace-primary)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/20"
               >
                 <option value="">{companiesLoading ? "Loading..." : "Select a client"}</option>
                 {companies.map(company => (
@@ -214,57 +201,58 @@ export function ProgressiveUploadSheet({
                 ))}
               </select>
               {needsClientChoice ? (
-                <span className="mt-1.5 block text-xs font-semibold text-amber-700">
-                  Pick a client
+                <span className="mt-1 block text-xs font-semibold text-amber-700">
+                  Client required
                 </span>
               ) : null}
             </label>
             <label className="block">
-              <span className="mb-1.5 block text-xs font-semibold text-foreground">Format</span>
+              <span className="mb-1 block text-xs font-semibold text-foreground">Reviewed export</span>
               <select
                 value={outputMode}
                 onChange={(event) => onOutputModeChange(event.target.value as OutputMode)}
                 disabled={busy}
-                className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-ring/40"
+                className="h-9 w-full rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground outline-none focus-visible:border-[var(--workspace-primary)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/20"
               >
                 <option value="table">Excel (XLSX)</option>
                 <option value="csv">CSV</option>
               </select>
             </label>
           </div>
-          <form
-            className="rounded-lg border border-[var(--workspace-border)] bg-white p-3"
-            onSubmit={createClient}
-          >
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
-              <label className="min-w-0 flex-1">
-                <span className="mb-1.5 block text-xs font-semibold text-foreground">Add client</span>
-                <input
-                  value={newClientName}
-                  onChange={(event) => {
-                    setNewClientName(event.target.value)
-                    if (createClientError) setCreateClientError("")
-                  }}
-                  disabled={busy || creatingClient || !workspaceId}
-                  placeholder="Client name"
-                  className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-ring/40"
-                />
-              </label>
-              <Button
-                type="submit"
-                variant="surface"
-                size="sm"
-                disabled={busy || creatingClient || !workspaceId || !newClientName.trim()}
-                className="h-10 shrink-0 px-4"
-              >
-                {creatingClient ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
-                Add
-              </Button>
-            </div>
-            {createClientError ? (
-              <p className="mt-2 text-xs font-semibold text-destructive">{createClientError}</p>
-            ) : null}
-          </form>
+          <details className="group rounded-md border border-[var(--workspace-border)] bg-white">
+            <summary className="ax-interactive flex h-9 cursor-pointer list-none items-center gap-2 px-3 text-xs font-semibold text-[var(--workspace-ink)] [&::-webkit-details-marker]:hidden">
+              <Plus className="size-3.5" />
+              Add client
+            </summary>
+            <form className="border-t border-[var(--workspace-border)] p-3" onSubmit={createClient}>
+              <div className="flex gap-2">
+                <label className="min-w-0 flex-1">
+                  <span className="sr-only">Client name</span>
+                  <input
+                    value={newClientName}
+                    onChange={(event) => {
+                      setNewClientName(event.target.value)
+                      if (createClientError) setCreateClientError("")
+                    }}
+                    disabled={busy || creatingClient || !workspaceId}
+                    placeholder="Client name"
+                    className="h-9 w-full rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground outline-none focus-visible:border-[var(--workspace-primary)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/20"
+                  />
+                </label>
+                <Button
+                  type="submit"
+                  variant="surface"
+                  size="sm"
+                  disabled={busy || creatingClient || !workspaceId || !newClientName.trim()}
+                  className="h-9 shrink-0 px-3"
+                >
+                  {creatingClient ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
+                  Add
+                </Button>
+              </div>
+              {createClientError ? <p className="mt-2 text-xs font-semibold text-destructive">{createClientError}</p> : null}
+            </form>
+          </details>
           {companiesError ? (
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-xs font-semibold text-destructive">{companiesError}</p>
@@ -281,56 +269,29 @@ export function ProgressiveUploadSheet({
             </div>
           ) : null}
 
-          {!uploadedFiles.length ? (
-            <div className="grid grid-cols-3 gap-2">
-              {intakeOptions.map(({ Icon, label }) => (
-                <div
-                  key={label}
-                  className="flex min-h-24 flex-col items-center justify-center gap-2 rounded-lg bg-white px-2.5 py-3 text-center shadow-[0_14px_34px_-30px_rgba(15,23,42,0.42)]"
-                >
-                  <span className="inline-flex size-10 items-center justify-center rounded-full bg-[var(--workspace-soft)] text-black ring-1 ring-inset ring-[color-mix(in_srgb,var(--workspace-border)_58%,transparent)]">
-                    <Icon className="size-5 text-black" />
-                  </span>
-                  <p className="text-[11px] font-semibold text-[var(--workspace-muted)]">
-                    {label}
-                  </p>
-                </div>
-              ))}
-            </div>
-          ) : null}
-
-          <motion.div
+          <div
             onDragOver={onDragOver}
             onDragLeave={onDragLeave}
             onDrop={onDrop}
-            animate={{
-              scale: isDragging ? 1.01 : 1,
-              boxShadow: isDragging
-                ? "0 0 0 4px var(--workspace-blue-soft), 0 8px 24px -12px var(--workspace-primary)"
-                : "0 0 0 0 rgba(0,0,0,0)",
-            }}
-            transition={m.spring}
             className={cn(
-              "relative overflow-hidden rounded-lg border border-dashed px-4 py-8 text-center transition-colors",
+              "relative overflow-hidden rounded-lg border border-dashed px-4 py-6 text-center transition-colors",
               isDragging ? "border-[var(--workspace-primary)] bg-[var(--workspace-blue-soft)]" : "border-[var(--workspace-border)] bg-white hover:border-[var(--workspace-primary)]"
             )}
           >
-            <div className="mx-auto flex max-w-sm items-center justify-center gap-2">
-              {(["invoice", "receipt", "bank-statement", "spreadsheet"] as const).map((name) => (
-                <Symbol key={name} name={name} size="inline" className="h-12 w-12 rounded-xl" alt="" />
-              ))}
-            </div>
-            <p className="mt-4 text-base font-bold text-foreground">
-              {isDragging ? "Drop the stack" : "Drop a client stack"}
+            <span className="mx-auto flex size-9 items-center justify-center rounded-full bg-[var(--workspace-soft)] text-black ring-1 ring-inset ring-[var(--workspace-border)]">
+              <FolderUp className="size-4" />
+            </span>
+            <p className="mt-3 text-sm font-bold text-foreground">
+              {isDragging ? "Drop to add" : "Add documents"}
             </p>
-            <p className="mt-1 text-xs font-semibold text-[var(--workspace-muted)]">
-              Invoices, receipts, statements and tables.
+            <p className="mt-1 text-xs font-medium text-[var(--workspace-muted)]">
+              PDFs, photos, receipts, statements, and tables
             </p>
             <label
               htmlFor="progressive-upload-input"
               className={cn(
                 buttonVariants({ variant: "surface", size: "sm" }),
-                "mt-4 cursor-pointer",
+                "mt-3 cursor-pointer",
                 busy && "pointer-events-none opacity-50"
               )}
             >
@@ -346,7 +307,7 @@ export function ProgressiveUploadSheet({
               disabled={busy}
               className="hidden"
             />
-          </motion.div>
+          </div>
 
           {uploadedFiles.length ? (
             <div className="overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white">
@@ -365,26 +326,17 @@ export function ProgressiveUploadSheet({
                   Clear
                 </Button>
               </div>
-              <motion.div
-                variants={m.staggerParent()}
-                initial="hidden"
-                animate="show"
-                className="max-h-56 divide-y divide-border overflow-y-auto"
-              >
-                <AnimatePresence initial={false}>
+              <div className="max-h-48 divide-y divide-border overflow-y-auto">
                   {uploadedFiles.map((file, index) => {
                     const pdf = isPdfFile(file)
                     const pageCount = pdfPageCounts[index]
                     const previewUrl = filePreviewUrls[index]
                     return (
-                      <motion.div
+                      <div
                         key={`${file.name}-${file.size}-${index}`}
-                        layout
-                        variants={m.fadeUp}
-                        exit="exit"
-                        className="flex items-center gap-3 px-3 py-2.5"
+                        className="flex items-center gap-3 px-3 py-2"
                       >
-                        <span className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-blue-soft)] text-black">
+                        <span className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-blue-soft)] text-black">
                           {previewUrl ? (
                             <img src={previewUrl} alt="" className="h-full w-full object-cover" />
                           ) : pdf ? (
@@ -410,17 +362,16 @@ export function ProgressiveUploadSheet({
                         >
                           <Trash2 className="size-3.5" />
                         </Button>
-                      </motion.div>
+                      </div>
                     )
                   })}
-                </AnimatePresence>
-              </motion.div>
+              </div>
             </div>
           ) : null}
         </div>
 
-        <SheetFooter className="gap-3 border-t border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)] px-6 py-4">
-          <div className="flex items-center justify-between gap-4 rounded-lg border border-[var(--workspace-popout-border)] bg-white px-3 py-2.5">
+        <SheetFooter className="gap-2 border-t border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)] px-5 py-3">
+          <div className="flex items-center justify-between gap-4 px-1">
             <p className="text-xs font-semibold text-foreground">
               {creditEstimate} page{creditEstimate === 1 ? "" : "s"} · {creditEstimate} credit{creditEstimate === 1 ? "" : "s"}
             </p>
@@ -434,20 +385,10 @@ export function ProgressiveUploadSheet({
             size="lg"
             onClick={onProcess}
             disabled={!uploadedFiles.length || busy || noCredits || !canProcess}
-            className={cn("w-full", workspacePrimaryControlClass)}
+            className="w-full"
           >
             {busy ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.span
-                key={processButtonLabel}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={m.tFast}
-              >
-                {processButtonLabel}
-              </motion.span>
-            </AnimatePresence>
+            <span>{processButtonLabel}</span>
           </Button>
           {busy ? (
             <Button type="button" variant="surface" onClick={onCancel} className="w-full">

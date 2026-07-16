@@ -1,5 +1,5 @@
 export const workspacePrimaryControlClass =
-  "rounded-full border border-[var(--workspace-primary)] bg-[var(--workspace-primary)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_1px_2px_0_rgba(16,24,40,0.08)] hover:border-[var(--workspace-primary-hover)] hover:bg-[var(--workspace-primary-hover)] focus-visible:ring-[var(--workspace-primary)]/30"
+  "rounded-full focus-visible:ring-[var(--brand-green-ring)]/30"
 export const workspaceNormalControlClass =
   "rounded-full border border-[var(--workspace-button-border)] bg-white text-[var(--workspace-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_1px_1px_0_rgba(16,24,40,0.04)] hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)] hover:text-[var(--workspace-primary)] focus-visible:ring-[var(--workspace-primary)]/20"
 export const workspacePanelSurfaceClass =
