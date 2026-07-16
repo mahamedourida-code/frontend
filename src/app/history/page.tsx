@@ -15,7 +15,7 @@ import {
   useReactTable,
   RowSelectionState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, Download, RefreshCw, FileSpreadsheet, FileText, FileImage, DownloadCloud, Trash2, CalendarIcon } from "lucide-react"
+import { ArrowUpDown, Download, RefreshCw, FileSpreadsheet, FileText, FileImage, DownloadCloud, Trash2, CalendarIcon, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -81,7 +81,7 @@ function isDownloadableJob(job: HistoryJob): boolean {
 function HistoryContent() {
   const { user } = useAuth()
   const { activeWorkspace } = useWorkspaces(user)
-  const { jobs, isLoading, error, refresh } = useHistory(
+  const { jobs, isLoading, error, refresh, loadMore, isLoadingMore, hasMore } = useHistory(
     activeWorkspace?.id,
     Boolean(activeWorkspace?.id),
   )
@@ -805,26 +805,46 @@ function HistoryContent() {
         </div>
 
         {/* Pagination */}
-        {filteredJobs.length > 0 && (
-          <div className="flex items-center justify-end space-x-2 py-4">
-            <Button
-              variant="surface"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-              className="h-8"
-            >
-              Previous
-            </Button>
-            <Button
-              variant="surface"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-              className="h-8"
-            >
-              Next
-            </Button>
+        {(jobs.length > 0 || hasMore) && (
+          <div className="flex items-center justify-between gap-3 py-4">
+            <div className="min-w-0">
+              {hasMore && (
+                <InlineAction
+                  onClick={() => void loadMore()}
+                  disabled={isLoading || isLoadingMore}
+                  className="text-xs"
+                >
+                  {isLoadingMore ? (
+                    <RefreshCw className="size-3.5 animate-spin" />
+                  ) : (
+                    <ChevronDown className="size-3.5" />
+                  )}
+                  {isLoadingMore ? "Loading" : "Load older"}
+                </InlineAction>
+              )}
+            </div>
+            {filteredJobs.length > 0 && (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="surface"
+                  size="sm"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                  className="h-8"
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="surface"
+                  size="sm"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                  className="h-8"
+                >
+                  Next
+                </Button>
+              </div>
+            )}
           </div>
         )}
     </DashboardShell>
