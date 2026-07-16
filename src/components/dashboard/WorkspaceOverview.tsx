@@ -226,6 +226,19 @@ function nextAction(companies: CompanySummary[]) {
     }
   }
 
+  const intakeClient = companies.find((company) => (
+    company.purchases + company.receipts + company.bankStatements + company.other === 0
+  ))
+  if (intakeClient) {
+    return {
+      icon: Upload,
+      title: `Upload for ${intakeClient.name}`,
+      detail: "First batch",
+      label: "Upload",
+      href: `/dashboard/client?company_id=${encodeURIComponent(intakeClient.id)}#upload-files`,
+    }
+  }
+
   const unlinkedClient = companies.find((company) => !company.accountingConnected)
   if (unlinkedClient) {
     return {
@@ -285,7 +298,7 @@ export function WorkspaceOverview({
       <div className="grid items-center gap-4 px-4 py-4 sm:px-5 lg:grid-cols-[minmax(0,1fr)_auto]">
         <div className="flex min-w-0 items-center gap-3.5">
           <span className="flex size-11 shrink-0 items-center justify-center rounded-md bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
-            <ActionIcon className="size-5" />
+            <ActionIcon className="ax-blue-icon size-5" />
           </span>
           <div className="min-w-0">
             <p className="text-[11px] font-semibold text-[var(--workspace-primary)]">Up next</p>

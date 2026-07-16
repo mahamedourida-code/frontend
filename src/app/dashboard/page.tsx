@@ -67,29 +67,29 @@ export default function DashboardPage() {
   }
 
   return (
-    <DashboardShell activeItem="companies" title="Workspace" user={user} showBack={false}>
+    <DashboardShell activeItem="companies" title="Clients" user={user} showBack={false}>
       <div className="space-y-3">
         <PageHeader
-          title={activeWorkspace?.name ?? "Workspace"}
+          title={activeWorkspace?.name ?? "Clients"}
           compact
           className="mb-0"
         />
+        {hasClients === false ? (
+          <WorkspaceFirstRunGuide
+            userId={user.id}
+            workspaceId={activeWorkspace?.id}
+            hasClients={hasClients}
+            onClientCreated={handleClientCreated}
+          />
+        ) : null}
         {hasClients !== null ? (
-          <>
-            <WorkspaceFirstRunGuide
-              userId={user.id}
-              workspaceId={activeWorkspace?.id}
-              hasClients={hasClients}
-              onClientCreated={handleClientCreated}
-            />
-            <WorkspaceWalkthrough
-              userId={user.id}
-              workspaceId={activeWorkspace?.id}
-              enabled={Boolean(tourRequest)}
-              restartToken={tourRequest}
-              onFinish={handleTourFinish}
-            />
-          </>
+          <WorkspaceWalkthrough
+            userId={user.id}
+            workspaceId={activeWorkspace?.id}
+            enabled={Boolean(tourRequest)}
+            restartToken={tourRequest}
+            onFinish={handleTourFinish}
+          />
         ) : null}
         <WorkspaceOverview companies={companies} activity={activity} />
         <CompaniesTable

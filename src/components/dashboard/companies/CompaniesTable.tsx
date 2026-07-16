@@ -381,9 +381,7 @@ export function CompaniesTable({
             ) : (
               <EmptyState
                 icon={<Building2 />}
-                title="Add a client"
-                description="Create a client before uploading documents."
-                action={<AddCompanyDialog workspaceId={workspaceId} onCreated={() => void load()} />}
+                title="No clients yet"
                 className="min-h-52"
                 compact
               />

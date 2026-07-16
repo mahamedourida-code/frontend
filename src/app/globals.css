@@ -304,6 +304,14 @@
     color: currentColor !important;
     stroke: currentColor !important;
   }
+  body.ax-workspace .ax-blue-icon {
+    color: #1877f2 !important;
+    stroke: #1877f2 !important;
+  }
+  body.ax-workspace .ax-on-blue-icon {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+  }
 
   /* Workspace text colour grammar: colour data and state, never ordinary prose. */
   .ax-text-action { color: var(--text-action); font-weight: 600; }
