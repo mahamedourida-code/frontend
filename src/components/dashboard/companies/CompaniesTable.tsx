@@ -258,20 +258,18 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
           />
         ) : visibleCompanies.length === 0 ? (
           query ? (
-            <EmptyState
-              art="bot-search-empty"
-              icon={<Building2 />}
-              title="No matching clients"
-              description="Try a different search term."
+          <EmptyState
+            icon={<Building2 />}
+            title="No matching clients"
+            description="Try a different search term."
               className="min-h-48"
               compact
             />
           ) : (
             <EmptyState
-              art="bot-add-client"
               icon={<Building2 />}
               title="Add a client"
-              description="Create a client workspace so uploads, review queues, draft bills, and accounting connections stay separated."
+              description="Keep each client's stacks separate."
               steps={[
                 "Add the client name.",
                 "Upload their first mixed document stack.",

@@ -198,7 +198,7 @@ export function NotificationsBell() {
           aria-label={
             unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"
           }
-          className="ax-interactive relative inline-flex size-10 items-center justify-center rounded-full text-white/88 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-white/35 data-[state=open]:text-white"
+          className="ax-interactive relative inline-flex size-10 items-center justify-center rounded-full text-white/88 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-white/35 data-[state=open]:text-white [&_svg]:text-white"
         >
           <Bell className="size-6" />
           <AnimatePresence>

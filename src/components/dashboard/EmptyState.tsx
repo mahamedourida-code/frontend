@@ -1,8 +1,5 @@
 import * as React from "react"
 
-import { WorkspaceArt } from "@/components/dashboard/WorkspaceArt"
-import { WorkspaceVisualImage } from "@/components/dashboard/WorkspaceVisualCard"
-import type { WorkspaceVisualName } from "@/components/dashboard/workspace-visuals"
 import { cn } from "@/lib/utils"
 
 const descriptionLineClasses: Record<1 | 2 | 3, string> = {
@@ -25,15 +22,10 @@ interface EmptyStateProps {
   align?: "center" | "start"
   descriptionLines?: 1 | 2 | 3
   /**
-   * Optional workspace caricature name (from `/public/workspace-art`). When set,
-   * a big raw illustration replaces the small `icon` glyph.
+   * Deprecated: empty states stay icon-led so dashboard tables and inbox panels
+   * do not turn into illustration cards.
    */
   art?: string
-  /**
-   * Optional premium workspace visual (from `/public/workspace/liked`). When set,
-   * it replaces the small `icon` glyph with an image-rich dashboard treatment.
-   */
-  likedArt?: WorkspaceVisualName
   /**
    * Optional small kicker shown above the title (e.g. "Get started"). Renders
    * as a quiet emerald-tinted label so onboarding states feel guided, not bare.
@@ -58,12 +50,9 @@ function EmptyState({
   descriptionClassName,
   actionClassName,
   iconClassName,
-  artClassName,
   align = "center",
   descriptionLines,
   eyebrow,
-  art,
-  likedArt,
   steps,
   showSteps = false,
 }: EmptyStateProps) {
@@ -80,28 +69,15 @@ function EmptyState({
         className,
       )}
     >
-      {likedArt ? (
-        <WorkspaceVisualImage
-          visual={likedArt}
-          className={cn(compact ? "h-[5.5rem] w-[8rem]" : "h-[8rem] w-[12rem]", artClassName)}
-          sizes={compact ? "128px" : "192px"}
-        />
-      ) : art ? (
-        <WorkspaceArt
-          name={art}
-          className={cn(compact ? "h-[5.5rem] w-auto" : "h-[7.5rem] w-auto", artClassName)}
-        />
-      ) : (
-        <div
-          className={cn(
-            "inline-flex items-center justify-center rounded-full bg-[var(--workspace-soft)] text-black ring-1 ring-inset ring-[color-mix(in_srgb,var(--workspace-border)_58%,transparent)] [&_svg]:text-black",
-            compact ? "size-9 [&_svg]:size-[18px]" : "size-10 [&_svg]:size-5",
-            iconClassName,
-          )}
-        >
-          {icon}
-        </div>
-      )}
+      <div
+        className={cn(
+          "inline-flex items-center justify-center rounded-full bg-[var(--workspace-soft)] text-black ring-1 ring-inset ring-[color-mix(in_srgb,var(--workspace-border)_58%,transparent)] [&_svg]:text-black",
+          compact ? "size-9 [&_svg]:size-[18px]" : "size-10 [&_svg]:size-5",
+          iconClassName,
+        )}
+      >
+        {icon}
+      </div>
       {eyebrow ? (
         <span className="text-[12px] font-medium text-[var(--workspace-muted)]">
           {eyebrow}

@@ -190,7 +190,7 @@ export function HelpMenu() {
         <PopoverContent
           align="end"
           sideOffset={10}
-          className="w-64 overflow-hidden rounded-xl border-[var(--workspace-border)] bg-white p-1.5 text-[var(--workspace-ink)] shadow-[0_16px_44px_rgba(15,23,42,0.14)]"
+          className="w-72 overflow-hidden rounded-[22px] border-[var(--workspace-border)] bg-white p-1.5 text-[var(--workspace-ink)] shadow-[0_22px_58px_-36px_rgba(15,23,42,0.48)]"
         >
           <div className="px-2 pb-1.5 pt-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
             Help

@@ -1,22 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import {
-  Columns2,
-  ShieldAlert,
-  RefreshCcw,
-  ScanLine,
+  Building2,
+  FileOutput,
   FileText,
   Gift,
+  Inbox,
+  Layers,
   LifeBuoy,
-  UserRound,
-  Building2,
+  ScanLine,
+  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 
 import { AppLogo } from "@/components/AppIcon";
 import { MobileNav } from "@/components/MobileNav";
+import { VisualMenuImage, type NavVisualKey } from "@/components/nav/visual-menu-assets";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -38,270 +39,218 @@ import { cn } from "@/lib/utils";
 
 const primaryAudienceSolutions = primaryAudienceSlugs.map(getAudienceSolutionBySlug);
 
-/* ── shared card-grid mega-menu primitives ──────────────────────────────── */
-
-type Accent = "lavender" | "mint" | "periwinkle" | "teal" | "cream";
-
-const accentFill: Record<Accent, string> = {
-  lavender: "hover:!bg-[#e9d5ff] focus-visible:!bg-[#e9d5ff] data-[active]:!bg-[#e9d5ff]",
-  mint: "hover:!bg-[#58f29b] focus-visible:!bg-[#58f29b] data-[active]:!bg-[#58f29b]",
-  periwinkle: "hover:!bg-[#91a6ff] focus-visible:!bg-[#91a6ff] data-[active]:!bg-[#91a6ff]",
-  teal: "hover:!bg-[#2fc9c1] focus-visible:!bg-[#2fc9c1] data-[active]:!bg-[#2fc9c1]",
-  cream: "hover:!bg-[#f2dfbf] focus-visible:!bg-[#f2dfbf] data-[active]:!bg-[#f2dfbf]",
-};
-
-const cardBase =
-  "ax-interactive group relative isolate flex flex-col overflow-hidden !rounded-[12px] !bg-[#f1f1f1] text-neutral-950 outline-none transition-[background-color,color,transform] duration-150 focus-visible:ring-2 focus-visible:ring-black/15";
-
-const menuIconClass =
-  "relative z-10 text-neutral-950 transition-colors duration-150";
-const menuTitleClass =
-  "relative z-10 block text-[15px] font-bold leading-5 text-neutral-950 transition-colors duration-150";
-const featuredTitleClass =
-  "relative z-10 block text-[20px] font-bold leading-6 text-neutral-950 transition-colors duration-150";
-const menuDescriptionClass =
-  "relative z-10 mt-1 block text-[13px] font-semibold leading-snug text-neutral-600 transition-colors duration-150 group-hover:text-neutral-950 group-focus-visible:text-neutral-950 group-data-[active]:text-neutral-950";
-const featuredDescriptionClass =
-  "relative z-10 mt-1.5 block text-[13px] font-semibold leading-snug text-neutral-600 transition-colors duration-150 group-hover:text-neutral-950 group-focus-visible:text-neutral-950 group-data-[active]:text-neutral-950";
-
-type FeaturedCardProps = {
-  icon: LucideIcon;
+type VisualMenuCardProps = {
   title: string;
-  description: string;
+  detail?: string;
   href: string;
-  accent: Accent;
+  visual: NavVisualKey;
+  label: string;
+  className?: string;
+  imageClassName?: string;
 };
 
-/* Wide left card (~1.6x a normal card): raw icon top-left, then title +
-   one-line description anchored near the bottom. */
-function FeaturedCard({ icon: Icon, title, description, href, accent }: FeaturedCardProps) {
+type TextMenuItem = {
+  title: string;
+  detail?: string;
+  href: string;
+  icon?: LucideIcon;
+};
+
+function MenuPanel({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div
+      className={cn(
+        "w-[960px] overflow-hidden rounded-[24px] border border-black/[0.07] bg-white/95 p-2.5 text-neutral-950",
+        "shadow-[0_30px_90px_-58px_rgba(15,23,42,0.5),0_10px_28px_-24px_rgba(15,23,42,0.28)] backdrop-blur-xl",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+function VisualMenuCard({
+  title,
+  detail,
+  href,
+  visual,
+  label,
+  className,
+  imageClassName,
+}: VisualMenuCardProps) {
   return (
     <NavigationMenuLink asChild>
-      <Link href={href} className={cn(cardBase, "h-full basis-0 grow-[1.6] justify-between p-6", accentFill[accent])}>
-        <Icon className={cn("size-7", menuIconClass)} strokeWidth={2} />
-        <span className="mt-12 block">
-          <span className={featuredTitleClass}>{title}</span>
-          <span className={featuredDescriptionClass}>{description}</span>
+      <Link
+        href={href}
+        className={cn(
+          "ax-interactive group flex min-h-[154px] flex-col justify-between overflow-hidden rounded-[18px] bg-[#fbfaf7] p-1",
+          "shadow-[0_1px_2px_rgba(15,23,42,0.06)] outline-none",
+          "transition-[border-color,box-shadow,transform] duration-200 ease-[var(--ax-motion-ease)]",
+          "hover:-translate-y-0.5 hover:shadow-[0_14px_34px_-28px_rgba(15,23,42,0.52)]",
+          "focus-visible:ring-2 focus-visible:ring-black/15",
+          className,
+        )}
+      >
+        <VisualMenuImage visual={visual} label={label} className={cn("h-[88px] rounded-[15px]", imageClassName)} />
+        <span className="flex min-h-[54px] flex-col justify-center px-2.5 pb-1 pt-2">
+          <span className="text-[14px] font-bold leading-5 text-neutral-950">{title}</span>
+          {detail ? (
+            <span className="mt-0.5 text-[12px] font-semibold leading-4 text-neutral-500">{detail}</span>
+          ) : null}
         </span>
       </Link>
     </NavigationMenuLink>
   );
 }
 
-type StandaloneCardProps = {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-  href: string;
-  accent: Accent;
-};
-
-/* Equal-width standalone card: raw icon top-left, title + one-line description. */
-function StandaloneCard({ icon: Icon, title, description, href, accent }: StandaloneCardProps) {
+function TextMenuLink({ title, detail, href, icon: Icon }: TextMenuItem) {
   return (
     <NavigationMenuLink asChild>
-      <Link href={href} className={cn(cardBase, "h-full basis-0 grow justify-between p-5", accentFill[accent])}>
-        <Icon className={cn("size-[22px]", menuIconClass)} strokeWidth={2} />
-        <span className="mt-8 block">
-          <span className={menuTitleClass}>{title}</span>
-          <span className={menuDescriptionClass}>{description}</span>
+      <Link
+        href={href}
+        className={cn(
+          "ax-interactive group flex min-h-[70px] items-center gap-3 rounded-[17px] border border-black/[0.05] bg-[#f7f4ee] px-3.5 py-3 text-neutral-950 outline-none",
+          "transition-[background-color,border-color,transform] duration-150 ease-[var(--ax-motion-ease)] hover:-translate-y-px hover:border-black/[0.12] hover:bg-[#f1ede4]",
+          "focus-visible:ring-2 focus-visible:ring-black/15",
+        )}
+      >
+        {Icon ? (
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]">
+            <Icon className="size-4 text-black" strokeWidth={2} aria-hidden="true" />
+          </span>
+        ) : null}
+        <span className="min-w-0">
+          <span className="block truncate text-[14px] font-bold leading-5">{title}</span>
+          {detail ? (
+            <span className="mt-0.5 block truncate text-[12.5px] font-semibold leading-4 text-neutral-500">
+              {detail}
+            </span>
+          ) : null}
         </span>
       </Link>
     </NavigationMenuLink>
   );
 }
 
-type CompactCardProps = {
-  title: string;
-  description: string;
-  href: string;
-  accent: Accent;
-};
-
-/* Small card used inside the stacked column: bold title + one-line
-   description, no big icon. */
-function CompactCard({ title, description, href, accent }: CompactCardProps) {
+function TextMenuStack({ items, className }: { items: TextMenuItem[]; className?: string }) {
   return (
-    <NavigationMenuLink asChild>
-      <Link href={href} className={cn(cardBase, "h-full justify-center p-5", accentFill[accent])}>
-        <span className={menuTitleClass}>{title}</span>
-        <span className={menuDescriptionClass}>{description}</span>
-      </Link>
-    </NavigationMenuLink>
-  );
-}
-
-type SubItem = { title: string; description: string; href: string; accent: Accent };
-
-/* Stacked column of 2–3 compact sub-items, equal-height with the cards beside it. */
-function StackedColumn({ items }: { items: SubItem[] }) {
-  return (
-    <div className="flex h-full basis-0 grow-[1.1] flex-col gap-3">
+    <div className={cn("flex h-full flex-col gap-2.5", className)}>
       {items.map((item) => (
-        <div key={item.title} className="flex grow flex-col">
-          <CompactCard title={item.title} description={item.description} href={item.href} accent={item.accent} />
-        </div>
+        <TextMenuLink key={`${item.title}-${item.href}`} {...item} />
       ))}
     </div>
   );
 }
-
-/* Shared panel shell: centered, generous width, one horizontal row of cards. */
-function MenuPanel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="w-[1140px] overflow-hidden rounded-[16px] border border-neutral-200 bg-white p-3 text-neutral-950 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.32)]">
-      <div className="flex items-stretch gap-[10px]">{children}</div>
-    </div>
-  );
-}
-
-/* ── Features mega-menu ─────────────────────────────────────────────────── */
 
 function FeaturesMegaMenu() {
   return (
     <MenuPanel>
-      <FeaturedCard
-        icon={Columns2}
-        title="Batch review board"
-        description="Fix every exception before export."
-        href="/for-accountants-and-bookkeepers/batch-review-board"
-        accent="lavender"
-      />
-      <StackedColumn
-        items={[
-          { title: "Inbox", description: "Email, upload, or photo intake.", href: "/dashboard/inbox", accent: "lavender" },
-          { title: "Processing queue", description: "Every batch grouped by status.", href: "/dashboard/client", accent: "cream" },
-          {
-            title: "Vendor memory",
-            description: "Learns each supplier as you go.",
-            href: "/for-accountants-and-bookkeepers/batch-review-board",
-            accent: "lavender",
-          },
-        ]}
-      />
-      <StandaloneCard
-        icon={ShieldAlert}
-        title="Duplicate detection"
-        description="Catches repeats and anomalies."
-        href="/dashboard/client"
-        accent="mint"
-      />
-      <StandaloneCard
-        icon={RefreshCcw}
-        title="Publish to QuickBooks & Xero"
-        description="Reviewed drafts, one click out."
-        href="/dashboard/integrations"
-        accent="periwinkle"
-      />
-      <StandaloneCard
-        icon={ScanLine}
-        title="OCR engine"
-        description="Reads handwriting and photos."
-        href="/ocr"
-        accent="teal"
-      />
+      <div className="grid grid-cols-[1fr_1fr_1fr_1fr] gap-2.5">
+        <VisualMenuCard
+          title="Review board"
+          detail="Fix exceptions"
+          href="/for-accountants-and-bookkeepers/batch-review-board"
+          visual="batch"
+          label="Review"
+        />
+        <VisualMenuCard
+          title="Publish"
+          detail="QBO + Xero"
+          href="/dashboard/integrations"
+          visual="export"
+          label="Books"
+        />
+        <div className="col-span-2 grid grid-cols-2 gap-2.5">
+          {[
+            { title: "Inbox", detail: "Email + upload", href: "/dashboard/inbox", icon: Inbox },
+            { title: "Processing queue", detail: "Stack status", href: "/dashboard/client", icon: Layers },
+            {
+              title: "Vendor memory",
+              detail: "Supplier rules",
+              href: "/for-accountants-and-bookkeepers/batch-review-board",
+              icon: ShieldCheck,
+            },
+            { title: "Free OCR", detail: "Try a file", href: "/ocr", icon: ScanLine },
+          ].map((item) => (
+            <TextMenuLink key={`${item.title}-${item.href}`} {...item} />
+          ))}
+        </div>
+      </div>
     </MenuPanel>
   );
 }
 
-/* ── For Accountants & Bookkeepers mega-menu ────────────────────────────── */
-
-const primaryAudienceIcons: Record<string, LucideIcon> = {
-  "solo-bookkeepers": UserRound,
-  "accounting-practices": Building2,
-};
-
 function AudienceMegaMenu() {
   const featured = primaryAudienceSolutions[0];
-  const FeaturedIcon = primaryAudienceIcons[featured.slug] ?? UserRound;
   const second = primaryAudienceSolutions[1];
-
-  // Re-render the existing audience data as the same card-grid + hover-fill.
   const prepare = audienceSolutionGroups[0];
   const review = audienceSolutionGroups[1];
   const finish = audienceSolutionGroups[2];
 
-  const stackedSlugs: SubItem[] = [...prepare.slugs, ...review.slugs.slice(0, 1)].map((slug, i): SubItem => {
-    const s = getAudienceSolutionBySlug(slug);
-    return {
-      title: s.menuLabel,
-      description: s.eyebrow,
-      href: audienceSolutionHref(slug),
-      accent: i === 1 ? "cream" : "lavender",
-    };
-  });
-
-  const finishCards = finish.slugs.map((slug) => getAudienceSolutionBySlug(slug));
+  const workflowItems: TextMenuItem[] = [prepare, review, finish].flatMap((group) =>
+    group.slugs.slice(0, 2).map((slug) => {
+      const solution = getAudienceSolutionBySlug(slug);
+      return {
+        title: solution.menuLabel,
+        detail: group.label,
+        href: audienceSolutionHref(slug),
+        icon: group.icon,
+      };
+    }),
+  );
 
   return (
     <MenuPanel>
-      <FeaturedCard
-        icon={FeaturedIcon}
-        title={featured.menuLabel}
-        description="A calm path from folder to reviewed books."
-        href={audienceSolutionHref(featured.slug)}
-        accent="lavender"
-      />
-      <StackedColumn items={stackedSlugs} />
-      <StandaloneCard
-        icon={primaryAudienceIcons[second.slug] ?? Building2}
-        title={second.menuLabel}
-        description="Intake to reviewer sign-off, visible."
-        href={audienceSolutionHref(second.slug)}
-        accent="mint"
-      />
-      {finishCards.map((s, i) => (
-        <StandaloneCard
-          key={s.slug}
-          icon={finish.icon}
-          title={s.menuLabel}
-          description={s.eyebrow}
-          href={audienceSolutionHref(s.slug)}
-          accent={i === 0 ? "periwinkle" : "teal"}
+      <div className="grid grid-cols-[1fr_1fr_1fr_1fr] gap-2.5">
+        <VisualMenuCard
+          title={featured.menuLabel}
+          detail="Client folders"
+          href={audienceSolutionHref(featured.slug)}
+          visual="tray"
+          label="Solo"
         />
-      ))}
+        <TextMenuLink
+          title={second.menuLabel}
+          detail="Shared review"
+          href={audienceSolutionHref(second.slug)}
+          icon={Building2}
+        />
+        <TextMenuStack items={workflowItems.slice(0, 3)} />
+        <TextMenuStack items={workflowItems.slice(3, 6)} />
+      </div>
     </MenuPanel>
   );
 }
-
-/* ── Resources dropdown ─────────────────────────────────────────────────── */
 
 function ResourcesMenu() {
   return (
-    <MenuPanel>
-      <FeaturedCard
-        icon={FileText}
-        title="Blog"
-        description="Playbooks and guides for the close."
-        href="/blogs"
-        accent="lavender"
-      />
-      <StackedColumn
-        items={[
-          { title: "Learn AxLiner", description: "Short product walkthroughs.", href: "/blogs", accent: "lavender" },
-          { title: "Changelog", description: "What shipped, recently.", href: "#", accent: "cream" },
-          { title: "Tools", description: "Free utilities for bookkeepers.", href: "#", accent: "lavender" },
-        ]}
-      />
-      <StandaloneCard
-        icon={Gift}
-        title="Affiliate program"
-        description="Earn by referring practices."
-        href="#"
-        accent="mint"
-      />
-      <StandaloneCard
-        icon={LifeBuoy}
-        title="Help and support"
-        description="Reach the team directly."
-        href="/contact"
-        accent="periwinkle"
-      />
+    <MenuPanel className="w-[820px]">
+      <div className="grid grid-cols-[1fr_1fr_1fr] gap-2.5">
+        <VisualMenuCard
+          title="Guides"
+          detail="Playbooks"
+          href="/blogs"
+          visual="magnifier"
+          label="Read"
+        />
+        <TextMenuStack
+          items={[
+            { title: "Learn AxLiner", detail: "Walkthroughs", href: "/blogs", icon: FileText },
+            { title: "Changelog", detail: "Recent ships", href: "#", icon: FileOutput },
+          ]}
+        />
+        <TextMenuStack
+          items={[
+            { title: "Tools", detail: "Utilities", href: "#" },
+            { title: "Affiliate program", detail: "Partner path", href: "#", icon: Gift },
+            { title: "Help and support", detail: "Contact", href: "/contact", icon: LifeBuoy },
+          ]}
+        />
+      </div>
     </MenuPanel>
   );
 }
-
-/* ── Nav bar ────────────────────────────────────────────────────────────── */
 
 type MarketingNavBarProps = {
   onSectionClick?: (sectionId: string) => void;
@@ -321,13 +270,13 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
 
   const flatLink = cn(
     navigationMenuTriggerStyle(),
-    "h-10 rounded-[8px] bg-transparent px-3.5 text-[15px] font-semibold text-black",
+    "h-10 rounded-full bg-transparent px-3.5 text-[15px] font-semibold text-black",
     "transition-colors hover:bg-black/[0.05] hover:text-black",
     "focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent",
   );
 
   const dropdownTrigger = cn(
-    "h-10 rounded-[8px] bg-transparent px-3.5 text-[15px] font-semibold",
+    "h-10 rounded-full bg-transparent px-3.5 text-[15px] font-semibold",
     "text-black transition-colors hover:bg-black/[0.05] hover:text-black",
     "focus:bg-transparent focus:ring-0 focus-visible:ring-2 focus-visible:ring-black/15",
     "data-[state=open]:bg-black/[0.05] data-[state=open]:text-black data-[state=open]:hover:bg-black/[0.05]",
@@ -344,7 +293,7 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
           : "border-transparent bg-transparent",
       )}
     >
-      <div className="mx-auto flex h-full max-w-[1500px] items-center justify-between px-5 sm:px-7 lg:px-12">
+      <div className="mx-auto flex h-full max-w-[1500px] items-center justify-between px-4 sm:px-5 lg:px-9">
         <Link href="/" aria-label="AxLiner home" className="flex-shrink-0">
           <AppLogo className="h-12 w-auto" />
         </Link>
@@ -353,10 +302,8 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
           <NavigationMenu viewport={false} delayDuration={0} skipDelayDuration={0}>
             <NavigationMenuList className="gap-0">
               <NavigationMenuItem>
-                <NavigationMenuTrigger className={dropdownTrigger}>
-                  Features
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="-left-[40px] xl:-left-[80px]">
+                <NavigationMenuTrigger className={dropdownTrigger}>Features</NavigationMenuTrigger>
+                <NavigationMenuContent className="-left-[60px] xl:-left-[110px]">
                   <FeaturesMegaMenu />
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -365,16 +312,14 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
                 <NavigationMenuTrigger className={dropdownTrigger}>
                   For Accountants &amp; Bookkeepers
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="-left-[300px] xl:-left-[320px]">
+                <NavigationMenuContent className="-left-[300px] xl:-left-[340px]">
                   <AudienceMegaMenu />
                 </NavigationMenuContent>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuTrigger className={dropdownTrigger}>
-                  Resources
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="-left-[560px] xl:-left-[560px]">
+                <NavigationMenuTrigger className={dropdownTrigger}>Resources</NavigationMenuTrigger>
+                <NavigationMenuContent className="-left-[540px] xl:-left-[560px]">
                   <ResourcesMenu />
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -401,11 +346,13 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
         <div className="hidden items-center gap-2.5 lg:flex">
           {isAuthenticated ? (
             <>
-              <Button variant="blue" asChild className="h-11 rounded-lg px-5 text-[15px] font-bold">
+              <Button variant="ink" asChild className="h-10 px-5 text-[15px] font-bold">
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
-              <Button variant="surface" asChild className="h-11 rounded-lg px-5 text-[15px] font-semibold">
-                <Link href="?demo=1" scroll={false}>Request a demo</Link>
+              <Button variant="surface" asChild className="h-10 px-5 text-[15px] font-semibold">
+                <Link href="?demo=1" scroll={false}>
+                  Request a demo
+                </Link>
               </Button>
             </>
           ) : (
@@ -413,25 +360,23 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
               <Button
                 asChild
                 variant="ghost"
-                className="h-11 px-4 text-[15px] font-semibold text-black hover:bg-transparent hover:text-black"
+                className="h-10 px-4 text-[15px] font-semibold text-black hover:bg-transparent hover:text-black"
               >
                 <Link href="/sign-in?next=%2Fdashboard%2Fclient">Log in</Link>
               </Button>
-              <Button variant="blue" asChild className="h-11 rounded-lg px-5 text-[15px] font-bold">
+              <Button variant="ink" asChild className="h-10 px-5 text-[15px] font-bold">
                 <Link href="/sign-up?next=%2Fdashboard%2Fclient">Sign up</Link>
               </Button>
-              <Button variant="surface" asChild className="h-11 rounded-lg px-5 text-[15px] font-semibold">
-                <Link href="?demo=1" scroll={false}>Request a demo</Link>
+              <Button variant="surface" asChild className="h-10 px-5 text-[15px] font-semibold">
+                <Link href="?demo=1" scroll={false}>
+                  Request a demo
+                </Link>
               </Button>
             </>
           )}
         </div>
 
-        <MobileNav
-          isAuthenticated={isAuthenticated}
-          user={user}
-          onSectionClick={onSectionClick}
-        />
+        <MobileNav isAuthenticated={isAuthenticated} user={user} onSectionClick={onSectionClick} />
       </div>
     </nav>
   );

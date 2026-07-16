@@ -228,7 +228,6 @@ export function BatchesQueue() {
       ) : total === 0 ? (
         <WorkspaceSection title="Your stacks" icon={<Layers />}>
           <EmptyState
-            art="bot-ap-queue"
             icon={<Inbox />}
             title="No stacks yet"
             action={(

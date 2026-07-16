@@ -16,8 +16,6 @@ import {
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { PageHeader } from "@/components/dashboard/PageHeader"
-import { WorkspaceVisualCard } from "@/components/dashboard/WorkspaceVisualCard"
-import type { WorkspaceVisualName } from "@/components/dashboard/workspace-visuals"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/hooks/useAuth"
 
@@ -27,35 +25,30 @@ const guideActions = [
     href: "/dashboard#clients",
     action: "Open",
     icon: Building2,
-    visual: "portalStack",
   },
   {
     title: "Upload",
     href: "/dashboard/client#upload-files",
     action: "Open",
     icon: FolderUp,
-    visual: "folderDropSquare",
   },
   {
     title: "Review",
     href: "/dashboard/client",
     action: "Open",
     icon: ScanSearch,
-    visual: "reviewLensWide",
   },
   {
     title: "Outputs",
     href: "/dashboard/client#reviewed-outputs",
     action: "Open",
     icon: PlugZap,
-    visual: "publishBridgeWide",
   },
 ] satisfies Array<{
   title: string
   href: string
   action: string
   icon: LucideIcon
-  visual: WorkspaceVisualName
 }>
 
 export default function GuidePage() {
@@ -105,11 +98,15 @@ export default function GuidePage() {
               const Icon = action.icon
 
               return (
-                <WorkspaceVisualCard
+                <article
                   key={action.title}
-                  visual={action.visual}
-                  title={action.title}
-                  action={
+                  className="flex min-w-0 flex-col rounded-lg bg-white p-4 shadow-[0_18px_42px_-34px_rgba(15,23,42,0.5)]"
+                >
+                  <span className="inline-flex size-10 items-center justify-center rounded-full bg-[var(--workspace-soft)] text-black ring-1 ring-inset ring-[color-mix(in_srgb,var(--workspace-border)_58%,transparent)]">
+                    <Icon className="size-5 text-black" />
+                  </span>
+                  <h3 className="mt-3 text-[15px] font-semibold tracking-normal text-foreground">{action.title}</h3>
+                  <div className="mt-4">
                     <Button asChild variant="surface" size="sm" className="w-full justify-between">
                       <Link href={action.href}>
                         <span className="inline-flex items-center gap-1.5">
@@ -119,8 +116,8 @@ export default function GuidePage() {
                         <ArrowRight className="size-3.5" />
                       </Link>
                     </Button>
-                  }
-                />
+                  </div>
+                </article>
               )
             })}
           </div>

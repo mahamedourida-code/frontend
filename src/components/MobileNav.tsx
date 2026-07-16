@@ -629,7 +629,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                         handleNavigation("/sign-up?next=%2Fdashboard%2Fclient");
                       }}
                     >
-                      <LogIn className="h-5 w-5" />
+                      <LogIn className="h-5 w-5 text-white" />
                       <span className="text-sm md:text-base">Create account</span>
                     </Button>
                     <Button
@@ -644,7 +644,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                         }
                       }}
                     >
-                      <LogIn className="h-5 w-5" />
+                      <LogIn className="h-5 w-5 text-black" />
                       <span className="text-sm md:text-base">Sign in</span>
                     </Button>
                   </>

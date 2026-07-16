@@ -15,8 +15,6 @@ import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
-import { WorkspaceVisualCard } from "@/components/dashboard/WorkspaceVisualCard"
-import type { WorkspaceVisualName } from "@/components/dashboard/workspace-visuals"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -106,28 +104,24 @@ const inboxEntryCards = [
     href: "#client-upload-links",
     action: "Manage",
     icon: Link2,
-    visual: "portalStack",
   },
   {
     title: "Email",
     href: "#email-in-address",
     action: "Copy",
     icon: AtSign,
-    visual: "cloudIntakeWide",
   },
   {
     title: "Folders",
     href: "#watched-folders",
     action: "Connect",
     icon: FolderSync,
-    visual: "darkFolderWide",
   },
 ] satisfies Array<{
   title: string
   href: string
   action: string
   icon: LucideIcon
-  visual: WorkspaceVisualName
 }>
 
 function SourceBadge({ kind }: { kind: keyof typeof SOURCE_LABEL }) {
@@ -467,12 +461,15 @@ export default function EmailInboxPage() {
               const Icon = card.icon
 
               return (
-                <WorkspaceVisualCard
+                <article
                   key={card.title}
-                  compact
-                  visual={card.visual}
-                  title={card.title}
-                  action={
+                  className="flex min-w-0 flex-col rounded-lg bg-white p-4 shadow-[0_18px_42px_-34px_rgba(15,23,42,0.5)]"
+                >
+                  <span className="inline-flex size-10 items-center justify-center rounded-full bg-[var(--workspace-soft)] text-black ring-1 ring-inset ring-[color-mix(in_srgb,var(--workspace-border)_58%,transparent)]">
+                    <Icon className="size-5 text-black" />
+                  </span>
+                  <h3 className="mt-3 text-[15px] font-semibold tracking-normal text-foreground">{card.title}</h3>
+                  <div className="mt-4">
                     <Button asChild variant="surface" size="sm" className="w-full justify-between">
                       <Link href={card.href}>
                         <span className="inline-flex items-center gap-1.5">
@@ -482,8 +479,8 @@ export default function EmailInboxPage() {
                         <ArrowRight className="size-3.5" />
                       </Link>
                     </Button>
-                  }
-                />
+                  </div>
+                </article>
               )
             })}
           </section>
@@ -859,7 +856,6 @@ export default function EmailInboxPage() {
         >
           {loading ? null : submissions.length === 0 ? (
             <EmptyState
-              likedArt="intakeTrayWide"
               icon={<Inbox />}
               title="No client files yet"
               compact
@@ -961,7 +957,6 @@ export default function EmailInboxPage() {
         >
           {loading ? null : messages.length === 0 ? (
             <EmptyState
-              likedArt="cleanSweepSquare"
               icon={<Mail />}
               title="No forwarded files yet"
               compact

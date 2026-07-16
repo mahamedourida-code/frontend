@@ -4,6 +4,7 @@ import { useEffect, useState, type ChangeEvent, type DragEvent, type FormEvent }
 import { AnimatePresence, motion } from "framer-motion"
 import {
   ArrowRight,
+  FileStack,
   FileImage,
   FileText,
   FolderUp,
@@ -26,8 +27,6 @@ import { useMotionTokens } from "@/lib/motion"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
 import { companyApi, type CompanySummary } from "@/lib/api-client"
 import { Symbol } from "@/components/dashboard/Symbol"
-import { WorkspaceVisualImage } from "@/components/dashboard/WorkspaceVisualCard"
-import type { WorkspaceVisualName } from "@/components/dashboard/workspace-visuals"
 
 type OutputMode = "table" | "text" | "csv"
 
@@ -68,10 +67,10 @@ function fileSize(bytes: number) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`
 }
 
-const intakeVisuals: Array<{ visual: WorkspaceVisualName; label: string }> = [
-  { visual: "cloudIntakeWide", label: "Inbox" },
-  { visual: "folderDropSquare", label: "Folder" },
-  { visual: "receiptCometSquare", label: "Receipt" },
+const intakeOptions = [
+  { Icon: FileStack, label: "Inbox" },
+  { Icon: FolderUp, label: "Folder" },
+  { Icon: FileText, label: "Receipt" },
 ]
 
 export function ProgressiveUploadSheet({
@@ -284,19 +283,16 @@ export function ProgressiveUploadSheet({
 
           {!uploadedFiles.length ? (
             <div className="grid grid-cols-3 gap-2">
-              {intakeVisuals.map((visual) => (
+              {intakeOptions.map(({ Icon, label }) => (
                 <div
-                  key={visual.visual}
-                  className="group overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white shadow-[0_16px_36px_-30px_rgba(15,23,42,0.5)]"
+                  key={label}
+                  className="flex min-h-24 flex-col items-center justify-center gap-2 rounded-lg bg-white px-2.5 py-3 text-center shadow-[0_14px_34px_-30px_rgba(15,23,42,0.42)]"
                 >
-                  <WorkspaceVisualImage
-                    visual={visual.visual}
-                    className="aspect-[4/3] rounded-none border-0 shadow-none"
-                    imageClassName="object-cover object-center transition-transform duration-200 ease-out group-hover:scale-[1.02]"
-                    sizes="180px"
-                  />
-                  <p className="border-t border-[var(--workspace-border)] px-2.5 py-1.5 text-[11px] font-semibold text-[var(--workspace-muted)]">
-                    {visual.label}
+                  <span className="inline-flex size-10 items-center justify-center rounded-full bg-[var(--workspace-soft)] text-black ring-1 ring-inset ring-[color-mix(in_srgb,var(--workspace-border)_58%,transparent)]">
+                    <Icon className="size-5 text-black" />
+                  </span>
+                  <p className="text-[11px] font-semibold text-[var(--workspace-muted)]">
+                    {label}
                   </p>
                 </div>
               ))}

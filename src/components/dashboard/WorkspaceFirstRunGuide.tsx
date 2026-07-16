@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, type ReactNode } from "react"
 import Link from "next/link"
 import { AnimatePresence, motion } from "framer-motion"
 import {
@@ -11,9 +11,9 @@ import {
 } from "lucide-react"
 
 import { AddCompanyDialog } from "@/components/dashboard/companies/AddCompanyDialog"
-import { WorkspaceVisualCard } from "@/components/dashboard/WorkspaceVisualCard"
 import { Button } from "@/components/ui/button"
 import { useMotionTokens } from "@/lib/motion"
+import { cn } from "@/lib/utils"
 
 type WorkspaceFirstRunGuideProps = {
   userId?: string | null
@@ -24,6 +24,31 @@ type WorkspaceFirstRunGuideProps = {
 
 function guideStorageKey(userId: string, workspaceId: string) {
   return `axliner:first-run-guide:${userId}:${workspaceId}`
+}
+
+function WorkspaceActionCard({
+  icon,
+  title,
+  action,
+}: {
+  icon: ReactNode
+  title: string
+  action: ReactNode
+}) {
+  return (
+    <div className="flex min-w-0 items-center gap-3 rounded-lg bg-white px-3 py-3 shadow-[0_14px_34px_-30px_rgba(15,23,42,0.42)]">
+      <span className={cn(
+        "inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--workspace-soft)] text-black ring-1 ring-inset ring-[color-mix(in_srgb,var(--workspace-border)_58%,transparent)]",
+        "[&_svg]:size-5 [&_svg]:text-black",
+      )}>
+        {icon}
+      </span>
+      <div className="min-w-0 flex-1">
+        <h3 className="truncate text-[14px] font-semibold tracking-normal text-foreground">{title}</h3>
+        <div className="mt-2">{action}</div>
+      </div>
+    </div>
+  )
 }
 
 export function WorkspaceFirstRunGuide({
@@ -98,9 +123,8 @@ export function WorkspaceFirstRunGuide({
             <div className="grid gap-3 sm:grid-cols-3">
               {hasClients ? (
                 <>
-                  <WorkspaceVisualCard
-                    compact
-                    visual="folderDropSquare"
+                  <WorkspaceActionCard
+                    icon={<FolderUp />}
                     title="Upload"
                     action={
                       <Button asChild variant="glossy" size="sm" className="w-full">
@@ -111,9 +135,8 @@ export function WorkspaceFirstRunGuide({
                       </Button>
                     }
                   />
-                  <WorkspaceVisualCard
-                    compact
-                    visual="portalStack"
+                  <WorkspaceActionCard
+                    icon={<Building2 />}
                     title="Clients"
                     action={
                       <AddCompanyDialog
@@ -128,9 +151,8 @@ export function WorkspaceFirstRunGuide({
                       />
                     }
                   />
-                  <WorkspaceVisualCard
-                    compact
-                    visual="reviewLensWide"
+                  <WorkspaceActionCard
+                    icon={<ListChecks />}
                     title="Review"
                     action={
                       <Button asChild variant="surface" size="sm" className="w-full">
@@ -144,9 +166,8 @@ export function WorkspaceFirstRunGuide({
                 </>
               ) : (
                 <>
-                  <WorkspaceVisualCard
-                    compact
-                    visual="portalStack"
+                  <WorkspaceActionCard
+                    icon={<Building2 />}
                     title="Clients"
                     action={
                       <AddCompanyDialog
@@ -161,9 +182,8 @@ export function WorkspaceFirstRunGuide({
                       />
                     }
                   />
-                  <WorkspaceVisualCard
-                    compact
-                    visual="folderDropSquare"
+                  <WorkspaceActionCard
+                    icon={<FolderUp />}
                     title="Upload"
                     action={
                       <Button asChild variant="surface" size="sm" className="w-full">
@@ -174,9 +194,8 @@ export function WorkspaceFirstRunGuide({
                       </Button>
                     }
                   />
-                  <WorkspaceVisualCard
-                    compact
-                    visual="reviewLensWide"
+                  <WorkspaceActionCard
+                    icon={<ListChecks />}
                     title="Review"
                     action={
                       <Button asChild variant="surface" size="sm" className="w-full">
