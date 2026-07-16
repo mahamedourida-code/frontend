@@ -1,10 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
 
 import { cn } from "@/lib/utils"
-import { useMotionTokens } from "@/lib/motion"
 
 export interface SegmentedTab {
   value: string
@@ -38,15 +36,12 @@ export function SegmentedTabs({
   labelClassName,
   ...rest
 }: SegmentedTabsProps) {
-  const m = useMotionTokens()
-  const layoutId = React.useId()
-
   return (
     <div
       role="tablist"
       aria-label={rest["aria-label"]}
       className={cn(
-        "inline-flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-[var(--workspace-border)] bg-[var(--workspace-soft)] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.74)]",
+        "inline-flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full border border-[var(--workspace-border)] bg-[var(--workspace-soft)] p-0.5",
         className,
       )}
     >
@@ -62,17 +57,13 @@ export function SegmentedTabs({
             onClick={() => onValueChange(tab.value)}
             className={cn(
               "ax-interactive relative inline-flex shrink-0 items-center justify-center gap-2 rounded-full font-medium whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/25",
-              size === "sm" ? "h-8 px-3 text-[12px]" : "h-9 px-4 text-[13px]",
+              size === "sm" ? "h-7 px-2.5 text-[12px]" : "h-8 px-3.5 text-[13px]",
               active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
               tabClassName,
             )}
           >
             {active ? (
-              <motion.span
-                layoutId={layoutId}
-                transition={m.reduced ? { duration: 0 } : m.springSnappy}
-                className="absolute inset-0 rounded-full border border-[var(--workspace-border)] bg-white shadow-[0_1px_2px_0_rgba(16,24,40,0.07)]"
-              />
+              <span className="absolute inset-0 rounded-full border border-[var(--workspace-border)] bg-white" />
             ) : null}
             {tab.icon ? (
               <span className="relative z-10 inline-flex shrink-0 text-black [&_svg]:size-3.5 [&_svg]:text-black">{tab.icon}</span>

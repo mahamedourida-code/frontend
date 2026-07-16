@@ -16,7 +16,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { motion, useReducedMotion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { AppLogo } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
@@ -32,7 +31,6 @@ import {
 import {
   Menu,
   BookCheck,
-  BookOpenText,
   ChevronRight,
   Home,
   LogIn,
@@ -41,18 +39,11 @@ import {
   Settings,
   LogOut,
   FileText,
-  FileOutput,
   ReceiptText,
-  Receipt,
   Building2,
   Inbox,
-  Landmark,
   Layers,
-  ListChecks,
-  NotebookText,
   PlugZap,
-  ScanSearch,
-  SlidersHorizontal,
   Users,
   ScanLine,
 } from "lucide-react"
@@ -82,7 +73,7 @@ type MobileNavItem = {
   }>
 }
 
-type AuthenticatedNavGroupKey = "collect" | "review" | "output" | "uploadAs" | "manage"
+type AuthenticatedNavGroupKey = "work" | "records" | "manage"
 
 type AuthenticatedNavGroup = {
   key: AuthenticatedNavGroupKey
@@ -97,52 +88,30 @@ type AuthenticatedNavGroup = {
 
 const AUTHENTICATED_NAV_GROUPS: AuthenticatedNavGroup[] = [
   {
-    key: "collect",
-    label: "1. Collect",
+    key: "work",
+    label: "Work",
     icon: Inbox,
     items: [
       { label: "Inbox", href: "/dashboard/inbox", icon: Inbox },
-      { label: "Upload documents", href: "/dashboard/client#upload-files", icon: Upload },
-    ],
-  },
-  {
-    key: "review",
-    label: "2. Review",
-    icon: BookCheck,
-    items: [
-      { label: "Stacks", href: "/dashboard/batches", icon: Layers },
       { label: "Review board", href: "/dashboard/client", icon: BookCheck },
-    ],
-  },
-  {
-    key: "output",
-    label: "3. Output",
-    icon: ReceiptText,
-    items: [
-      { label: "Export Excel / CSV", href: "/dashboard/client#reviewed-outputs", icon: FileOutput },
       { label: "Draft bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
-      { label: "Integrations", href: "/dashboard/integrations", icon: PlugZap },
     ],
   },
   {
-    key: "uploadAs",
-    label: "Upload as",
-    icon: Upload,
+    key: "records",
+    label: "Records",
+    icon: Activity,
     items: [
-      { label: "Auto-detect", href: "/dashboard/auto-detect", icon: ScanSearch },
-      { label: "Invoices", href: "/dashboard/invoices", icon: FileText },
-      { label: "Receipts", href: "/dashboard/receipts", icon: Receipt },
-      { label: "Bank statements", href: "/dashboard/bank-statements", icon: Landmark },
-      { label: "Notes", href: "/dashboard/notes", icon: NotebookText },
+      { label: "Batches", href: "/dashboard/batches", icon: Layers },
+      { label: "Activity", href: "/history", icon: Activity },
     ],
   },
   {
     key: "manage",
     label: "Manage",
-    icon: SlidersHorizontal,
+    icon: Settings,
     items: [
-      { label: "Setup", href: "/dashboard/setup", icon: ListChecks },
-      { label: "Activity", href: "/history", icon: Activity },
+      { label: "Connections", href: "/dashboard/integrations", icon: PlugZap },
       { label: "Settings", href: "/dashboard/settings", icon: Settings },
     ],
   },
@@ -166,16 +135,13 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
   const [isOpen, setIsOpen] = useState(false)
   const [audiencesOpen, setAudiencesOpen] = useState(false)
   const [authenticatedGroupsOpen, setAuthenticatedGroupsOpen] = useState<Record<AuthenticatedNavGroupKey, boolean>>({
-    collect: true,
-    review: false,
-    output: false,
-    uploadAs: false,
+    work: true,
+    records: false,
     manage: false,
   })
   const router = useRouter()
   const pathname = usePathname()
   const currentHash = useCurrentHash()
-  const prefersReducedMotion = useReducedMotion()
 
   // Close menu on route change
   useEffect(() => {
@@ -331,7 +297,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 aria-current={item.active ? "page" : undefined}
                 onClick={item.onClick}
                 className={cn(
-                  "ax-interactive h-14 min-w-0 flex-col gap-1 rounded-2xl px-1.5 text-[10px] font-semibold",
+                  "ax-interactive h-14 min-w-0 flex-col gap-1 rounded-full px-1.5 text-[10px] font-semibold",
                   isAuthenticated
                     ? item.active
                       ? "bg-accent text-accent-foreground shadow-sm hover:bg-accent hover:text-accent-foreground"
@@ -353,7 +319,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 variant="ghost"
                 size="sm" 
                 className={cn(
-                  "ax-interactive h-14 min-w-0 flex-col gap-1 rounded-2xl px-1.5 text-[10px] font-semibold",
+                  "ax-interactive h-14 min-w-0 flex-col gap-1 rounded-full px-1.5 text-[10px] font-semibold",
                   isAuthenticated
                     ? isOpen
                       ? "bg-accent text-accent-foreground"
@@ -364,7 +330,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 )}
               >
                 <Menu className="h-5 w-5 text-black" />
-                <span className="w-full truncate leading-none">Menu</span>
+                <span className="w-full truncate leading-none">More</span>
               </Button>
             </SheetTrigger>
             
@@ -411,16 +377,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
               )}
 
               {/* Navigation Items */}
-              <motion.div
-                className="flex-1 overflow-y-auto py-3"
-                initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={
-                  prefersReducedMotion
-                    ? { duration: 0.15 }
-                    : { duration: 0.28, ease: [0.16, 1, 0.3, 1], delay: 0.04 }
-                }
-              >
+              <div className="flex-1 overflow-y-auto py-3">
                 <nav className="space-y-1 px-3">
                   {isAuthenticated ? (
                     <>
@@ -601,7 +558,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                   )}
                 </nav>
 
-              </motion.div>
+              </div>
 
               {/* Footer Actions */}
               <div className={cn(

@@ -23,7 +23,6 @@ import {
   Settings,
   Upload,
 } from "lucide-react"
-import { AnimatePresence, motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { useHistory, type HistoryJob } from "@/hooks/useHistory"
 import { useAuth } from "@/hooks/useAuth"
@@ -53,11 +52,11 @@ type CommandItem = {
 
 const GROUP_LABELS: Record<CommandGroup, string> = {
   workspace: "Workspace",
-  collect: "1. Collect",
-  review: "2. Review",
-  output: "3. Output",
-  uploadAs: "Upload as",
-  manage: "Manage",
+  collect: "Intake",
+  review: "Review",
+  output: "Publish",
+  uploadAs: "Document types",
+  manage: "Workspace",
   act: "Actions",
   clients: "Clients",
   documents: "Documents",
@@ -101,6 +100,8 @@ const ACT_ITEMS: CommandItem[] = [
   { id: "act-refresh-accounting", group: "act", label: "Refresh accounting lists", hint: "Accounting connection", keywords: "sync vendors accounts tax qbo xero", icon: RefreshCw, href: "/dashboard/integrations" },
   { id: "act-import-pos",  group: "act", label: "Import purchase orders",   hint: "Settings",               keywords: "po pos bills coding",           icon: FileSpreadsheet, href: "/dashboard/settings?section=accounting" },
 ]
+
+const RESTING_ITEM_IDS = new Set(["nav-upload", "nav-inbox", "nav-review", "nav-bills"])
 
 function fuzzyScore(haystack: string, query: string): number {
   // Subsequence fuzzy match; returns -1 for no match, lower = better (tighter span).
@@ -158,11 +159,7 @@ interface CommandPaletteProps {
 // Outer gate: only mount the body (and the useHistory fetch) while the palette is open,
 // so the dashboard never pays for the "Find" source until the shortcut is pressed.
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
-  return (
-    <AnimatePresence>
-      {open && <CommandPaletteBody onOpenChange={onOpenChange} />}
-    </AnimatePresence>
-  )
+  return open ? <CommandPaletteBody onOpenChange={onOpenChange} /> : null
 }
 
 function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) => void }) {
@@ -209,8 +206,12 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
         .sort((a, b) => a.score - b.score)
         .map(entry => entry.item)
     }
-    // Resting state (no query): pages + a few recent clients and documents.
-    return [...staticItems, ...clientItems.slice(0, 5), ...documentItems.slice(0, 5)]
+    // Resting state stays deliberately short; typing searches every route.
+    return [
+      ...staticItems.filter((item) => RESTING_ITEM_IDS.has(item.id)),
+      ...clientItems.slice(0, 3),
+      ...documentItems.slice(0, 3),
+    ]
   }, [query, clientItems, documentItems])
 
   // Group the flat results while preserving the flat index for keyboard nav.
@@ -264,13 +265,11 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
   }, [activeIndex])
 
   return (
-    <motion.div
-      key="cp-root"
-      className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[18vh]"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.14 }}
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center px-3 pt-[12vh] sm:px-4 sm:pt-[16vh]"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Find in workspace"
     >
           {/* Backdrop */}
           <div
@@ -279,13 +278,7 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
           />
 
           {/* Panel */}
-          <motion.div
-            className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-border bg-background/95 shadow-2xl backdrop-blur-xl"
-            initial={{ opacity: 0, scale: 0.96, y: -8 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: -8 }}
-            transition={{ type: "spring", stiffness: 500, damping: 32 }}
-          >
+          <div className="relative z-10 w-full max-w-[34rem] overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.22)]">
             {/* Search row */}
             <div className="flex items-center gap-3 border-b border-border px-4 py-3">
               <Search className="size-4 shrink-0 text-black" />
@@ -293,8 +286,9 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
                 ref={inputRef}
                 value={query}
                 onChange={e => setQuery(e.target.value)}
-                placeholder="Search clients, documents, or jump to a page..."
-                className="flex-1 bg-transparent text-[15px] font-medium text-foreground outline-none placeholder:text-muted-foreground"
+                placeholder="Find a client, batch, or action"
+                aria-label="Find a client, batch, or action"
+                className="flex-1 bg-transparent text-[14px] font-medium text-foreground outline-none placeholder:text-muted-foreground"
               />
               <kbd className="hidden rounded-md border border-border bg-muted px-1.5 py-0.5 font-sans text-xs font-semibold text-muted-foreground sm:block">
                 ESC
@@ -302,17 +296,13 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
             </div>
 
             {/* Results */}
-            <div ref={listRef} className="max-h-[340px] overflow-y-auto py-1.5">
+            <div ref={listRef} className="max-h-[min(25rem,58vh)] overflow-y-auto py-1.5">
               {results.length === 0 ? (
                 <p className="px-4 py-8 text-center text-[15px] font-medium text-muted-foreground">
                   No results for &ldquo;{query}&rdquo;
                 </p>
               ) : (
-                <motion.div
-                  variants={{ show: { transition: { staggerChildren: 0.02 } } }}
-                  initial="hidden"
-                  animate="show"
-                >
+                <div>
                   {grouped.map(({ group, rows }) => (
                     <div key={group} className="pb-1">
                       <div className="px-4 pb-1 pt-2 text-xs font-bold uppercase tracking-normal text-muted-foreground">
@@ -323,20 +313,16 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
                           const Icon = item.icon
                           const isActive = flatIndex === activeIndex
                           return (
-                            <motion.li
+                            <li
                               key={item.id}
                               data-flat-index={flatIndex}
-                              variants={{
-                                hidden: { opacity: 0, y: 4 },
-                                show: { opacity: 1, y: 0, transition: { duration: 0.12, ease: [0.2, 0, 0, 1] } },
-                              }}
                             >
                               <button
                                 type="button"
                                 onMouseEnter={() => setActiveIndex(flatIndex)}
                                 onClick={() => execute(item)}
                                 className={cn(
-                                  "flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors duration-100",
+                                  "flex w-full items-center gap-3 px-4 py-2 text-left transition-colors duration-100",
                                   isActive
                                     ? "bg-accent text-accent-foreground"
                                     : "text-foreground hover:bg-accent/60"
@@ -353,23 +339,23 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
                                 <span className="flex-1 truncate text-[15px] font-semibold">{item.label}</span>
                                 <span className="shrink-0 text-[13px] font-medium text-muted-foreground">{item.hint}</span>
                               </button>
-                            </motion.li>
+                            </li>
                           )
                         })}
                       </ul>
                     </div>
                   ))}
-                </motion.div>
+                </div>
               )}
             </div>
 
             {/* Footer hints */}
-            <div className="flex items-center gap-4 border-t border-border px-4 py-2 text-xs font-medium text-muted-foreground">
+            <div className="hidden">
               <span className="flex items-center gap-1"><kbd className="font-sans">↑↓</kbd> navigate</span>
               <span className="flex items-center gap-1"><kbd className="font-sans">↵</kbd> open</span>
               <span className="flex items-center gap-1"><kbd className="font-sans">esc</kbd> close</span>
             </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   )
 }

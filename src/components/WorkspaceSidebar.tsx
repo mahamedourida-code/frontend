@@ -1,35 +1,25 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import {
   Activity,
   BookCheck,
-  BookOpenText,
   Building2,
-  ChevronDown,
-  FileOutput,
-  FileText,
   Inbox,
-  Landmark,
-  Layers,
-  ListChecks,
-  NotebookText,
-  PanelLeft,
+  Layers3,
+  PanelLeftClose,
+  PanelLeftOpen,
   PlugZap,
-  Receipt,
+  Plus,
   ReceiptText,
-  ScanSearch,
   Settings,
-  SlidersHorizontal,
-  Upload,
   type LucideIcon,
 } from "lucide-react"
-import { AnimatePresence, motion } from "framer-motion"
+
 import { AxMark } from "@/components/AppIcon"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import { useCurrentHash } from "@/hooks/useCurrentHash"
-import { useMotionTokens } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 export type WorkspaceSidebarItemKey =
@@ -63,131 +53,84 @@ interface WorkspaceSidebarProps {
   user?: unknown
 }
 
+type VisibleItemKey =
+  | "companies"
+  | "inbox"
+  | "review"
+  | "accounts_payable"
+  | "batches"
+  | "activity"
+  | "integrations"
+  | "settings"
+
 type SidebarItem = {
-  key: Extract<
-    WorkspaceSidebarItemKey,
-    | "companies"
-    | "setup"
-    | "activity"
-    | "inbox"
-    | "batches"
-    | "review"
-    | "accounts_payable"
-    | "integrations"
-    | "guide"
-    | "settings"
-    | "invoices"
-    | "receipts"
-    | "bank_statements"
-    | "notes"
-    | "auto_detect"
-    | "upload"
-    | "exports"
-  >
+  key: VisibleItemKey
   label: string
   href: string
   icon: LucideIcon
 }
 
-type SidebarGroupKey = "collect" | "review" | "output" | "uploadAs" | "manage"
-
-type SidebarGroup = {
-  key: SidebarGroupKey
-  label: string
-  icon: LucideIcon
-  step?: string
-  items: SidebarItem[]
-}
-
-// framer-motion-wrapped Link so nav items can carry quiet hover micro-motion.
-const MotionLink = motion.create(Link)
-
-const EXPANDED_W = 236
-const COLLAPSED_W = 72
+const EXPANDED_W = 224
+const COLLAPSED_W = 68
 const STORAGE_KEY = "axliner:sidebarCollapsed"
-const CORE_FLOW_GROUPS = new Set<SidebarGroupKey>(["collect", "review", "output"])
 
-// "Clients" is the one name everywhere (sidebar, mobile, command palette).
-const PRIMARY_ITEMS: SidebarItem[] = [
+const WORK_ITEMS: SidebarItem[] = [
   { key: "companies", label: "Clients", href: "/dashboard", icon: Building2 },
-  { key: "guide", label: "Guide", href: "/dashboard/guide", icon: BookOpenText },
-]
-
-const COLLECT_ITEMS: SidebarItem[] = [
   { key: "inbox", label: "Inbox", href: "/dashboard/inbox", icon: Inbox },
-  { key: "upload", label: "Upload", href: "/dashboard/client#upload-files", icon: Upload },
-]
-
-const REVIEW_ITEMS: SidebarItem[] = [
-  { key: "batches", label: "Stacks", href: "/dashboard/batches", icon: Layers },
-  { key: "review", label: "Review", href: "/dashboard/client", icon: BookCheck },
-]
-
-const OUTPUT_ITEMS: SidebarItem[] = [
-  { key: "exports", label: "Exports", href: "/dashboard/client#reviewed-outputs", icon: FileOutput },
+  { key: "review", label: "Review board", href: "/dashboard/client", icon: BookCheck },
   { key: "accounts_payable", label: "Draft bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
-  { key: "integrations", label: "Integrations", href: "/dashboard/integrations", icon: PlugZap },
 ]
 
-const UPLOAD_AS_ITEMS: SidebarItem[] = [
-  { key: "auto_detect", label: "Auto-detect", href: "/dashboard/auto-detect", icon: ScanSearch },
-  { key: "invoices", label: "Invoices", href: "/dashboard/invoices", icon: FileText },
-  { key: "receipts", label: "Receipts", href: "/dashboard/receipts", icon: Receipt },
-  { key: "bank_statements", label: "Statements", href: "/dashboard/bank-statements", icon: Landmark },
-  { key: "notes", label: "Notes", href: "/dashboard/notes", icon: NotebookText },
+const RECORD_ITEMS: SidebarItem[] = [
+  { key: "batches", label: "Batches", href: "/dashboard/batches", icon: Layers3 },
+  { key: "activity", label: "Activity", href: "/history", icon: Activity },
 ]
 
 const MANAGE_ITEMS: SidebarItem[] = [
-  { key: "setup", label: "Setup", href: "/dashboard/setup", icon: ListChecks },
-  { key: "activity", label: "Activity", href: "/history", icon: Activity },
+  { key: "integrations", label: "Connections", href: "/dashboard/integrations", icon: PlugZap },
   { key: "settings", label: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 
-const SIDEBAR_GROUPS: SidebarGroup[] = [
-  { key: "collect", label: "Collect", icon: Inbox, step: "1", items: COLLECT_ITEMS },
-  { key: "review", label: "Review", icon: BookCheck, step: "2", items: REVIEW_ITEMS },
-  { key: "output", label: "Output", icon: ReceiptText, step: "3", items: OUTPUT_ITEMS },
-  { key: "uploadAs", label: "Upload as", icon: Upload, items: UPLOAD_AS_ITEMS },
-  { key: "manage", label: "Manage", icon: SlidersHorizontal, items: MANAGE_ITEMS },
-]
+const BATCH_ENTRY_ITEMS = new Set<WorkspaceSidebarItemKey>([
+  "auto_detect",
+  "invoices",
+  "receipts",
+  "bank_statements",
+  "notes",
+  "upload",
+])
 
-function useReviewCount(): number {
-  const { state } = useProcessingState()
-  return state.processingComplete && Array.isArray(state.processedFiles) ? state.processedFiles.length : 0
-}
-
-function normalizeActiveItem(activeItem: WorkspaceSidebarItemKey): SidebarItem["key"] | null {
+function normalizedActiveItem(activeItem: WorkspaceSidebarItemKey, hash: string): VisibleItemKey | null {
   if (activeItem === "overview" || activeItem === "clients") return "companies"
   if (activeItem === "process") return "review"
   if (activeItem === "history") return "activity"
-  if (activeItem === "pricing") return null
-  return activeItem
+  if (activeItem === "exports" || hash === "#reviewed-outputs") return "review"
+  if (BATCH_ENTRY_ITEMS.has(activeItem) || hash === "#upload-files") return null
+  if ([...WORK_ITEMS, ...RECORD_ITEMS, ...MANAGE_ITEMS].some((item) => item.key === activeItem)) {
+    return activeItem as VisibleItemKey
+  }
+  return null
 }
 
-export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }: WorkspaceSidebarProps) {
-  const reviewCount = useReviewCount()
+export function WorkspaceSidebar({
+  activeItem,
+  unreadCount = 0,
+  notifications,
+}: WorkspaceSidebarProps) {
+  const { state } = useProcessingState()
   const currentHash = useCurrentHash()
-  const shellActiveItem = normalizeActiveItem(activeItem)
-  const normalizedActiveItem = shellActiveItem === "review" && currentHash === "#upload-files"
-    ? "upload"
-    : shellActiveItem === "review" && currentHash === "#reviewed-outputs"
-      ? "exports"
-      : shellActiveItem
-  const m = useMotionTokens()
   const [collapsed, setCollapsed] = useState(false)
-  const [openGroups, setOpenGroups] = useState<Record<SidebarGroupKey, boolean>>({
-    collect: true,
-    review: true,
-    output: true,
-    uploadAs: false,
-    manage: false,
-  })
+  const active = normalizedActiveItem(activeItem, currentHash)
+  const reviewCount = state.processingComplete && Array.isArray(state.processedFiles)
+    ? state.processedFiles.length
+    : 0
+  const batchEntryActive = BATCH_ENTRY_ITEMS.has(activeItem) || currentHash === "#upload-files"
 
   useEffect(() => {
     try {
       setCollapsed(window.localStorage.getItem(STORAGE_KEY) === "1")
     } catch {
-      /* ignore */
+      // Local preference is optional.
     }
   }, [])
 
@@ -197,306 +140,129 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
     try {
       window.localStorage.setItem(STORAGE_KEY, collapsed ? "1" : "0")
     } catch {
-      /* ignore */
+      // Local preference is optional.
     }
-    return () => {
-      document.documentElement.style.removeProperty("--sidebar-w")
-    }
+    return () => document.documentElement.style.removeProperty("--sidebar-w")
   }, [collapsed])
 
-  useEffect(() => {
-    const activeGroup = SIDEBAR_GROUPS.find((group) =>
-      group.items.some((item) => item.key === normalizedActiveItem),
-    )
-    if (!activeGroup) return
-
-    setOpenGroups((current) =>
-      current[activeGroup.key] ? current : { ...current, [activeGroup.key]: true },
-    )
-  }, [normalizedActiveItem])
-
-  // In the collapsed rail, empty space reopens the full navigation. Icon links
-  // still navigate without changing the user's preferred rail width.
-  const handleRailClick = useCallback(
-    (event: React.MouseEvent<HTMLElement>) => {
-      if (!collapsed) return
-      if ((event.target as HTMLElement).closest("a,button")) return
-      setCollapsed(false)
-    },
-    [collapsed],
-  )
-
-  const renderItem = (item: SidebarItem, nested = false) => {
+  const renderItem = (item: SidebarItem) => {
     const Icon = item.icon
-    const isActive = normalizedActiveItem === item.key
-    const showDot = Boolean(notifications?.[item.key])
+    const isActive = active === item.key
     const count = item.key === "review" ? reviewCount : item.key === "inbox" ? unreadCount : 0
-    const activeSpring = m.reduced ? { duration: 0 } : m.springSnappy
+    const showDot = Boolean(notifications?.[item.key]) || (collapsed && count > 0)
 
     return (
-      <MotionLink
+      <Link
         key={item.key}
         href={item.href}
-        data-workspace-tour={
-          item.key === "companies"
-            ? "clients"
-            : item.key === "upload"
-              ? "upload"
-              : item.key === "review"
-                ? "review"
-                : item.key === "exports"
-                  ? "outputs"
-                  : undefined
-        }
         aria-current={isActive ? "page" : undefined}
         title={collapsed ? item.label : undefined}
-        whileHover={m.reduced ? undefined : { x: nested ? 1 : 2 }}
-        whileTap={m.reduced ? undefined : { scale: 0.985 }}
-        transition={m.reduced ? { duration: 0 } : m.springSnappy}
+        data-workspace-tour={
+          item.key === "companies" ? "clients" : item.key === "review" ? "review" : undefined
+        }
         className={cn(
-          "ax-interactive relative flex items-center overflow-hidden rounded-full border border-transparent outline-none focus-visible:ring-2 focus-visible:ring-black/25",
-          collapsed
-            ? "h-10 justify-center px-0"
-            : nested
-              ? "h-9 gap-2.5 px-3 text-[14px]"
-              : "h-10 gap-2.5 px-3 text-[15px]",
+          "ax-interactive relative flex h-9 items-center rounded-full border outline-none focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/25",
+          collapsed ? "justify-center px-0" : "gap-2.5 px-3 text-[13px]",
           isActive
-            ? "border-[var(--workspace-selection-border)] bg-white font-semibold text-[var(--workspace-ink)] shadow-[0_1px_2px_rgba(16,24,40,0.06)]"
-            : "font-medium text-slate-700 hover:border-[var(--workspace-border)] hover:bg-white/80 hover:text-[var(--workspace-primary)]",
+            ? "border-[var(--workspace-selection-border)] bg-white font-semibold text-[var(--workspace-ink)]"
+            : "border-transparent font-medium text-[var(--workspace-muted)] hover:border-[var(--workspace-border)] hover:bg-white hover:text-[var(--workspace-ink)]",
         )}
       >
-        {isActive ? (
-          <motion.span
-            layoutId="sidebar-active"
-            transition={activeSpring}
-            className="absolute inset-0 rounded-full bg-white"
-            aria-hidden="true"
-          />
-        ) : null}
         {isActive && !collapsed ? (
-          <motion.span
-            layoutId="sidebar-active-bar"
-            transition={activeSpring}
-            className="absolute left-1.5 top-1/2 h-4 w-1 -translate-y-1/2 rounded-full bg-[var(--workspace-primary)]"
-            aria-hidden="true"
-          />
+          <span className="absolute left-1.5 top-1/2 h-3.5 w-0.5 -translate-y-1/2 rounded-full bg-[var(--workspace-primary)]" />
         ) : null}
-        {isActive && collapsed ? (
-          <motion.span
-            layoutId="sidebar-active-dot"
-            transition={activeSpring}
-            className="absolute right-1.5 top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-[var(--workspace-primary)]"
-            aria-hidden="true"
-          />
-        ) : null}
-        <span className="relative z-10 flex shrink-0 items-center justify-center">
-          <Icon
-            className={cn(
-              nested && !collapsed ? "size-4" : "size-[18px]",
-              "text-black",
-            )}
-          />
-          {(showDot || (collapsed && count > 0)) && (
-            <span
-              className="absolute -right-1 -top-1 size-1.5 rounded-full bg-amber-400 ring-2 ring-[var(--workspace-sidebar)]"
-              aria-hidden="true"
-            />
-          )}
+        <span className="relative flex shrink-0 items-center justify-center">
+          <Icon className="size-[17px] text-black" />
+          {showDot ? (
+            <span className="absolute -right-1 -top-1 size-1.5 rounded-full bg-[var(--workspace-warning)] ring-2 ring-[var(--workspace-sidebar)]" />
+          ) : null}
         </span>
-        {!collapsed && <span className="relative z-10 truncate">{item.label}</span>}
-        {!collapsed && count > 0 && (
-          <span
-            className={cn(
-              "relative z-10 ms-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-semibold leading-none",
-              isActive ? "bg-[var(--workspace-primary)] text-white" : "bg-[var(--workspace-primary-hover)] text-white",
-            )}
-          >
+        {!collapsed ? <span className="truncate">{item.label}</span> : null}
+        {!collapsed && count > 0 ? (
+          <span className="ms-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--workspace-soft)] px-1.5 text-[10px] font-semibold tabular-nums text-[var(--workspace-ink)]">
             {count > 99 ? "99+" : count}
           </span>
-        )}
-      </MotionLink>
-    )
-  }
-
-  const renderGroup = (group: SidebarGroup) => {
-    const GroupIcon = group.icon
-    const containsActiveItem = group.items.some((item) => item.key === normalizedActiveItem)
-
-    if (collapsed) {
-      return (
-        <div key={group.key} className="space-y-1.5">
-          <div
-            className={cn(
-              "mx-auto mt-2 flex h-6 w-10 items-center justify-center rounded-full text-[11px] font-semibold",
-              group.step
-                ? "border border-[var(--workspace-border)] bg-white text-slate-500"
-                : "text-slate-500",
-            )}
-            title={group.label}
-            aria-hidden="true"
-          >
-            {group.step ? group.step : <GroupIcon className="size-3.5 text-black" />}
-          </div>
-          {group.items.map((item) => renderItem(item))}
-        </div>
-      )
-    }
-
-    if (CORE_FLOW_GROUPS.has(group.key)) {
-      return (
-        <div key={group.key} className="space-y-1.5">
-          <div
-            className={cn(
-              "flex h-7 items-center gap-2 px-3 pt-1 text-[12px] font-semibold text-slate-500",
-              containsActiveItem && "text-[var(--workspace-ink)]",
-            )}
-          >
-            <span
-              className={cn(
-                "inline-flex size-5 shrink-0 items-center justify-center rounded-full border text-[11px] tabular-nums",
-                containsActiveItem
-                  ? "border-[var(--workspace-selection-border)] bg-white text-black"
-                  : "border-[var(--workspace-border)] bg-white/70 text-black",
-              )}
-            >
-              {group.step}
-            </span>
-            <span>{group.label}</span>
-            <span className="h-px flex-1 bg-[var(--workspace-border)]" aria-hidden="true" />
-          </div>
-          <div className="space-y-0.5">{group.items.map((item) => renderItem(item, true))}</div>
-        </div>
-      )
-    }
-
-    const isOpen = openGroups[group.key]
-
-    return (
-      <div key={group.key} className="space-y-1.5">
-        <button
-          type="button"
-          aria-expanded={isOpen}
-          aria-controls={`sidebar-group-${group.key}`}
-          onClick={() => setOpenGroups((current) => ({ ...current, [group.key]: !current[group.key] }))}
-          className={cn(
-            "ax-interactive flex h-9 w-full items-center gap-2.5 rounded-full border border-transparent px-3 text-[13px] font-semibold text-slate-600 outline-none hover:border-[var(--workspace-border)] hover:bg-white/80 hover:text-[var(--workspace-ink)] focus-visible:ring-2 focus-visible:ring-black/25",
-            containsActiveItem && "border-[var(--workspace-selection-border)] bg-white text-[var(--workspace-ink)]",
-          )}
-        >
-          <GroupIcon
-            className={cn(
-              "size-4 text-black",
-            )}
-          />
-          <span className="flex-1 text-left">{group.label}</span>
-          <ChevronDown
-            className={cn(
-              "size-3.5 text-black transition-transform duration-150 ease-out",
-              isOpen && "rotate-180",
-            )}
-            aria-hidden="true"
-          />
-        </button>
-        <AnimatePresence initial={false}>
-          {isOpen ? (
-            <motion.div
-              id={`sidebar-group-${group.key}`}
-              key="items"
-              initial={m.reduced ? false : { height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={m.reduced ? { opacity: 0 } : { height: 0, opacity: 0 }}
-              transition={m.reduced ? { duration: 0 } : { duration: m.dur.fast, ease: m.ease }}
-              className="ml-4 overflow-hidden border-l border-[var(--workspace-border)] pl-2"
-            >
-              <div className="space-y-0.5 py-0.5">{group.items.map((item) => renderItem(item, true))}</div>
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
-      </div>
+        ) : null}
+      </Link>
     )
   }
 
   return (
-    <motion.aside
-      className="fixed inset-y-0 start-0 z-30 hidden overflow-hidden border-r border-[var(--workspace-border)] bg-[var(--workspace-sidebar)] text-[var(--workspace-ink)] md:flex md:flex-col"
+    <aside
+      style={{ width: collapsed ? COLLAPSED_W : EXPANDED_W }}
+      className="fixed inset-y-0 start-0 z-30 hidden overflow-hidden border-r border-[var(--workspace-border)] bg-[var(--workspace-sidebar)] text-[var(--workspace-ink)] transition-[width] duration-150 md:flex md:flex-col"
       aria-label="Workspace navigation"
-      initial={false}
-      animate={{ width: collapsed ? COLLAPSED_W : EXPANDED_W }}
-      transition={m.reduced ? { duration: 0 } : { duration: m.dur.slow, ease: m.ease }}
     >
       <div
         className={cn(
-          "flex h-16 shrink-0 items-center border-b border-white/10 bg-[#213445] px-3 text-white",
-          collapsed ? "justify-center gap-1.5 px-2" : "gap-2.5",
+          "flex h-14 shrink-0 items-center border-b border-white/10 bg-[var(--workspace-topbar)] px-2.5 text-white",
+          collapsed ? "justify-center" : "gap-2",
         )}
       >
-        <AnimatePresence initial={false} mode="popLayout">
-          {collapsed ? (
-            <motion.div
-              key="mark"
-              initial={m.reduced ? false : { opacity: 0, x: -4 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={m.reduced ? { opacity: 0 } : { opacity: 0, x: -4 }}
-              transition={m.reduced ? { duration: 0 } : m.tFast}
-            >
-              <Link
-                href="/dashboard"
-                aria-label="AxLiner home"
-                className="ax-interactive flex size-9 items-center justify-center rounded-full outline-none hover:bg-white/8 focus-visible:ring-2 focus-visible:ring-white/30"
-              >
-                <AxMark className="h-8 w-auto" />
-              </Link>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="brand"
-              initial={m.reduced ? false : { opacity: 0, x: -6 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={m.reduced ? { opacity: 0 } : { opacity: 0, x: -6 }}
-              transition={m.reduced ? { duration: 0 } : m.tFast}
-              className="min-w-0 flex-1"
-            >
-              <Link
-                href="/dashboard"
-                aria-label="AxLiner home"
-                className="ax-interactive flex min-w-0 items-center gap-2.5 outline-none focus-visible:ring-2 focus-visible:ring-white/30"
-              >
-                <AxMark className="h-9 w-auto" />
-                <span className="truncate text-[19px] font-semibold tracking-normal">AxLiner</span>
-              </Link>
-            </motion.div>
+        <Link
+          href="/dashboard"
+          aria-label="AxLiner workspace"
+          className={cn(
+            "ax-interactive flex min-w-0 items-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-white/30",
+            collapsed ? "size-9 justify-center" : "flex-1 gap-2 px-1",
           )}
-        </AnimatePresence>
-        <button
-          type="button"
-          onClick={() => setCollapsed((value) => !value)}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          aria-expanded={!collapsed}
-          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="ax-interactive flex size-9 items-center justify-center rounded-full text-white/76 outline-none hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-white/30"
         >
-          <PanelLeft className="size-[18px]" />
-        </button>
+          <AxMark className="h-8 w-auto shrink-0" />
+          {!collapsed ? <span className="truncate text-[17px] font-semibold">AxLiner</span> : null}
+        </Link>
+        {!collapsed ? (
+          <button
+            type="button"
+            onClick={() => setCollapsed(true)}
+            aria-label="Collapse navigation"
+            className="ax-interactive flex size-8 items-center justify-center rounded-full text-white/70 hover:bg-white/10 hover:text-white"
+          >
+            <PanelLeftClose className="size-4" />
+          </button>
+        ) : null}
       </div>
 
-      <motion.nav
-        aria-label="Sections"
-        onClick={handleRailClick}
-        initial={m.reduced ? false : { opacity: 0, y: 4 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={m.reduced ? { duration: 0 } : m.tBase}
-        className={cn("flex flex-1 flex-col gap-3 overflow-y-auto px-2.5 py-3", collapsed && "cursor-pointer px-2")}
-      >
-        <div className="space-y-1 border-b border-[var(--workspace-border)] pb-3">
-          {PRIMARY_ITEMS.map((item) => renderItem(item))}
+      <nav className="flex min-h-0 flex-1 flex-col overflow-y-auto px-2 py-3" aria-label="Workspace sections">
+        {collapsed ? (
+          <button
+            type="button"
+            onClick={() => setCollapsed(false)}
+            aria-label="Expand navigation"
+            className="ax-interactive mb-2 flex h-9 items-center justify-center rounded-full text-[var(--workspace-muted)] hover:bg-white hover:text-[var(--workspace-ink)]"
+          >
+            <PanelLeftOpen className="size-[17px]" />
+          </button>
+        ) : null}
+
+        <Link
+          href="/dashboard/client#upload-files"
+          data-workspace-tour="upload"
+          aria-current={batchEntryActive ? "page" : undefined}
+          title={collapsed ? "New batch" : undefined}
+          className={cn(
+            "ax-interactive mb-4 flex h-9 items-center justify-center rounded-full border border-[var(--brand-green-ring)] bg-[var(--brand-green)] font-semibold text-[var(--brand-green-fg)] shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_1px_2px_rgba(16,24,40,0.08)] hover:bg-[var(--brand-green-hover)]",
+            collapsed ? "px-0" : "gap-2 px-3 text-[13px]",
+            batchEntryActive && "ring-2 ring-[var(--brand-green-ring)]/20",
+          )}
+        >
+          <Plus className="size-4 text-[var(--brand-green-fg)]" />
+          {!collapsed ? <span>New batch</span> : null}
+        </Link>
+
+        <div className="space-y-1">
+          {!collapsed ? <p className="px-3 pb-1 text-[10px] font-semibold uppercase text-[var(--workspace-muted)]">Work</p> : null}
+          {WORK_ITEMS.map(renderItem)}
         </div>
-        <div className="space-y-3">
-          {SIDEBAR_GROUPS.slice(0, -1).map((group) => renderGroup(group))}
+
+        <div className="mt-4 space-y-1 border-t border-[var(--workspace-border)] pt-3">
+          {!collapsed ? <p className="px-3 pb-1 text-[10px] font-semibold uppercase text-[var(--workspace-muted)]">Records</p> : null}
+          {RECORD_ITEMS.map(renderItem)}
         </div>
-        <div className="mt-auto border-t border-[var(--workspace-border)] pt-3">
-          {renderGroup(SIDEBAR_GROUPS[SIDEBAR_GROUPS.length - 1])}
+
+        <div className="mt-auto space-y-1 border-t border-[var(--workspace-border)] pt-3">
+          {MANAGE_ITEMS.map(renderItem)}
         </div>
-      </motion.nav>
-    </motion.aside>
+      </nav>
+    </aside>
   )
 }

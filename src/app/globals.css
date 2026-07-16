@@ -212,13 +212,12 @@
     --button-warm: var(--workspace-soft);
     --button-warm-hover: #eef2f8;
     --button-warm-ring: var(--workspace-border);
-    /* Workspace buttons: Facebook-blue primary, black secondary. */
-    --btn-primary-bg: #ffffff;
-    --btn-primary-bg-hover: var(--workspace-blue);
-    --btn-primary-fg: var(--workspace-blue);
-    --btn-primary-fg-hover: #ffffff;
-    --btn-primary-border: var(--workspace-blue);
-    --btn-primary-border-hover: var(--workspace-blue);
+    --btn-primary-bg: var(--brand-green);
+    --btn-primary-bg-hover: var(--brand-green-hover);
+    --btn-primary-fg: var(--brand-green-fg);
+    --btn-primary-fg-hover: var(--brand-green-fg);
+    --btn-primary-border: var(--brand-green-ring);
+    --btn-primary-border-hover: var(--brand-green-ring);
     --btn-secondary-bg: #ffffff;
     --btn-secondary-fg: var(--workspace-ink);
     --btn-secondary-border: var(--workspace-button-border);
@@ -277,6 +276,14 @@
   body.ax-workspace svg[fill="none"],
   body.ax-workspace svg [fill="none"] {
     fill: none !important;
+  }
+  body.ax-workspace .ax-workspace-header svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+  }
+  body.ax-workspace .ax-workspace-header [data-variant="glossy"] svg {
+    color: var(--brand-green-fg) !important;
+    stroke: var(--brand-green-fg) !important;
   }
 
   /* Workspace text colour grammar: colour data and state, never ordinary prose. */
@@ -440,11 +447,30 @@
   .ax-dashboard-content [data-slot="button"][data-variant="glossy"],
   .ax-dashboard-content [data-slot="button"][data-variant="critical"],
   .ax-dashboard-content [data-slot="button"][data-variant="warm"],
-  .ax-dashboard-content [data-slot="button"][data-variant="clay"],
-  .ax-dashboard-content [data-slot="button"][data-variant="lime"],
-  .ax-dashboard-content [data-slot="button"][data-variant="secondary"] {
-    border-color: var(--workspace-primary) !important;
-    background: var(--workspace-primary) !important;
+  .ax-dashboard-content [data-slot="button"][data-variant="clay"] {
+    border-color: var(--brand-green-ring) !important;
+    background: var(--brand-green) !important;
+    color: var(--brand-green-fg) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.65), 0 0 0 1px var(--brand-green-ring), 0 1px 3px rgba(0,0,0,0.12) !important;
+  }
+  .ax-dashboard-content [data-slot="button"][data-variant="glossy"]:hover,
+  .ax-dashboard-content [data-slot="button"][data-variant="critical"]:hover,
+  .ax-dashboard-content [data-slot="button"][data-variant="warm"]:hover,
+  .ax-dashboard-content [data-slot="button"][data-variant="clay"]:hover {
+    background: var(--brand-green-hover) !important;
+  }
+  .ax-dashboard-content [data-slot="button"][data-variant="lime"] {
+    border-color: #84cc16 !important;
+    background-color: #65a30d !important;
+    background-image: url("/buto.png") !important;
+    background-position: center !important;
+    background-size: cover !important;
+    color: #ffffff !important;
+  }
+  .ax-dashboard-content [data-slot="button"][data-variant="ink"],
+  .ax-dashboard-content [data-slot="button"][data-variant="reviewed"] {
+    border-color: #0a0a0a !important;
+    background: #171717 !important;
     color: #ffffff !important;
   }
   .ax-dashboard-content [data-slot="button"][data-variant="default"],
@@ -453,11 +479,6 @@
     border-color: var(--workspace-button-border) !important;
     background: #ffffff !important;
     color: var(--workspace-ink) !important;
-  }
-  .ax-dashboard-content [data-slot="button"][data-variant="reviewed"] {
-    border-color: var(--workspace-success) !important;
-    background: var(--workspace-success) !important;
-    color: #ffffff !important;
   }
   /* Section vertical rhythm — 80px mobile / 112px desktop */
   .ax-section {
@@ -488,7 +509,7 @@
   @media (min-width: 768px) {
     .ax-dashboard-content {
       margin-left: var(--sidebar-w, 56px);
-      transition: margin-left 350ms cubic-bezier(0.2, 0, 0, 1);
+      transition: margin-left 150ms cubic-bezier(0.23, 1, 0.32, 1);
     }
   }
 
@@ -568,6 +589,10 @@
     background: #ffffff;
   }
 
+  .ax-workspace-header {
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.12), 0 5px 14px rgba(15, 23, 42, 0.06);
+  }
+
   .ax-page-bg::before {
     content: none;
   }
@@ -638,21 +663,19 @@
   --popover-foreground: hsl(222 47% 11%);
   --primary: hsl(189 94% 43%);
   --primary-foreground: hsl(164 80% 9%);
-  /* Primary CTA green — the exact bright cyan-aqua pill (sampled from the
-     reference). Identical in light & dark so CTA hierarchy never theme-flips. */
-  /* Validated brand primaries: cyan #06B6D4 + monochrome black #0a0a0a. */
-  --brand-green: #06B6D4;
-  --brand-green-hover: #0599ac;
-  --brand-green-fg: #000000;
-  --brand-green-ring: #0e7490;
+  /* Primary CTA mint. Identical in light and dark so hierarchy never theme-flips. */
+  --brand-green: #d1fae5;
+  --brand-green-hover: #a7f3d0;
+  --brand-green-fg: #064e3b;
+  --brand-green-ring: #10b981;
   --brand-link: #1877F2;
   --brand-link-hover: #0b5fcc;
   /* Devin-matched bright accent blue for landing-page heading accents + links. */
   --landing-blue: #317cff;
   --landing-blue-hover: #1f63e0;
-  --workspace-topbar: #23384a;
-  --workspace-topbar-hover: #2c465d;
-  --workspace-sidebar: #f4f5fb;
+  --workspace-topbar: #1b1d1c;
+  --workspace-topbar-hover: #2b2e2c;
+  --workspace-sidebar: #f6f7f5;
   --workspace-sidebar-active: #0a0a0a;
   --workspace-primary: #1877F2;
   --workspace-primary-hover: #0b5fcc;

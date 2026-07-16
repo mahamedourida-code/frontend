@@ -48,9 +48,11 @@ export default function DashboardPage() {
 
   return (
     <DashboardShell activeItem="companies" title="Clients" user={user} showBack={false}>
-      <div className="space-y-8">
+      <div className="space-y-5">
         <PageHeader
           title="Clients"
+          description={activeWorkspace?.name ? `Review queues and draft bills across ${activeWorkspace.name}.` : "Review queues and draft bills across this workspace."}
+          compact
           className="mb-0"
         />
         {hasClients !== null ? (
