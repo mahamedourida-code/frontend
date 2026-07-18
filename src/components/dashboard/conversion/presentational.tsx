@@ -26,18 +26,34 @@ import type { BookkeeperFigures, RecoverableJob, ResultFile, ResultPreview, Work
 export function InvoiceDraftBillAction({
   file,
   onSendToAccountsPayable,
+  onOpenPublishWorkflow,
   stopPropagation = false,
   className,
 }: {
   file: ResultFile
   onSendToAccountsPayable?: (file: ResultFile) => void | Promise<void>
+  onOpenPublishWorkflow?: (files: ResultFile[]) => void | Promise<void>
   stopPropagation?: boolean
   className?: string
 }) {
-  if (file.document_type !== "invoice" || !["ready", "published"].includes(file.review_status || "")) return null
+  if (file.document_type !== "invoice" || file.review_status !== "ready") return null
 
   const stopCardClick = (event: ReactMouseEvent<HTMLElement>) => {
     if (stopPropagation) event.stopPropagation()
+  }
+
+  if (onOpenPublishWorkflow) {
+    return (
+      <InlineAction
+        onClick={(event) => {
+          stopCardClick(event)
+          void onOpenPublishWorkflow([file])
+        }}
+        className={className}
+      >
+        Publish
+      </InlineAction>
+    )
   }
 
   if (file.draft_bill_item_id) {

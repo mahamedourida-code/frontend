@@ -179,6 +179,11 @@ function recommendedQueueFilter(items: AccountsPayableItem[]): QueueFilter {
   return "needs_attention"
 }
 
+function queueFilterForStatus(status: AccountsPayableStatus): QueueFilter {
+  if (status === "needs_coding" || status === "needs_review") return "needs_attention"
+  return status
+}
+
 function AccountingDestinationGlyph({
   destination,
   className,
@@ -330,6 +335,8 @@ function AccountsPayableContent() {
   const m = useMotionTokens()
   const clientId = searchParams.get("client")
   const companyId = searchParams.get("company_id")
+  const requestedItemId = searchParams.get("item")
+  const jobId = searchParams.get("job")
   const [clientJobIds, setClientJobIds] = useState<Set<string> | null>(null)
   const [items, setItems] = useState<AccountsPayableItem[]>([])
   const [filter, setFilter] = useState<QueueFilter>("needs_attention")
@@ -384,12 +391,22 @@ function AccountsPayableContent() {
         companyId: companyId || undefined,
         workspaceId: activeWorkspace.id,
       })
+      const jobItems = jobId
+        ? response.items.filter(item => item.job_id === jobId)
+        : response.items
+      const requestedItem = requestedItemId
+        ? response.items.find(item => item.id === requestedItemId)
+        : null
       setItems(response.items)
       setSelectedReadyIds(current => current.filter(id => response.items.some(item => item.id === id)))
-      if (!filterTouchedRef.current) setFilter(recommendedQueueFilter(response.items))
-      setActiveId(current => current && response.items.some(item => item.id === current)
-        ? current
-        : null)
+      if (!filterTouchedRef.current) {
+        setFilter(requestedItem ? queueFilterForStatus(requestedItem.status) : recommendedQueueFilter(jobItems))
+      }
+      setActiveId(current => {
+        if (requestedItem) return requestedItem.id
+        if (current && jobItems.some(item => item.id === current)) return current
+        return jobItems[0]?.id || null
+      })
     } catch {
       toast.error("Could not load draft bills.")
     } finally {
@@ -399,11 +416,11 @@ function AccountsPayableContent() {
 
   useEffect(() => {
     filterTouchedRef.current = false
-  }, [companyId])
+  }, [companyId, jobId, requestedItemId])
 
   useEffect(() => {
     if (user && activeWorkspace?.id) void loadQueue()
-  }, [user?.id, activeWorkspace?.id, companyId])
+  }, [user?.id, activeWorkspace?.id, companyId, jobId, requestedItemId])
 
   const loadAccountingDestination = async (sync = false) => {
     if (!sync) {
@@ -591,6 +608,9 @@ function AccountsPayableContent() {
     if (clientJobIds) {
       base = base.filter(item => clientJobIds.has(String(item.job_id || "")))
     }
+    if (jobId) {
+      base = base.filter(item => item.job_id === jobId)
+    }
     // C1 — "needs you first": stable sort by Review Score (Flagged → Review →
     // High). `.map`+index keeps ties in their original API order.
     return base
@@ -602,7 +622,7 @@ function AccountsPayableContent() {
         return weight !== 0 ? weight : a.index - b.index
       })
       .map(({ item }) => item)
-  }, [items, filter, clientJobIds, reviewScores, missingInfo])
+  }, [items, filter, clientJobIds, jobId, reviewScores, missingInfo])
   const chooseFilter = (value: QueueFilter) => {
     filterTouchedRef.current = true
     setFilter(value)
@@ -1189,9 +1209,9 @@ function AccountsPayableContent() {
         {/* Quieter secondary actions — destination plumbing is reachable but no
             longer competes with the queue. */}
         <div className="flex flex-wrap items-center justify-end gap-4">
-          {clientId ? (
+          {clientId || jobId ? (
             <InlineAction tone="neutral" onClick={() => router.push("/dashboard/accounts-payable")}>
-              Clear client
+              {jobId ? "Show all draft bills" : "Clear client"}
             </InlineAction>
           ) : null}
           {accountingConnection?.connected ? (

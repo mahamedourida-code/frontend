@@ -14,6 +14,7 @@ import {
   ListChecks,
   Loader2,
   Receipt,
+  Send,
   ScanLine,
 } from "lucide-react"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
@@ -72,14 +73,13 @@ export interface DocumentReviewWorkspaceProps {
   savingPath?: string | null
   downloading?: boolean
   markingReady?: boolean
-  creatingDraftBill?: boolean
-  draftBillCreated?: boolean
+  publishing?: boolean
   canMarkReady?: boolean
-  canCreateDraftBill?: boolean
+  canPublish?: boolean
   onSave: (fieldPath: ReviewFieldPath, value: string) => void
   onDownload: () => void
   onMarkReady: () => void
-  onCreateDraftBill: () => void
+  onPublish: () => void
 }
 
 const STATUS_TONES: Record<string, StatusTone> = {
@@ -531,20 +531,19 @@ export function DocumentReviewWorkspace({
   savingPath,
   downloading = false,
   markingReady = false,
-  creatingDraftBill = false,
-  draftBillCreated = false,
+  publishing = false,
   canMarkReady = false,
-  canCreateDraftBill = false,
+  canPublish = false,
   onSave,
   onDownload,
   onMarkReady,
-  onCreateDraftBill,
+  onPublish,
 }: DocumentReviewWorkspaceProps) {
   const [mobileView, setMobileView] = useState<"fields" | "source">("fields")
   const reduceMotion = useReducedMotion()
   const uncertain = useMemo(() => new Set(uncertainCells), [uncertainCells])
   const DocumentIcon = documentIcon(documentType)
-  const primaryAction = canMarkReady ? "ready" : canCreateDraftBill ? "bill" : null
+  const primaryAction = canMarkReady ? "ready" : canPublish ? "publish" : null
 
   const fieldsPanel = (
     <FieldsPanel
@@ -639,18 +638,17 @@ export function DocumentReviewWorkspace({
                 <span className="sm:hidden">Ready</span>
                 <span className="hidden sm:inline">Mark ready</span>
               </Button>
-            ) : primaryAction === "bill" ? (
+            ) : primaryAction === "publish" ? (
               <Button
                 type="button"
                 variant="glossy"
                 size="sm"
-                onClick={onCreateDraftBill}
-                disabled={creatingDraftBill || draftBillCreated}
+                onClick={onPublish}
+                disabled={publishing}
                 className="h-9 px-3.5 shadow-none hover:shadow-none active:shadow-none"
               >
-                {creatingDraftBill ? <Loader2 className="size-4 animate-spin" /> : draftBillCreated ? <Check className="size-4" /> : <Receipt className="size-4" />}
-                <span className="sm:hidden">{draftBillCreated ? "Created" : "Draft bill"}</span>
-                <span className="hidden sm:inline">{draftBillCreated ? "Draft bill created" : "Create draft bill"}</span>
+                {publishing ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+                <span>Publish</span>
               </Button>
             ) : null}
           </div>

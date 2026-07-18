@@ -132,6 +132,7 @@ export function ProcessImagesContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const requestedMode = searchParams.get("type")
+  const requestedPublishDocumentId = searchParams.get("publish_doc") || undefined
   const requestedDocumentMode: DocumentMode = requestedMode && ROUTABLE_DOCUMENT_MODES.has(requestedMode as DocumentMode)
     ? requestedMode as DocumentMode
     : "auto"
@@ -1716,6 +1717,39 @@ Best regards`
     }
   }, [jobId])
 
+  const handleOpenPublishWorkflow = useCallback(async (files: any[]) => {
+    if (!jobId) return
+    const invoices = files.filter(file => file?.document_type === "invoice" && file?.document_id)
+    if (!invoices.length) return
+
+    try {
+      const nextDraftBillItemIds = { ...draftBillItemIds }
+      const itemIds: string[] = []
+
+      for (const file of invoices) {
+        const documentId = String(file.document_id)
+        let itemId = file.draft_bill_item_id || nextDraftBillItemIds[documentId]
+        if (!itemId) {
+          const response = await accountsPayableApi.createFromDocument(jobId, documentId)
+          itemId = response.item.id
+          nextDraftBillItemIds[documentId] = itemId
+        }
+        itemIds.push(itemId)
+      }
+
+      setDraftBillItemIds(nextDraftBillItemIds)
+      const params = new URLSearchParams({ job: jobId })
+      if (itemIds.length === 1) params.set("item", itemIds[0])
+      router.push(`/dashboard/accounts-payable?${params.toString()}`)
+    } catch (error: any) {
+      setWorkspaceBanner({
+        title: "Publish workflow could not be opened",
+        description: error?.detail || error?.message || "Confirm the reviewed invoices and try again.",
+        tone: "error",
+      })
+    }
+  }, [draftBillItemIds, jobId, router])
+
   const loadQuickBooksReferences = useCallback(async (sync = false) => {
     try {
       let connection = await quickBooksApi.status(activeWorkspace?.id)
@@ -1925,6 +1959,7 @@ Best regards`
         uploadedFiles={uploadedFiles}
         workspaceId={activeWorkspace?.id}
         jobId={jobId ?? undefined}
+        publishDocumentId={requestedPublishDocumentId}
         selectedCompanyId={selectedCompanyId}
         onSelectedCompanyIdChange={setSelectedCompanyId}
         filePreviewUrls={filePreviewUrls}
@@ -1975,6 +2010,7 @@ Best regards`
         onPersistStructuredEdit={handlePersistStructuredEdit}
         onMarkDocumentReady={handleMarkDocumentReady}
         onSendToAccountsPayable={handleSendToAccountsPayable}
+        onOpenPublishWorkflow={handleOpenPublishWorkflow}
         onOverrideDuplicateWarning={handleOverrideDuplicateWarning}
         onSaveVendorRule={handleSaveVendorRule}
         quickBooksConnection={quickBooksConnection}

@@ -139,6 +139,7 @@ type ConversionWorkspaceProps = {
   uploadedFiles: File[]
   workspaceId?: string
   jobId?: string
+  publishDocumentId?: string
   selectedCompanyId: string
   onSelectedCompanyIdChange: (companyId: string) => void
   filePreviewUrls: Record<number, string>
@@ -189,6 +190,7 @@ type ConversionWorkspaceProps = {
   onPersistStructuredEdit?: (file: ResultFile, fieldPath: Array<string | number>, value: string) => boolean | Promise<boolean>
   onMarkDocumentReady?: (file: ResultFile) => void | Promise<void>
   onSendToAccountsPayable?: (file: ResultFile) => void | Promise<void>
+  onOpenPublishWorkflow?: (files: ResultFile[]) => void | Promise<void>
   onOverrideDuplicateWarning?: (file: ResultFile, warningId: string) => void | Promise<void>
   onSaveVendorRule?: (file: ResultFile, suggestedFields: VendorRuleFields) => boolean | Promise<boolean>
   quickBooksConnection?: QuickBooksConnectionStatus | null
@@ -857,6 +859,7 @@ export function ResultPreviewPanel({
 
 export function ResultActions({
   jobId,
+  publishDocumentId,
   resultFiles,
   isComplete,
   isProcessing = false,
@@ -886,6 +889,7 @@ export function ResultActions({
   onPersistStructuredEdit,
   onMarkDocumentReady,
   onSendToAccountsPayable,
+  onOpenPublishWorkflow,
   onOverrideDuplicateWarning,
   onSaveVendorRule,
   quickBooksConnection,
@@ -895,6 +899,7 @@ export function ResultActions({
 }: Pick<
   ConversionWorkspaceProps,
   | "jobId"
+  | "publishDocumentId"
   | "resultFiles"
   | "isComplete"
   | "outputMode"
@@ -922,6 +927,7 @@ export function ResultActions({
   | "onPersistStructuredEdit"
   | "onMarkDocumentReady"
   | "onSendToAccountsPayable"
+  | "onOpenPublishWorkflow"
   | "onOverrideDuplicateWarning"
   | "onSaveVendorRule"
   | "quickBooksConnection"
@@ -1171,12 +1177,11 @@ export function ResultActions({
     return { file, index, fileKey, badge, edited, duplicateWarning }
   })
   const readyInvoiceEntries = resultEntries.filter(({ file }) =>
-    file.document_type === "invoice" && ["ready", "published"].includes(file.review_status || "")
+    file.document_type === "invoice" && file.review_status === "ready"
   )
   const unsentReadyInvoiceEntries = readyInvoiceEntries.filter(({ file }) => !file.draft_bill_item_id)
-  const draftBillInvoiceCount = readyInvoiceEntries.length - unsentReadyInvoiceEntries.length
   const readyReceiptEntries = resultEntries.filter(({ file }) =>
-    file.document_type === "receipt" && ["ready", "published"].includes(file.review_status || "")
+    file.document_type === "receipt" && file.review_status === "ready" && file.quickbooks_receipt_publication?.status !== "published"
   )
   const filterCounts = resultEntries.reduce(
     (counts, entry) => {
@@ -1223,6 +1228,30 @@ export function ResultActions({
     setEditingCell(null)
     onEditFile(file, index)
   }
+
+  const openPublishForFile = (file: ResultFile, index: number) => {
+    if (file.document_type === "invoice") {
+      if (onOpenPublishWorkflow) {
+        void onOpenPublishWorkflow([file])
+        return
+      }
+      if (onSendToAccountsPayable) {
+        void onSendToAccountsPayable(file)
+        return
+      }
+    }
+
+    openComparison(index)
+  }
+
+  const openedPublishDocumentRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!publishDocumentId || openedPublishDocumentRef.current === publishDocumentId) return
+    const index = safeResultFiles.findIndex(file => file.document_id === publishDocumentId)
+    if (index < 0) return
+    openedPublishDocumentRef.current = publishDocumentId
+    openComparison(index)
+  }, [publishDocumentId, safeResultFiles.map(file => file.document_id || "").join("|")])
 
   useEffect(() => {
     setReceiptDestination("")
@@ -1408,13 +1437,25 @@ export function ResultActions({
     }
   }
 
-  const sendReadyInvoicesToDraftBills = async () => {
-    if (!onSendToAccountsPayable || !unsentReadyInvoiceEntries.length || unresolvedDuplicateCount > 0) return
+  const openReadyPublishWorkflow = async () => {
+    if (unresolvedDuplicateCount > 0) return
+    const firstReceipt = readyReceiptEntries[0]
+
     setBatchApBusy(true)
     try {
-      for (const entry of unsentReadyInvoiceEntries) {
-        await onSendToAccountsPayable(entry.file)
+      if (readyInvoiceEntries.length && onOpenPublishWorkflow) {
+        await onOpenPublishWorkflow(readyInvoiceEntries.map(entry => entry.file))
+        return
       }
+
+      if (unsentReadyInvoiceEntries.length && onSendToAccountsPayable) {
+        for (const entry of unsentReadyInvoiceEntries) {
+          await onSendToAccountsPayable(entry.file)
+        }
+        return
+      }
+
+      if (firstReceipt) openComparison(firstReceipt.index)
     } finally {
       setBatchApBusy(false)
     }
@@ -1560,57 +1601,34 @@ export function ResultActions({
                 ) : null}
               </div>
             </details>
-            <details className="group relative">
-              <summary className={cn(buttonVariants({ variant: "glossy", size: "default" }), "h-9 cursor-pointer list-none gap-2 px-4 text-sm [&::-webkit-details-marker]:hidden", workspacePrimaryControlClass)}>
-                <Send className="h-4 w-4" />
-                Export reviewed
-                <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
-              </summary>
-              <div className={cn(reviewBoardMenuClass, "w-64")}>
-                <Button
-                  size="sm"
-                  variant="surface"
-                  onClick={handleReviewedBatchDownload}
-                  disabled={reviewedDownloadBusy || unresolvedDuplicateCount > 0}
-                  className={cn("h-9 w-full justify-start gap-2 px-3 text-xs", workspaceNormalControlClass)}
-                >
-                  {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-                  {unresolvedDuplicateCount > 0 ? "Resolve duplicates" : "Download reviewed stack"}
-                </Button>
-                {onSendToAccountsPayable && unsentReadyInvoiceEntries.length ? (
-                  <Button
-                    size="sm"
-                    variant="glossy"
-                    onClick={() => void sendReadyInvoicesToDraftBills()}
-                    disabled={batchApBusy || unresolvedDuplicateCount > 0}
-                    className={cn("h-9 w-full justify-start gap-2 px-3 text-xs", workspacePrimaryControlClass)}
-                  >
-                    {batchApBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                    {unresolvedDuplicateCount > 0
-                      ? "Resolve dupes"
-                      : `Draft ${unsentReadyInvoiceEntries.length} invoice${unsentReadyInvoiceEntries.length === 1 ? "" : "s"}`}
-                  </Button>
-                ) : null}
-                {draftBillInvoiceCount > 0 ? (
-                  <Button asChild size="sm" variant="surface" className={cn("h-9 w-full justify-start gap-2 px-3 text-xs", workspaceNormalControlClass)}>
-                    <a href="/dashboard/accounts-payable">
-                      <Inbox className="h-4 w-4" />
-                      Open draft bills
-                    </a>
-                  </Button>
-                ) : null}
-                {readyReceiptEntries.length ? (
-                  <p className="px-2 py-1 text-[11px] font-medium leading-snug text-[var(--workspace-muted)]">
-                    Open a receipt to publish.
-                  </p>
-                ) : null}
-                {!unsentReadyInvoiceEntries.length && !draftBillInvoiceCount && !readyReceiptEntries.length ? (
-                  <p className="px-2 py-1 text-[11px] font-medium leading-snug text-[var(--workspace-muted)]">
-                    Mark documents ready first.
-                  </p>
-                ) : null}
-              </div>
-            </details>
+            <Button
+              size="sm"
+              variant="surface"
+              onClick={handleReviewedBatchDownload}
+              disabled={reviewedDownloadBusy || unresolvedDuplicateCount > 0}
+              className={cn("h-9 gap-2 px-4 text-sm", workspaceNormalControlClass)}
+            >
+              {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+              {unresolvedDuplicateCount > 0 ? "Resolve duplicates" : "Download reviewed"}
+            </Button>
+            {readyInvoiceEntries.length || readyReceiptEntries.length ? (
+              <Button
+                size="sm"
+                variant="glossy"
+                onClick={() => void openReadyPublishWorkflow()}
+                disabled={batchApBusy || unresolvedDuplicateCount > 0}
+                className={cn("h-9 gap-2 px-4 text-sm", workspacePrimaryControlClass)}
+              >
+                {batchApBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                {unresolvedDuplicateCount > 0
+                  ? "Resolve duplicates"
+                  : readyInvoiceEntries.length
+                    ? `Publish ${readyInvoiceEntries.length} invoice${readyInvoiceEntries.length === 1 ? "" : "s"}`
+                    : readyReceiptEntries.length === 1
+                      ? "Publish receipt"
+                      : `Review ${readyReceiptEntries.length} receipts to publish`}
+              </Button>
+            ) : null}
           </div>
         </div>
       ) : null}
@@ -1687,6 +1705,7 @@ export function ResultActions({
               const issue = resultIssue(file, badge, reviewLevel, duplicateWarning)
               const confidence = resultConfidence(file)
               const canMarkReady = Boolean(file.document_id && !["ready", "published", "failed", "deleted"].includes(file.review_status || ""))
+              const canPublish = file.review_status === "ready" && ["invoice", "receipt"].includes(file.document_type || "")
               const docHref = jobId && file.document_id ? `/dashboard/document?job=${jobId}&doc=${file.document_id}` : null
 
               return (
@@ -1718,6 +1737,11 @@ export function ResultActions({
                       {canMarkReady ? (
                         <Button type="button" variant="glossy" size="sm" onClick={() => void onMarkDocumentReady?.(file)} className="h-8 px-3 text-xs">
                           Mark ready
+                        </Button>
+                      ) : null}
+                      {canPublish ? (
+                        <Button type="button" variant="glossy" size="sm" onClick={() => openPublishForFile(file, index)} className="h-8 px-3 text-xs">
+                          Publish
                         </Button>
                       ) : null}
                       {docHref ? (
@@ -1772,7 +1796,7 @@ export function ResultActions({
                     file.document_id &&
                     !["ready", "published", "failed", "deleted"].includes(file.review_status || "")
                   )
-                  const isReadyToPublish = ["ready", "published"].includes(file.review_status || "")
+                  const isReadyToPublish = file.review_status === "ready" && ["invoice", "receipt"].includes(file.document_type || "")
                   // Clicking a document opens the full-page review route. Falls
                   // back to the modal only when durable ids are unavailable.
                   const docHref = jobId && file.document_id
@@ -1883,22 +1907,16 @@ export function ResultActions({
                             </button>
                           ) : (
                             <>
-                              {isReadyToPublish && file.document_type === "invoice" && onSendToAccountsPayable && !file.draft_bill_item_id ? (
-                                <button
+                              {isReadyToPublish ? (
+                                <Button
                                   type="button"
-                                  onClick={() => void onSendToAccountsPayable(file)}
-                                  className="ax-interactive inline-flex h-7 items-center rounded-md border border-[var(--workspace-primary)] bg-[var(--workspace-primary)] px-2.5 text-[11px] font-semibold text-white shadow-none transition-colors hover:border-[var(--workspace-primary-hover)] hover:bg-[var(--workspace-primary-hover)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/30"
+                                  variant="glossy"
+                                  size="sm"
+                                  onClick={() => openPublishForFile(file, index)}
+                                  className="h-7 px-2.5 text-[11px]"
                                 >
-                                  Draft bill
-                                </button>
-                              ) : null}
-                              {isReadyToPublish && file.draft_bill_item_id ? (
-                                <Link
-                                  href="/dashboard/accounts-payable"
-                                  className={cn("ax-interactive inline-flex h-7 items-center px-2.5 text-[11px] font-semibold transition-colors", workspaceNormalControlClass)}
-                                >
-                                  Draft bill
-                                </Link>
+                                  Publish
+                                </Button>
                               ) : null}
                               {docHref ? (
                                 <Link
@@ -2002,6 +2020,7 @@ export function ResultActions({
               <InvoiceDraftBillAction
                 file={comparisonFile}
                 onSendToAccountsPayable={onSendToAccountsPayable}
+                onOpenPublishWorkflow={onOpenPublishWorkflow}
                 className="h-9 px-3 text-xs"
               />
               {comparisonFile.document_id && !["ready", "published", "failed", "deleted"].includes(comparisonFile.review_status || "") ? (
@@ -3224,6 +3243,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     uploadedFiles,
     workspaceId,
     jobId,
+    publishDocumentId,
     selectedCompanyId,
     onSelectedCompanyIdChange,
     filePreviewUrls,
@@ -3273,6 +3293,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     onPersistStructuredEdit,
     onMarkDocumentReady,
     onSendToAccountsPayable,
+    onOpenPublishWorkflow,
     onOverrideDuplicateWarning,
     onSaveVendorRule,
     quickBooksConnection,
@@ -3393,6 +3414,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
           <div className={cn("space-y-6", hasResults ? "" : "hidden")}>
             <ResultActions
               jobId={jobId}
+              publishDocumentId={publishDocumentId}
               resultFiles={resultFiles}
               isProcessing={isProcessing}
               pendingCount={pendingCount}
@@ -3422,6 +3444,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
               onPersistStructuredEdit={onPersistStructuredEdit}
               onMarkDocumentReady={onMarkDocumentReady}
               onSendToAccountsPayable={onSendToAccountsPayable}
+              onOpenPublishWorkflow={onOpenPublishWorkflow}
               onOverrideDuplicateWarning={onOverrideDuplicateWarning}
               onSaveVendorRule={onSaveVendorRule}
               quickBooksConnection={quickBooksConnection}

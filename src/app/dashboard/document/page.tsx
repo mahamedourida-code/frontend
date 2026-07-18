@@ -124,8 +124,7 @@ function DocumentReviewContent() {
   const [savingPath, setSavingPath] = useState<string | null>(null)
   const [markingReady, setMarkingReady] = useState(false)
   const [downloading, setDownloading] = useState(false)
-  const [sendingBill, setSendingBill] = useState(false)
-  const [sentToBills, setSentToBills] = useState(false)
+  const [publishing, setPublishing] = useState(false)
   const saveInFlightRef = useRef(false)
 
   const load = useCallback(async () => {
@@ -269,16 +268,21 @@ function DocumentReviewContent() {
     }
   }
 
-  const sendToBills = async () => {
-    setSendingBill(true)
+  const startPublish = async () => {
+    setPublishing(true)
     try {
-      await accountsPayableApi.createFromDocument(jobId, documentId)
-      setSentToBills(true)
-      toast.success("Draft bill created.")
+      if (docType === "receipt") {
+        router.push(`/dashboard/client?job_id=${encodeURIComponent(jobId)}&publish_doc=${encodeURIComponent(documentId)}`)
+        return
+      }
+
+      const response = await accountsPayableApi.createFromDocument(jobId, documentId)
+      const params = new URLSearchParams({ job: jobId, item: response.item.id })
+      router.push(`/dashboard/accounts-payable?${params.toString()}`)
     } catch (err: any) {
-      toast.error(err?.detail || err?.message || "Could not create the draft bill.")
+      toast.error(err?.detail || err?.message || "Could not start the publish workflow.")
     } finally {
-      setSendingBill(false)
+      setPublishing(false)
     }
   }
 
@@ -356,7 +360,7 @@ function DocumentReviewContent() {
     : undefined
 
   const canMarkReady = !["ready", "published", "failed", "deleted"].includes(status)
-  const canSendToBills = docType === "invoice" && ["ready", "published"].includes(status)
+  const canPublish = ["invoice", "receipt"].includes(docType) && status === "ready"
 
   return (
     <DashboardShell
@@ -394,14 +398,13 @@ function DocumentReviewContent() {
         savingPath={savingPath}
         downloading={downloading}
         markingReady={markingReady}
-        creatingDraftBill={sendingBill}
-        draftBillCreated={sentToBills}
+        publishing={publishing}
         canMarkReady={canMarkReady}
-        canCreateDraftBill={canSendToBills}
+        canPublish={canPublish}
         onSave={(path, value) => void persist(path, value)}
         onDownload={() => void download()}
         onMarkReady={() => void markReady()}
-        onCreateDraftBill={() => void sendToBills()}
+        onPublish={() => void startPublish()}
       />
     </DashboardShell>
   )
