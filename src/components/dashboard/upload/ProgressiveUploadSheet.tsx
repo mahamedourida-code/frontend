@@ -7,6 +7,7 @@ import {
   FileText,
   FolderUp,
   Loader2,
+  PencilLine,
   Plus,
   Trash2,
   X,
@@ -56,6 +57,7 @@ type ProgressiveUploadSheetProps = {
   onClearFiles: () => void
   onProcess: () => void
   onCancel: () => void
+  onOpenManual: () => void
 }
 
 function fileSize(bytes: number) {
@@ -90,6 +92,7 @@ export function ProgressiveUploadSheet({
   onClearFiles,
   onProcess,
   onCancel,
+  onOpenManual,
 }: ProgressiveUploadSheetProps) {
   const [companies, setCompanies] = useState<CompanySummary[]>([])
   const [companiesLoading, setCompaniesLoading] = useState(false)
@@ -412,6 +415,17 @@ export function ProgressiveUploadSheet({
             {busy ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
             <span>{processButtonLabel}</span>
           </Button>
+          {!busy ? (
+            <Button
+              type="button"
+              variant="surface"
+              onClick={onOpenManual}
+              className="w-full"
+            >
+              <PencilLine className="size-4" />
+              Enter a document manually
+            </Button>
+          ) : null}
           {busy ? (
             <Button type="button" variant="surface" onClick={onCancel} className="w-full">
               Cancel reading

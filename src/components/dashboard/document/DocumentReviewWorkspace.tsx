@@ -31,6 +31,7 @@ export type ReviewField = {
   label: string
   path: string
   value: string
+  multiline?: boolean
 }
 
 export type ReviewTableColumn = {
@@ -144,12 +145,14 @@ function ReviewInput({
   label,
   value,
   path,
+  multiline,
   savingPath,
   onSave,
 }: {
   label: string
   value: string
   path: string
+  multiline?: boolean
   savingPath?: string | null
   onSave: DocumentReviewWorkspaceProps["onSave"]
 }) {
@@ -161,19 +164,35 @@ function ReviewInput({
         {label}
         {saving ? <Loader2 className="size-3 animate-spin" aria-label="Saving" /> : null}
       </span>
-      <input
-        key={`${path}-${value}`}
-        defaultValue={value}
-        onBlur={(event) => {
-          if (event.target.value !== value) onSave([path], event.target.value)
-        }}
-        className={cn(
-          "ax-interactive h-9 w-full rounded-md border border-[var(--workspace-button-border)] bg-white px-3 text-[13px] outline-none",
-          "hover:border-[var(--workspace-muted)] focus:border-[var(--workspace-primary)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--workspace-primary)_18%,transparent)]",
-          fieldValueClass(label),
-        )}
-        placeholder="-"
-      />
+      {multiline ? (
+        <textarea
+          key={`${path}-${value}`}
+          defaultValue={value}
+          onBlur={(event) => {
+            if (event.target.value !== value) onSave([path], event.target.value)
+          }}
+          className={cn(
+            "ax-interactive min-h-44 w-full resize-y rounded-md border border-[var(--workspace-button-border)] bg-white px-3 py-2 text-[13px] leading-6 outline-none",
+            "hover:border-[var(--workspace-muted)] focus:border-[var(--workspace-primary)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--workspace-primary)_18%,transparent)]",
+            fieldValueClass(label),
+          )}
+          placeholder="-"
+        />
+      ) : (
+        <input
+          key={`${path}-${value}`}
+          defaultValue={value}
+          onBlur={(event) => {
+            if (event.target.value !== value) onSave([path], event.target.value)
+          }}
+          className={cn(
+            "ax-interactive h-9 w-full rounded-md border border-[var(--workspace-button-border)] bg-white px-3 text-[13px] outline-none",
+            "hover:border-[var(--workspace-muted)] focus:border-[var(--workspace-primary)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--workspace-primary)_18%,transparent)]",
+            fieldValueClass(label),
+          )}
+          placeholder="-"
+        />
+      )}
     </label>
   )
 }
@@ -621,7 +640,7 @@ export function DocumentReviewWorkspace({
           </div>
 
           <div className="ms-auto flex shrink-0 items-center gap-1.5">
-            <IconAction label="Download XLSX" disabled={downloading} onClick={onDownload}>
+            <IconAction label={documentType === "notes" ? "Download TXT" : "Download XLSX"} disabled={downloading} onClick={onDownload}>
               {downloading ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
             </IconAction>
 

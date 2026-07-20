@@ -19,6 +19,7 @@ import {
   Languages,
   ListChecks,
   Loader2,
+  PencilLine,
   ReceiptText,
   RotateCcw,
   Save,
@@ -200,6 +201,7 @@ type ConversionWorkspaceProps = {
   classifiedDocuments?: JobDocumentRecord[]
   overridingDocumentId?: string | null
   onOverrideDocumentMode?: (documentId: string, mode: ResolvedDocumentMode) => void | Promise<void>
+  manualEntryHref?: string
 }
 
 export function UploadDropzone({
@@ -896,6 +898,7 @@ export function ResultActions({
   quickBooksReferences = [],
   onRefreshQuickBooksReferences,
   onPublishReceipt,
+  manualEntryHref,
 }: Pick<
   ConversionWorkspaceProps,
   | "jobId"
@@ -934,6 +937,7 @@ export function ResultActions({
   | "quickBooksReferences"
   | "onRefreshQuickBooksReferences"
   | "onPublishReceipt"
+  | "manualEntryHref"
 > & { isProcessing?: boolean; pendingCount?: number }) {
   const [comparisonIndex, setComparisonIndex] = useState<number | null>(null)
   const [editingCell, setEditingCell] = useState<{ fileKey: string; row: number; col: number } | null>(null)
@@ -1548,6 +1552,14 @@ export function ResultActions({
               <span className="inline-flex h-7 items-center rounded-full border border-[var(--workspace-border)] bg-white px-2.5 text-xs font-semibold text-[var(--workspace-muted)] shadow-none">
                 {editedCount} edited
               </span>
+            ) : null}
+            {manualEntryHref ? (
+              <Button asChild size="sm" variant="surface" className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}>
+                <Link href={manualEntryHref}>
+                  <PencilLine className="h-4 w-4" />
+                  Add manually
+                </Link>
+              </Button>
             ) : null}
             <details className="group relative">
               <summary className={cn(buttonVariants({ variant: "surface", size: "sm" }), "h-9 cursor-pointer list-none gap-2 px-3 text-xs [&::-webkit-details-marker]:hidden", workspaceNormalControlClass)}>
@@ -2843,6 +2855,7 @@ function BatchStagingBoard({
   onRemoveFile,
   onClearFiles,
   onConvert,
+  manualEntryHref,
 }: {
   uploadedFiles: File[]
   workspaceId?: string
@@ -2857,6 +2870,7 @@ function BatchStagingBoard({
   onRemoveFile: (index: number) => void
   onClearFiles: () => void
   onConvert: () => void
+  manualEntryHref: string
 }) {
   const m = useMotionTokens()
   const router = useRouter()
@@ -2984,6 +2998,12 @@ function BatchStagingBoard({
                 >
                   <Upload className="h-4 w-4" />
                   Upload
+                </Button>
+                <Button asChild variant="surface" className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}>
+                  <Link href={manualEntryHref}>
+                    <PencilLine className="h-4 w-4" />
+                    Add manually
+                  </Link>
                 </Button>
                 <Button asChild variant="surface" className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}>
                   <a href="/dashboard/inbox">
@@ -3153,6 +3173,12 @@ function BatchStagingBoard({
                             <Upload className="h-4 w-4" />
                             Upload your first stack
                           </Button>
+                          <Button asChild variant="surface" className={cn("h-9 gap-2 px-5", workspaceNormalControlClass)}>
+                            <Link href={manualEntryHref}>
+                              <PencilLine className="h-4 w-4" />
+                              Add manually
+                            </Link>
+                          </Button>
                         </div>
                       </td>
                     </tr>
@@ -3317,7 +3343,13 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     ? Math.max(0, (processingTotal ?? 0) - readyCount)
     : 0
   const [uploadSheetOpen, setUploadSheetOpen] = useState(false)
+  const router = useRouter()
   const uploadIntentRef = useRef(typeof window !== "undefined" && window.location.hash === "#upload-files")
+  const manualCompanyId = classifiedDocuments?.find(document => document.company_id)?.company_id || selectedCompanyId
+  const manualEntryParams = new URLSearchParams()
+  if (hasResults && jobId) manualEntryParams.set("job_id", jobId)
+  if (manualCompanyId) manualEntryParams.set("company_id", manualCompanyId)
+  const manualEntryHref = `/dashboard/manual${manualEntryParams.size ? `?${manualEntryParams.toString()}` : ""}`
 
   const setUploadOpen = useCallback((open: boolean) => {
     uploadIntentRef.current = open
@@ -3386,6 +3418,10 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
         onClearFiles={onClearFiles}
         onProcess={onConvert}
         onCancel={onCancel}
+        onOpenManual={() => {
+          setUploadOpen(false)
+          router.push(manualEntryHref)
+        }}
       />
 
       <div className="space-y-5">
@@ -3405,6 +3441,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
               onRemoveFile={onRemoveFile}
               onClearFiles={onClearFiles}
               onConvert={onConvert}
+              manualEntryHref={manualEntryHref}
             />
           ) : null}
 
@@ -3451,6 +3488,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
               quickBooksReferences={quickBooksReferences}
               onRefreshQuickBooksReferences={onRefreshQuickBooksReferences}
               onPublishReceipt={onPublishReceipt}
+              manualEntryHref={manualEntryHref}
             />
           </div>
         </div>

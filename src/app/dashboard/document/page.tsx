@@ -203,7 +203,8 @@ function DocumentReviewContent() {
   const docType = doc.resolved_mode || doc.detected_mode || doc.selected_mode || "auto"
   const status = doc.review_status || extraction?.review_status || "needs_review"
   const sourceUrl = extraction?.source_preview_url || doc.source_access_url || ""
-  const sourceContentType = extraction?.source_preview_url ? "image/*" : doc.source_content_type
+  const extractionMetadata = extraction?.metadata || {}
+  const sourceContentType = String(extractionMetadata.source_content_type || doc.source_content_type || "image/*")
   const processingUnitId = extraction?.processing_unit_id || ""
 
   const currencyLabel =
@@ -258,9 +259,10 @@ function DocumentReviewContent() {
   const download = async () => {
     setDownloading(true)
     try {
-      const blob = await ocrApi.downloadReviewedDocument(jobId, documentId, "xlsx")
+      const exportFormat = docType === "notes" ? "txt" : "xlsx"
+      const blob = await ocrApi.downloadReviewedDocument(jobId, documentId, exportFormat)
       const stem = (doc.original_filename || "axliner_document").replace(/\.[^/.]+$/, "")
-      downloadBlob(blob, `${stem}_reviewed.xlsx`)
+      downloadBlob(blob, `${stem}_reviewed.${exportFormat}`)
     } catch (err: any) {
       toast.error(err?.detail || err?.message || "Could not download this document.")
     } finally {
@@ -293,20 +295,39 @@ function DocumentReviewContent() {
           { label: "Invoice no.", path: "invoice_number", value: String(data.invoice_number ?? "") },
           { label: "Invoice date", path: "invoice_date", value: String(data.invoice_date ?? "") },
           { label: "Due date", path: "due_date", value: String(data.due_date ?? "") },
+          { label: "Subtotal", path: "subtotal", value: String(data.subtotal ?? "") },
+          { label: "Tax / VAT", path: "tax_vat_amount", value: String(data.tax_vat_amount ?? "") },
+          { label: "Total", path: "total", value: String(data.total ?? "") },
+          { label: "Currency", path: "currency", value: String(data.currency ?? "") },
         ]
       : docType === "receipt"
         ? [
             { label: "Merchant", path: "merchant", value: String(data.merchant ?? "") },
             { label: "Date", path: "date", value: String(data.date ?? "") },
             { label: "Payment method", path: "payment_method", value: String(data.payment_method ?? "") },
+            { label: "Subtotal", path: "subtotal", value: String(data.subtotal ?? "") },
+            { label: "Tax / VAT", path: "tax_vat_amount", value: String(data.tax_vat_amount ?? "") },
+            { label: "Total", path: "total", value: String(data.total ?? "") },
+            { label: "Currency", path: "currency", value: String(data.currency ?? "") },
           ]
         : docType === "bank_statement"
           ? [
               { label: "Account holder", path: "account_holder", value: String(data.account_holder ?? "") },
               { label: "Bank", path: "bank_name", value: String(data.bank_name ?? "") },
               { label: "Period", path: "period", value: String(data.period ?? "") },
+              { label: "Opening balance", path: "opening_balance", value: String(data.opening_balance ?? "") },
+              { label: "Closing balance", path: "closing_balance", value: String(data.closing_balance ?? "") },
+              { label: "Currency", path: "currency", value: String(data.currency ?? "") },
             ]
           : []
+  if (docType === "notes") {
+    fields.push({
+      label: "Notes",
+      path: "readable_text",
+      value: String(data.readable_text ?? ""),
+      multiline: true,
+    })
+  }
 
   const lineItems: ReviewTable | null =
     docType === "invoice" || docType === "receipt"

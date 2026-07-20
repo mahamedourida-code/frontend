@@ -796,6 +796,22 @@ export interface UploadBatchMultipartOptions {
   onUploadProgress?: (percent: number, event: AxiosProgressEvent) => void
 }
 
+export interface ManualDocumentCreateOptions {
+  workspace_id: string
+  company_id: string
+  document_mode: ResolvedDocumentMode
+  document_data: Record<string, unknown>
+  target_job_id?: string
+}
+
+export interface ManualDocumentCreateResponse {
+  job_id: string
+  document_id: string
+  status: 'completed'
+  review_status: 'edited'
+  appended_to_existing_batch: boolean
+}
+
 export interface AppLimits {
   plan: 'anonymous' | 'free' | 'pro' | 'max' | 'mega' | 'enterprise'
   max_files_per_batch: number
@@ -970,6 +986,27 @@ export const ocrApi = {
             : 0
         options.onUploadProgress(Math.min(100, Math.max(0, percent)), event)
       },
+    })
+    return response.data
+  },
+
+  createManualDocument: async (
+    sourceFile: File,
+    options: ManualDocumentCreateOptions,
+  ): Promise<ManualDocumentCreateResponse> => {
+    const formData = new FormData()
+    formData.append('source_file', sourceFile)
+    formData.append('workspace_id', options.workspace_id)
+    formData.append('company_id', options.company_id)
+    formData.append('document_mode', options.document_mode)
+    formData.append('document_data', JSON.stringify(options.document_data))
+    if (options.target_job_id) formData.append('target_job_id', options.target_job_id)
+
+    const response = await apiClient.post<ManualDocumentCreateResponse>('/api/v1/jobs/manual', formData, {
+      headers: {
+        'Content-Type': undefined,
+      },
+      timeout: isMobile ? 120000 : 90000,
     })
     return response.data
   },
